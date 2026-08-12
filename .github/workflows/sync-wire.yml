@@ -1,0 +1,40 @@
+name: sync evidence wire
+
+on:
+  schedule:
+    - cron: "17 12 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: evidence-wire-refresh
+  cancel-in-progress: false
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+      - run: npm ci
+      - run: npm test
+      - run: npm run sync
+      - name: Publish a changed wire cache
+        run: |
+          if git diff --quiet -- data/cache.json; then
+            echo "Wire unchanged"
+            exit 0
+          fi
+          git config user.name "myquant-wire"
+          git config user.email "wire@myquantdoesntspeakenglish.com"
+          git add data/cache.json
+          git commit -m "content: refresh evidence wire $(date -u +%F)"
+          git push

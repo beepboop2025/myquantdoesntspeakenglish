@@ -18,6 +18,10 @@ The build has no runtime dependencies. If a source is temporarily unavailable,
 it uses the last successful `data/cache.json` slice for that source and prints the
 coverage state in the generated page.
 
+The scheduled `sync evidence wire` workflow refreshes that cache daily at
+12:17 UTC. A changed public feed produces one small content commit, which becomes
+the deployment trigger; an unchanged wire produces no commit and no redeploy.
+
 ## Editorial rule
 
 Automation may collect and normalize published records. It may not manufacture a
