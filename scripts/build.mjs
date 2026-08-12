@@ -4,6 +4,7 @@ import { fileURLToPath } from 'node:url'
 import {
   SITE_ORIGIN,
   SOURCES,
+  buildSignalPulse,
   chooseLead,
   normalizeHouseArticle,
   normalizePayload,
@@ -115,7 +116,9 @@ function masthead() {
       <span>my quant</span><span>doesn’t speak</span><span>english.com</span>
     </a>
     <nav aria-label="Primary">
+      <a href="/#signals">Signal map</a>
       <a href="/#wire">Every dispatch</a>
+      <a href="/#telegram">Telegram desks</a>
       <a href="/articles/why-the-quant-needs-subtitles/">House rules</a>
       <a class="nav-ad" href="/advertise/">Advertise, tastefully</a>
     </nav>
@@ -141,10 +144,108 @@ function sourceStatus(cache, product) {
   return `<li data-state="${escapeHtml(status.state)}"><span>${escapeHtml(productLabel(product))}</span><b>${escapeHtml(status.state)}</b><small>${escapeHtml(status.detail)}</small></li>`
 }
 
+const GRAPH_PRODUCTS = [
+  { id: 'seiche', label: 'Seiche', layer: 'System' },
+  { id: 'liquilens', label: 'LiquiLens', layer: 'Institution' },
+  { id: 'liquilens-undertow', label: 'Undertow', layer: 'Market' },
+  { id: 'myquant', label: 'House', layer: 'Editorial' },
+]
+
+function cadenceSvg(pulse, windowSize = 14) {
+  const days = pulse.days.slice(-windowSize)
+  const width = 760
+  const height = 252
+  const left = 46
+  const right = 18
+  const top = 22
+  const baseline = 198
+  const chartHeight = baseline - top
+  const step = (width - left - right) / Math.max(1, days.length)
+  const barWidth = Math.max(5, step - Math.min(10, step * 0.28))
+  const max = Math.max(1, ...days.map((day) => Object.values(day.counts).reduce((sum, count) => sum + count, 0)))
+  const labelEvery = Math.max(1, Math.ceil(days.length / 7))
+  const bars = days.map((day, index) => {
+    const x = left + index * step + (step - barWidth) / 2
+    let y = baseline
+    const total = Object.values(day.counts).reduce((sum, count) => sum + count, 0)
+    const segments = GRAPH_PRODUCTS.map((product) => {
+      const count = day.counts[product.id] || 0
+      if (!count) return ''
+      const segmentHeight = Math.max(4, count / max * chartHeight)
+      y -= segmentHeight
+      return `<rect class="pulse-${product.id}" x="${x.toFixed(2)}" y="${y.toFixed(2)}" width="${barWidth.toFixed(2)}" height="${segmentHeight.toFixed(2)}" rx="2" />`
+    }).join('')
+    const label = index % labelEvery === 0 || index === days.length - 1
+      ? `<text x="${(x + barWidth / 2).toFixed(2)}" y="226" text-anchor="middle">${escapeHtml(day.date.slice(5))}</text>`
+      : ''
+    const detail = GRAPH_PRODUCTS.map((product) => `${product.label} ${day.counts[product.id] || 0}`).join(', ')
+    return `<g class="cadence-day" data-date="${day.date}" tabindex="0"><title>${day.date}: ${total} records; ${detail}</title>${segments}${label}</g>`
+  }).join('')
+  const grid = [0, .5, 1].map((ratio) => {
+    const y = baseline - ratio * chartHeight
+    return `<g class="cadence-grid"><line x1="${left}" x2="${width - right}" y1="${y}" y2="${y}"/><text x="${left - 10}" y="${y + 4}" text-anchor="end">${Math.round(max * ratio)}</text></g>`
+  }).join('')
+  return `<svg id="cadenceChart" viewBox="0 0 ${width} ${height}" role="img" aria-label="Published records per day over the latest ${days.length} days, stacked by product"><desc>Interactive dispatch cadence chart. Use the range controls to show seven, fourteen, or twenty-eight days.</desc>${grid}${bars}</svg>`
+}
+
+function mixGraphic(pulse) {
+  let offset = 0
+  const rings = GRAPH_PRODUCTS.map((product) => {
+    const count = pulse.totals[product.id] || 0
+    const percent = pulse.recordCount ? count / pulse.recordCount * 100 : 0
+    const circle = `<circle class="mix-${product.id}" cx="80" cy="80" r="58" pathLength="100" stroke-dasharray="${percent.toFixed(3)} ${(100 - percent).toFixed(3)}" stroke-dashoffset="${(-offset).toFixed(3)}"/>`
+    offset += percent
+    return circle
+  }).join('')
+  const legend = GRAPH_PRODUCTS.map((product) => {
+    const count = pulse.totals[product.id] || 0
+    const percent = pulse.recordCount ? Math.round(count / pulse.recordCount * 100) : 0
+    return `<button type="button" data-route-filter="${product.id}"><i class="mix-${product.id}"></i><span>${product.label}</span><b>${count}</b><small>${percent}%</small></button>`
+  }).join('')
+  return `<div class="mix-wrap"><svg class="mix-ring" viewBox="0 0 160 160" role="img" aria-label="Source mix across ${pulse.recordCount} published records">${rings}<text x="80" y="75" text-anchor="middle">${pulse.recordCount}</text><text x="80" y="94" text-anchor="middle">records</text></svg><div class="mix-legend">${legend}</div></div>`
+}
+
+function signalMap() {
+  return `<svg class="signal-map" viewBox="0 0 920 278" role="group" aria-labelledby="signal-map-title signal-map-desc">
+    <title id="signal-map-title">The Liquidity Lab stress chain</title>
+    <desc id="signal-map-desc">Select a layer to filter the editorial wire: Seiche for system funding, LiquiLens for institutions, Undertow for market exits, and the house desk for synthesis.</desc>
+    <path class="route-line" d="M126 132 C220 30 248 30 342 132 S464 234 558 132 S680 30 774 132"/>
+    <path class="route-current" d="M126 132 C220 30 248 30 342 132 S464 234 558 132 S680 30 774 132"/>
+    <g class="route-node route-seiche" data-route-filter="seiche" role="button" tabindex="0" aria-label="Filter to Seiche system funding dispatches" transform="translate(52 82)"><rect width="148" height="100" rx="50"/><text x="74" y="43" text-anchor="middle">01 / SYSTEM</text><text class="node-name" x="74" y="66" text-anchor="middle">SEICHE</text></g>
+    <g class="route-node route-liquilens" data-route-filter="liquilens" role="button" tabindex="0" aria-label="Filter to LiquiLens institution dispatches" transform="translate(268 82)"><rect width="148" height="100" rx="50"/><text x="74" y="43" text-anchor="middle">02 / INSTITUTION</text><text class="node-name" x="74" y="66" text-anchor="middle">LIQUILENS</text></g>
+    <g class="route-node route-undertow" data-route-filter="liquilens-undertow" role="button" tabindex="0" aria-label="Filter to Undertow market exit dispatches" transform="translate(484 82)"><rect width="148" height="100" rx="50"/><text x="74" y="43" text-anchor="middle">03 / MARKET</text><text class="node-name" x="74" y="66" text-anchor="middle">UNDERTOW</text></g>
+    <g class="route-node route-myquant" data-route-filter="myquant" role="button" tabindex="0" aria-label="Filter to original house reporting" transform="translate(700 82)"><rect width="168" height="100" rx="50"/><text x="84" y="43" text-anchor="middle">04 / EDITORIAL</text><text class="node-name" x="84" y="66" text-anchor="middle">SUBTITLES</text></g>
+    <text class="map-hint" x="460" y="254" text-anchor="middle">CLICK A LAYER TO TUNE THE WIRE</text>
+  </svg>`
+}
+
+function signalCockpit(pulse) {
+  return `<section class="signal-cockpit" id="signals" aria-labelledby="signals-title">
+    <header class="cockpit-head"><div><p class="eyebrow">THE LAB, AS A LIVING SYSTEM</p><h2 id="signals-title">One chain. Three instruments.<br><em>A translator at the end.</em></h2></div><p>Every mark below comes from the published records already in this wire. No analytics theatre; zero is allowed to look like zero.</p></header>
+    <div class="cockpit-grid">
+      <article class="flow-panel"><header><span>A / SIGNAL ROUTE</span><p>Pressure becomes institution risk, then exit cost, then an argument you can read.</p></header>${signalMap()}</article>
+      <article class="cadence-panel"><header><div><span>B / DISPATCH CADENCE</span><p>Daily output, stacked by the desk that published it.</p></div><div class="range-buttons" role="group" aria-label="Dispatch cadence range"><button type="button" data-window="7">7D</button><button type="button" data-window="14" class="active">14D</button><button type="button" data-window="28">28D</button></div></header>${cadenceSvg(pulse)}</article>
+      <article class="mix-panel"><header><span>C / SOURCE MIX</span><p>What this edition of the wire is actually made of.</p></header>${mixGraphic(pulse)}</article>
+    </div>
+    <script id="signalPulseData" type="application/json">${JSON.stringify(pulse).replaceAll('<', '\\u003c')}</script>
+  </section>`
+}
+
+function telegramDesk() {
+  const cards = [
+    ['PLUMBING BOT', 'Seiche in Telegram', 'Ask for the current funding regime, the week ahead, or a source trail.', 'https://t.me/seiche_desk_bot?start=mqdnse_signals', 'Open @seiche_desk_bot'],
+    ['INSTITUTION BOT', 'LiquiLens in Telegram', 'Carry the bank and lender screen into the place you already check.', 'https://t.me/LiquiLens_bot?start=mqdnse_signals', 'Open @LiquiLens_bot'],
+    ['MARKET BOT', 'Undertow in Telegram', 'Check exit cost and liquidity conditions without opening the full desk.', 'https://t.me/undertow_LiquiLens_bot?start=ref_mqdnse_signals', 'Open @undertow_LiquiLens_bot'],
+    ['DAILY CHANNEL', 'The lab’s free read', 'One opt-in channel for reviewed dispatches across the financial stack.', 'https://t.me/LiquidityLabDesk', 'Join @LiquidityLabDesk'],
+  ]
+  return `<section class="telegram-desk" id="telegram" aria-labelledby="telegram-title"><header><p class="eyebrow">TAKE THE DESK WITH YOU</p><h2 id="telegram-title">The website explains.<br><em>Telegram taps your shoulder.</em></h2><p>Choose one instrument or the daily channel. Every destination is opt-in; none of them needs your phone number on this website.</p></header><div class="telegram-grid">${cards.map(([kicker, title, copy, href, label]) => `<a data-telegram href="${href}" target="_blank" rel="noopener"><span>${kicker}</span><h3>${title}</h3><p>${copy}</p><b>${label} ↗</b></a>`).join('')}</div></section>`
+}
+
 function renderHome(stories, cache) {
   const lead = chooseLead(stories)
   const counts = Object.fromEntries(['liquilens', 'seiche', 'liquilens-undertow', 'myquant'].map((product) => [product, stories.filter((story) => story.product === product).length]))
   const ordered = [...stories].sort((a, b) => Date.parse(b.published) - Date.parse(a.published))
+  const pulse = buildSignalPulse(ordered, 28)
   const schema = {
     '@context': 'https://schema.org',
     '@type': 'CollectionPage',
@@ -181,6 +282,9 @@ function renderHome(stories, cache) {
       <div><p class="eyebrow" id="status-title">WIRE CHECK</p><p>Missing data prints as missing. A surprisingly radical feature.</p></div>
       <ul>${['liquilens', 'seiche', 'liquilens-undertow'].map((product) => sourceStatus(cache, product)).join('')}</ul>
     </section>
+
+    ${signalCockpit(pulse)}
+    ${telegramDesk()}
 
     <aside class="ad-slot ad-slot-top" aria-label="Advertisement opportunity">
       <span>AD BREAK / CURRENTLY JUST OXYGEN</span>
@@ -227,7 +331,7 @@ function renderHome(stories, cache) {
       </div>
     </aside>
   </main>
-  <footer><p>Research and market data, not investment advice. Jokes are not evidence. Evidence is linked.</p><p><a href="/feed.xml">Atom</a> · <a href="/feed.json">JSON Feed</a> · <a href="/advertise/">Advertise</a> · <a href="https://narcoscope.com/">NarcoScope</a></p></footer>
+  <footer><p>Research and market data, not investment advice. Jokes are not evidence. Evidence is linked.</p><p><a href="/feed.xml">Atom</a> · <a href="/feed.json">JSON Feed</a> · <a href="#telegram">Telegram desks</a> · <a href="/advertise/">Advertise</a> · <a href="https://narcoscope.com/">NarcoScope</a></p></footer>
   <script type="application/ld+json">${JSON.stringify(schema).replaceAll('<', '\\u003c')}</script>
   <script src="/assets/app.js" defer></script>
 </body></html>`
@@ -303,7 +407,7 @@ async function build() {
   await write(join(dist, 'robots.txt'), `User-agent: *\nAllow: /\nSitemap: ${SITE_ORIGIN}/sitemap.xml\n`)
   const urls = [`${SITE_ORIGIN}/`, `${SITE_ORIGIN}/advertise/`, ...house.map((story) => story.url)]
   await write(join(dist, 'sitemap.xml'), `<?xml version="1.0" encoding="UTF-8"?><urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">${urls.map((url) => `<url><loc>${escapeXml(url)}</loc></url>`).join('')}</urlset>\n`)
-  await write(join(dist, 'llms.txt'), `# My Quant Doesn't Speak English\n\nEditorial and advertising hub for Seiche, LiquiLens, and LiquiLens—Undertow.\n\n- Home: ${SITE_ORIGIN}/\n- JSON Feed: ${SITE_ORIGIN}/feed.json\n- Atom: ${SITE_ORIGIN}/feed.xml\n- Source articles remain canonical at their product domains.\n- Research and market data, not investment advice.\n\n## Related evidence desk\n\n- NarcoScope, https://narcoscope.com/: an independent public-interest explorer for official drug-market records. It shares this network's evidence standards, not its financial subject.\n`)
+  await write(join(dist, 'llms.txt'), `# My Quant Doesn't Speak English\n\nEditorial and advertising hub for Seiche, LiquiLens, and LiquiLens—Undertow.\n\n- Home: ${SITE_ORIGIN}/\n- JSON Feed: ${SITE_ORIGIN}/feed.json\n- Atom: ${SITE_ORIGIN}/feed.xml\n- Source articles remain canonical at their product domains.\n- Research and market data, not investment advice.\n\n## Telegram desks\n\n- Seiche bot: https://t.me/seiche_desk_bot\n- LiquiLens bot: https://t.me/LiquiLens_bot\n- Undertow bot: https://t.me/undertow_LiquiLens_bot\n- Free reviewed dispatch channel: https://t.me/LiquidityLabDesk\n\n## Related evidence desk\n\n- NarcoScope, https://narcoscope.com/: an independent public-interest explorer for official drug-market records. It shares this network's evidence standards, not its financial subject.\n`)
   process.stdout.write(`Built ${stories.length} records (${house.length} house) into ${dist}\n`)
 }
 

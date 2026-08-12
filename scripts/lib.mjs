@@ -148,6 +148,41 @@ export function preserveStableClocks(records, cachedRecords = []) {
   })
 }
 
+/**
+ * Build the small, deterministic dataset used by the homepage signal graphics.
+ * The clock is anchored to the newest published record rather than "today", so
+ * a cached build never turns an upstream outage into a visually quiet day.
+ */
+export function buildSignalPulse(stories, horizon = 28) {
+  const products = ['seiche', 'liquilens', 'liquilens-undertow', 'myquant']
+  const usable = stories.filter((story) => products.includes(story.product) && Number.isFinite(Date.parse(story.published)))
+  if (!usable.length) return { days: [], totals: Object.fromEntries(products.map((product) => [product, 0])), maxDaily: 0, recordCount: 0 }
+
+  const latest = Math.max(...usable.map((story) => Date.parse(story.published)))
+  const latestDay = new Date(latest)
+  latestDay.setUTCHours(0, 0, 0, 0)
+  const safeHorizon = Math.max(1, Math.min(90, Number.parseInt(horizon, 10) || 28))
+  const days = Array.from({ length: safeHorizon }, (_, index) => {
+    const date = new Date(latestDay)
+    date.setUTCDate(date.getUTCDate() - (safeHorizon - index - 1))
+    return {
+      date: date.toISOString().slice(0, 10),
+      counts: Object.fromEntries(products.map((product) => [product, 0])),
+    }
+  })
+  const dayByDate = new Map(days.map((day) => [day.date, day]))
+  usable.forEach((story) => {
+    const day = dayByDate.get(new Date(story.published).toISOString().slice(0, 10))
+    if (day) day.counts[story.product] += 1
+  })
+  const totals = Object.fromEntries(products.map((product) => [
+    product,
+    usable.filter((story) => story.product === product).length,
+  ]))
+  const maxDaily = Math.max(1, ...days.map((day) => Object.values(day.counts).reduce((sum, count) => sum + count, 0)))
+  return { days, totals, maxDaily, recordCount: usable.length, latestDate: latestDay.toISOString().slice(0, 10) }
+}
+
 export function storyScore(story, now = Date.now()) {
   const ageHours = Math.max(0, (now - Date.parse(story.published)) / 3_600_000)
   const freshness = Math.max(0, 36 - Math.min(36, ageHours / 4))
