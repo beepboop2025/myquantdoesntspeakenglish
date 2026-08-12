@@ -1,0 +1,45 @@
+{
+  "schema": "mqdnse.house-article.v1",
+  "slug": "why-the-quant-needs-subtitles",
+  "product": "myquant",
+  "title": "The model is numerate. The headline is where it gets weird.",
+  "dek": "Why this site keeps the numbers, the caveats, and the occasional joke in three different drawers.",
+  "beat": "house-rules",
+  "editorial_class": "house_note",
+  "publication_status": "PUBLISHED",
+  "published_at": "2026-08-12T16:00:00+05:30",
+  "event_time": "2026-08-12T00:00:00Z",
+  "author": "The Quant's interpreter",
+  "evidence_status": "EDITORIAL",
+  "original_contribution": "A public operating note explaining how the three product feeds and original reporting share one desk without sharing claims.",
+  "limitations": [
+    "This is an editorial operating note, not a market finding or investment advice."
+  ],
+  "sources": [
+    { "label": "Seiche dispatch archive", "url": "https://seiche.info/dispatches/" },
+    { "label": "LiquiLens intelligence desk", "url": "https://liquilens.in/desk/" },
+    { "label": "LiquiLens—Undertow dispatch", "url": "https://liquilens-undertow.com/dispatch/" }
+  ],
+  "sections": [
+    {
+      "heading": "One desk, three instruments",
+      "paragraphs": [
+        "Seiche reads dollar-funding plumbing. LiquiLens reads institutions. Undertow reads the cost and availability of an exit. They overlap in subject, not in what they are allowed to claim.",
+        "This site brings their published records into one chronological wire. The original page stays canonical, because attribution is not a decorative footnote and search engines should not have to guess which copy is real."
+      ]
+    },
+    {
+      "heading": "The joke stops before the evidence starts",
+      "paragraphs": [
+        "The wrapper can be funny. A limitation cannot. Dates, evidence classes, missing coverage and countercases travel with the story even when the headline has better timing than the model.",
+        "If a feed goes missing, the page says coverage gap. It does not translate silence into calm, confidence, or a convenient advertisement."
+      ]
+    },
+    {
+      "heading": "Advertising gets its own box",
+      "paragraphs": [
+        "Sponsors can buy clearly labelled space around the reporting. They cannot buy a finding, a product ranking, or a quieter limitation. The separation is both an editorial rule and a useful way to avoid making every paragraph sound like a pitch deck."
+      ]
+    }
+  ]
+}
