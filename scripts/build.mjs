@@ -151,6 +151,7 @@ function renderHome(stories, cache) {
     name: "My Quant Doesn't Speak English",
     url: SITE_ORIGIN,
     description: 'Evidence-led dispatches and investigations from Seiche, LiquiLens, and LiquiLens—Undertow.',
+    relatedLink: 'https://narcoscope.com/',
     hasPart: ordered.slice(0, 20).map((story) => ({ '@type': 'Article', headline: story.title, url: story.url, datePublished: isoDate(story.published) })),
   }
 
@@ -212,8 +213,21 @@ function renderHome(stories, cache) {
         <a href="https://liquilens-undertow.com"><span>03 / MARKET</span><h3>Undertow</h3><p>What will a position-sized exit cost?</p></a>
       </div>
     </section>
+
+    <aside class="evidence-network" aria-labelledby="evidence-network-title">
+      <div>
+        <p class="eyebrow">BEYOND MARKETS / SAME EVIDENCE RULES</p>
+        <h2 id="evidence-network-title">Different subject.<br>Same allergy to mystery meat.</h2>
+      </div>
+      <div class="evidence-network__route">
+        <span>INDEPENDENT EVIDENCE DESK</span>
+        <h3>NarcoScope</h3>
+        <p>Official drug-market records, mapped and cited without converting administrative data into claims it cannot support.</p>
+        <a href="https://narcoscope.com/">Open the public-interest evidence explorer →</a>
+      </div>
+    </aside>
   </main>
-  <footer><p>Research and market data, not investment advice. Jokes are not evidence. Evidence is linked.</p><p><a href="/feed.xml">Atom</a> · <a href="/feed.json">JSON Feed</a> · <a href="/advertise/">Advertise</a></p></footer>
+  <footer><p>Research and market data, not investment advice. Jokes are not evidence. Evidence is linked.</p><p><a href="/feed.xml">Atom</a> · <a href="/feed.json">JSON Feed</a> · <a href="/advertise/">Advertise</a> · <a href="https://narcoscope.com/">NarcoScope</a></p></footer>
   <script type="application/ld+json">${JSON.stringify(schema).replaceAll('<', '\\u003c')}</script>
   <script src="/assets/app.js" defer></script>
 </body></html>`
@@ -289,7 +303,7 @@ async function build() {
   await write(join(dist, 'robots.txt'), `User-agent: *\nAllow: /\nSitemap: ${SITE_ORIGIN}/sitemap.xml\n`)
   const urls = [`${SITE_ORIGIN}/`, `${SITE_ORIGIN}/advertise/`, ...house.map((story) => story.url)]
   await write(join(dist, 'sitemap.xml'), `<?xml version="1.0" encoding="UTF-8"?><urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">${urls.map((url) => `<url><loc>${escapeXml(url)}</loc></url>`).join('')}</urlset>\n`)
-  await write(join(dist, 'llms.txt'), `# My Quant Doesn't Speak English\n\nEditorial and advertising hub for Seiche, LiquiLens, and LiquiLens—Undertow.\n\n- Home: ${SITE_ORIGIN}/\n- JSON Feed: ${SITE_ORIGIN}/feed.json\n- Atom: ${SITE_ORIGIN}/feed.xml\n- Source articles remain canonical at their product domains.\n- Research and market data, not investment advice.\n`)
+  await write(join(dist, 'llms.txt'), `# My Quant Doesn't Speak English\n\nEditorial and advertising hub for Seiche, LiquiLens, and LiquiLens—Undertow.\n\n- Home: ${SITE_ORIGIN}/\n- JSON Feed: ${SITE_ORIGIN}/feed.json\n- Atom: ${SITE_ORIGIN}/feed.xml\n- Source articles remain canonical at their product domains.\n- Research and market data, not investment advice.\n\n## Related evidence desk\n\n- NarcoScope, https://narcoscope.com/: an independent public-interest explorer for official drug-market records. It shares this network's evidence standards, not its financial subject.\n`)
   process.stdout.write(`Built ${stories.length} records (${house.length} house) into ${dist}\n`)
 }
 
