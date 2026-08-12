@@ -1,3 +1,5 @@
+import { createHash } from 'node:crypto'
+
 const ALLOWED_PRODUCTS = new Set(['liquilens', 'seiche', 'liquilens-undertow', 'myquant'])
 
 export const SITE_ORIGIN = 'https://myquantdoesntspeakenglish.com'
@@ -58,7 +60,7 @@ export function normalizeRecord(raw, product, fallbackUrl) {
   const parsed = Date.parse(published)
   if (!string(raw.headline, raw.title) || !Number.isFinite(parsed)) return null
 
-  return {
+  const record = {
     id: string(raw.id, raw.slug, `${product}:${published}`),
     product,
     title: string(raw.headline, raw.title),
@@ -77,6 +79,21 @@ export function normalizeRecord(raw, product, fallbackUrl) {
     limitation: string(limitations[0], raw.honesty, 'Read the source record for its evidence boundary.'),
     newsworthiness: Number.isFinite(raw.newsworthiness?.score) ? raw.newsworthiness.score : null,
   }
+  record.fingerprint = createHash('sha256').update(JSON.stringify({
+    id: record.id,
+    title: record.title,
+    dek: record.dek,
+    url: record.url,
+    beat: record.beat,
+    editorialClass: record.editorialClass,
+    publicationStatus: record.publicationStatus,
+    eventTime: record.eventTime,
+    evidenceStatus: record.evidenceStatus,
+    contribution: record.contribution,
+    limitation: record.limitation,
+    newsworthiness: record.newsworthiness,
+  })).digest('hex')
+  return record
 }
 
 export function normalizePayload(payload, source) {
@@ -120,6 +137,15 @@ export function normalizeHouseArticle(raw) {
     newsworthiness: Number.isFinite(raw.newsworthiness?.score) ? raw.newsworthiness.score : null,
     article: raw,
   }
+}
+
+export function preserveStableClocks(records, cachedRecords = []) {
+  const cachedById = new Map(cachedRecords.map((record) => [record.id, record]))
+  return records.map((record) => {
+    const cached = cachedById.get(record.id)
+    if (!cached || !record.fingerprint || cached.fingerprint !== record.fingerprint) return record
+    return { ...record, published: cached.published, knowledgeTime: cached.knowledgeTime }
+  })
 }
 
 export function storyScore(story, now = Date.now()) {

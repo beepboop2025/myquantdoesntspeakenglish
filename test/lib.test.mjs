@@ -1,6 +1,6 @@
 import test from 'node:test'
 import assert from 'node:assert/strict'
-import { chooseLead, normalizePayload, normalizeHouseArticle } from '../scripts/lib.mjs'
+import { chooseLead, normalizePayload, normalizeHouseArticle, preserveStableClocks } from '../scripts/lib.mjs'
 
 test('normalizes all three product feed shapes', () => {
   const sources = {
@@ -32,4 +32,11 @@ test('house articles require sources and published status', () => {
   }
   assert.equal(normalizeHouseArticle(raw).product, 'myquant')
   assert.equal(normalizeHouseArticle({ ...raw, sources: [] }), null)
+})
+
+test('unchanged evidence keeps its first publication clocks', () => {
+  const cached = { id: 'same', fingerprint: 'stable', published: '2026-08-12T10:00:00Z', knowledgeTime: '2026-08-12T09:59:00Z' }
+  const reread = { ...cached, published: '2026-08-12T11:00:00Z', knowledgeTime: '2026-08-12T10:59:00Z' }
+  assert.deepEqual(preserveStableClocks([reread], [cached])[0], cached)
+  assert.equal(preserveStableClocks([{ ...reread, fingerprint: 'changed' }], [cached])[0].published, '2026-08-12T11:00:00Z')
 })

@@ -7,14 +7,13 @@ import {
   chooseLead,
   normalizeHouseArticle,
   normalizePayload,
+  preserveStableClocks,
   productLabel,
 } from './lib.mjs'
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..')
 const dist = join(root, 'dist')
 const cachePath = join(root, 'data', 'cache.json')
-const refresh = process.argv.includes('--refresh')
-
 const escapeHtml = (value = '') => String(value)
   .replaceAll('&', '&amp;')
   .replaceAll('<', '&lt;')
@@ -53,19 +52,22 @@ async function syncFeeds() {
   for (const source of SOURCES) {
     try {
       const payload = await fetchJson(source.url)
-      feeds[source.product] = normalizePayload(payload, source)
-      statuses[source.product] = { state: 'live', detail: `${feeds[source.product].length} records`, checkedAt: new Date().toISOString() }
+      const normalized = normalizePayload(payload, source)
+      feeds[source.product] = preserveStableClocks(normalized, cached.feeds?.[source.product])
+      statuses[source.product] = { state: 'live', detail: `${feeds[source.product].length} records` }
     } catch (error) {
       const fallback = Array.isArray(cached.feeds?.[source.product]) ? cached.feeds[source.product] : []
       if (!fallback.length) throw new Error(`${source.label}: ${error.message}; no cache available`)
       feeds[source.product] = fallback
-      statuses[source.product] = { state: 'cached', detail: `${fallback.length} records · refresh failed`, checkedAt: new Date().toISOString() }
+      statuses[source.product] = { state: 'cached', detail: `${fallback.length} records · refresh failed` }
     }
   }
 
   const next = { schema: 'mqdnse.feed-cache.v1', syncedAt: new Date().toISOString(), feeds, statuses }
   await mkdir(dirname(cachePath), { recursive: true })
-  if (refresh || JSON.stringify(cached.feeds) !== JSON.stringify(feeds)) {
+  const changed = JSON.stringify(cached.feeds) !== JSON.stringify(feeds)
+    || JSON.stringify(cached.statuses) !== JSON.stringify(statuses)
+  if (changed) {
     await writeFile(cachePath, `${JSON.stringify(next, null, 2)}\n`)
   }
   return next
