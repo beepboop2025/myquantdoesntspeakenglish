@@ -54,3 +54,11 @@ test('signal pulse is anchored to published evidence and preserves missing days'
   assert.equal(pulse.totals.seiche, 2)
   assert.equal(pulse.recordCount, 3)
 })
+
+test('signal pulse clamps an explicit zero horizon instead of treating it as missing', () => {
+  const pulse = buildSignalPulse([
+    { product: 'myquant', published: '2026-08-12T09:00:00Z' },
+  ], 0)
+  assert.equal(pulse.days.length, 1)
+  assert.equal(pulse.days[0].date, '2026-08-12')
+})

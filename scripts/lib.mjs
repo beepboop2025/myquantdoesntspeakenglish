@@ -161,7 +161,10 @@ export function buildSignalPulse(stories, horizon = 28) {
   const latest = Math.max(...usable.map((story) => Date.parse(story.published)))
   const latestDay = new Date(latest)
   latestDay.setUTCHours(0, 0, 0, 0)
-  const safeHorizon = Math.max(1, Math.min(90, Number.parseInt(horizon, 10) || 28))
+  const parsedHorizon = Number.parseInt(horizon, 10)
+  const safeHorizon = Number.isNaN(parsedHorizon)
+    ? 28
+    : Math.max(1, Math.min(90, parsedHorizon))
   const days = Array.from({ length: safeHorizon }, (_, index) => {
     const date = new Date(latestDay)
     date.setUTCDate(date.getUTCDate() - (safeHorizon - index - 1))

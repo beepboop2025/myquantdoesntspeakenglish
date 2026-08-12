@@ -111,7 +111,7 @@ main { overflow: hidden; }
 .mix-legend button { display: grid; grid-template-columns: 10px 1fr auto; gap: 3px 9px; align-items: center; padding: 10px 2px; border: 0; border-bottom: 1px solid rgba(255,255,255,.13); background: transparent; color: white; text-align: left; cursor: pointer; }
 .mix-legend button:last-child { border-bottom: 0; }
 .mix-legend button:hover, .mix-legend button.active { color: var(--lemon); }
-.mix-legend i { grid-row: 1 / 3; width: 8px; height: 8px; border-radius: 50%; background: currentColor; }
+.mix-legend i { grid-row: 1 / 3; width: 8px; height: 8px; border-radius: 50%; background: currentcolor; }
 .mix-legend i.mix-seiche { background: var(--seiche); }
 .mix-legend i.mix-liquilens { background: var(--liquilens); }
 .mix-legend i.mix-liquilens-undertow { background: var(--undertow); }
