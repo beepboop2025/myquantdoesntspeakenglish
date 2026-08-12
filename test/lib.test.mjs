@@ -1,6 +1,6 @@
 import test from 'node:test'
 import assert from 'node:assert/strict'
-import { chooseLead, normalizePayload, normalizeHouseArticle, preserveStableClocks } from '../scripts/lib.mjs'
+import { buildSignalPulse, chooseLead, normalizePayload, normalizeHouseArticle, preserveStableClocks } from '../scripts/lib.mjs'
 
 test('normalizes all three product feed shapes', () => {
   const sources = {
@@ -39,4 +39,26 @@ test('unchanged evidence keeps its first publication clocks', () => {
   const reread = { ...cached, published: '2026-08-12T11:00:00Z', knowledgeTime: '2026-08-12T10:59:00Z' }
   assert.deepEqual(preserveStableClocks([reread], [cached])[0], cached)
   assert.equal(preserveStableClocks([{ ...reread, fingerprint: 'changed' }], [cached])[0].published, '2026-08-12T11:00:00Z')
+})
+
+test('signal pulse is anchored to published evidence and preserves missing days', () => {
+  const pulse = buildSignalPulse([
+    { product: 'seiche', published: '2026-08-10T08:00:00Z' },
+    { product: 'seiche', published: '2026-08-12T08:00:00Z' },
+    { product: 'liquilens', published: '2026-08-12T09:00:00Z' },
+    { product: 'unknown', published: '2026-08-12T10:00:00Z' },
+  ], 3)
+  assert.deepEqual(pulse.days.map((day) => day.date), ['2026-08-10', '2026-08-11', '2026-08-12'])
+  assert.equal(pulse.days[1].counts.seiche, 0)
+  assert.equal(pulse.days[2].counts.liquilens, 1)
+  assert.equal(pulse.totals.seiche, 2)
+  assert.equal(pulse.recordCount, 3)
+})
+
+test('signal pulse clamps an explicit zero horizon instead of treating it as missing', () => {
+  const pulse = buildSignalPulse([
+    { product: 'myquant', published: '2026-08-12T09:00:00Z' },
+  ], 0)
+  assert.equal(pulse.days.length, 1)
+  assert.equal(pulse.days[0].date, '2026-08-12')
 })
