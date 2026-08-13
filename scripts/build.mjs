@@ -496,6 +496,7 @@ function renderInterpretation(interpretation) {
     <main class="article-page interpretation-page" id="interpretation">
       <header><p class="eyebrow">INTERPRETED / ${escapeHtml(source.label)} / ${escapeHtml(copyLabel)}</p><h1>${escapeHtml(interpretation.title)}</h1><p class="article-dek">${escapeHtml(interpretation.inEnglish)}</p><div class="byline"><span>MyQuant translation desk</span><time datetime="${escapeHtml(interpretation.publishedAt)}">Source published ${escapeHtml(shortDate(interpretation.publishedAt))}</time></div></header>
       ${interpretation.contentNotice ? `<aside class="article-correction"><b>${escapeHtml(interpretation.contentNotice.status)}</b><p>${escapeHtml(interpretation.contentNotice.summary)}</p><time datetime="${escapeHtml(interpretation.contentNotice.effectiveAt)}">Effective ${escapeHtml(shortDate(interpretation.contentNotice.effectiveAt))}</time></aside>` : ''}
+      ${interpretation.corrections?.map((correction) => `<aside class="article-correction"><b>SOURCE METADATA CORRECTION</b><p>${escapeHtml(correction.note)}</p><time datetime="${escapeHtml(isoDate(correction.correctedAt))}">Corrected ${escapeHtml(shortDate(correction.correctedAt))}</time></aside>`).join('') || ''}
       <aside class="interpretation-provenance"><b>This page explains; it does not replace.</b><p>${escapeHtml(source.label)} owns the underlying article and factual claim. MyQuant owns this explanation. Read the original before relying on the detail.</p><a href="${escapeHtml(source.url)}">Read the original ${escapeHtml(source.label)} record ↗</a></aside>
       <div class="translation-ledger">
         <section><p class="eyebrow">THE SPECIALIST SAYS</p><h2>${escapeHtml(interpretation.quantSays)}</h2><p>${escapeHtml(interpretation.sourceSummary)}</p></section>
@@ -746,6 +747,7 @@ function renderFeedJson(stories, consumerCopy) {
             contribution: story.contribution,
             limitation: story.limitation,
             sourceFingerprint: story.fingerprint,
+            ...(story.corrections?.length ? { corrections: story.corrections.map((correction) => ({ ...correction })) } : {}),
           },
           copy,
           sources,

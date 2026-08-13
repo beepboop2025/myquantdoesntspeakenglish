@@ -1398,9 +1398,9 @@
         "beat": "dollar-funding-plumbing",
         "editorialClass": "investigation",
         "publicationStatus": "PUBLISHED",
-        "published": "2026-08-12T12:00:00+05:30",
+        "published": "2026-08-12T16:04:29+05:30",
         "eventTime": "2026-08-12T08:20:00Z",
-        "knowledgeTime": "2026-08-12T12:00:00+05:30",
+        "knowledgeTime": "2026-08-12T13:50:00+05:30",
         "evidenceStatus": "POINT_IN_TIME_REVIEWED_ANALYSIS",
         "contribution": "dated_forward_test · cross_signal_divergence",
         "limitation": "The reserve-demand kink and forward path are Seiche derivations. Historical inputs use final or current-vintage data where publication vintages are unavailable, so this is not a validated backtest.",
@@ -1410,7 +1410,18 @@
         "verdicts": null,
         "outcomeWindow": null,
         "fraudMasked": false,
-        "fingerprint": "7d7de870ab44d1bd845308e732615039baa0e273de1bddae272728dfef9d3661"
+        "corrections": [
+          {
+            "correctedAt": "2026-08-14T00:58:39+05:30",
+            "fields": [
+              "published_at",
+              "modified_at",
+              "clocks.knowledge_time"
+            ],
+            "note": "The original structured metadata placed publication before the 08:20 UTC evidence cut. The clocks were corrected; the analysis and figures were unchanged."
+          }
+        ],
+        "fingerprint": "df076d5be496280771aa8e02b54b422b8da83c08b2ac5ebc4bf22ff0f6f533ee"
       }
     ],
     "undertow-dispatches": [
@@ -2471,9 +2482,9 @@
         "beat": "dollar-funding-plumbing",
         "editorialClass": "investigation",
         "publicationStatus": "PUBLISHED",
-        "published": "2026-08-12T12:00:00+05:30",
+        "published": "2026-08-12T16:04:29+05:30",
         "eventTime": "2026-08-12T08:20:00Z",
-        "knowledgeTime": "2026-08-12T12:00:00+05:30",
+        "knowledgeTime": "2026-08-12T13:50:00+05:30",
         "evidenceStatus": "POINT_IN_TIME_REVIEWED_ANALYSIS",
         "contribution": "dated_forward_test · cross_signal_divergence",
         "limitation": "The reserve-demand kink and forward path are Seiche derivations. Historical inputs use final or current-vintage data where publication vintages are unavailable, so this is not a validated backtest.",
@@ -2483,7 +2494,18 @@
         "verdicts": null,
         "outcomeWindow": null,
         "fraudMasked": false,
-        "fingerprint": "7d7de870ab44d1bd845308e732615039baa0e273de1bddae272728dfef9d3661"
+        "corrections": [
+          {
+            "correctedAt": "2026-08-14T00:58:39+05:30",
+            "fields": [
+              "published_at",
+              "modified_at",
+              "clocks.knowledge_time"
+            ],
+            "note": "The original structured metadata placed publication before the 08:20 UTC evidence cut. The clocks were corrected; the analysis and figures were unchanged."
+          }
+        ],
+        "fingerprint": "df076d5be496280771aa8e02b54b422b8da83c08b2ac5ebc4bf22ff0f6f533ee"
       },
       {
         "id": "seiche:2026-08-11-daily",

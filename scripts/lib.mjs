@@ -143,6 +143,14 @@ export function normalizeRecord(raw, product, fallbackUrl) {
   const contributionKinds = array(contribution.kinds)
   const claims = array(raw.claims)
   const limitations = array(raw.limitations)
+  const corrections = array(raw.corrections)
+    .filter((correction) => correction && typeof correction === 'object' && !Array.isArray(correction))
+    .map((correction) => ({
+      correctedAt: string(correction.corrected_at, correction.correctedAt),
+      fields: array(correction.fields).map((field) => string(field)).filter(Boolean),
+      note: string(correction.note),
+    }))
+    .filter((correction) => correction.correctedAt && correction.fields.length && correction.note)
   const published = string(raw.published_at, raw.generated, raw.modified_at, raw.date)
   const parsed = Date.parse(published)
   if (!string(raw.headline, raw.title) || !Number.isFinite(parsed)) return null
@@ -174,6 +182,7 @@ export function normalizeRecord(raw, product, fallbackUrl) {
       ? { ...raw.outcome_window }
       : null,
     fraudMasked: raw.fraud_masked === true,
+    ...(corrections.length ? { corrections } : {}),
   }
   record.fingerprint = createHash('sha256').update(JSON.stringify({
     id: record.id,
@@ -193,6 +202,7 @@ export function normalizeRecord(raw, product, fallbackUrl) {
     verdicts: record.verdicts,
     outcomeWindow: record.outcomeWindow,
     fraudMasked: record.fraudMasked,
+    ...(record.corrections?.length ? { corrections: record.corrections } : {}),
   })).digest('hex')
   return record
 }
@@ -764,6 +774,7 @@ export function buildInterpretation(story, consumerCopy = {}) {
     ...(story.verdicts ? { verdicts: { ...story.verdicts } } : {}),
     ...(story.outcomeWindow ? { outcomeWindow: { ...story.outcomeWindow } } : {}),
     ...(story.fraudMasked ? { fraudMasked: true } : {}),
+    ...(story.corrections?.length ? { corrections: story.corrections.map((correction) => ({ ...correction })) } : {}),
     ...(story.contentNotice ? { contentNotice: story.contentNotice } : {}),
   }
   interpretation.fingerprint = createHash('sha256').update(JSON.stringify(interpretation)).digest('hex')

@@ -197,6 +197,11 @@ test('normalizes investigation and historical case-file indexes without dropping
     point_in_time_status: 'RECONSTRUCTED_LATER',
     verdicts: { action_zone: 'HIT', funding_fragility: 'MISS' },
     outcome_window: { end: '2020-01-01', definition: 'First qualifying pre-failure signal.' },
+    corrections: [{
+      corrected_at: '2026-08-14T00:58:39+05:30',
+      fields: ['published_at', 'clocks.knowledge_time'],
+      note: 'The structured clocks were corrected; the analysis was unchanged.',
+    }],
     original_contribution: { kinds: ['historical_case_file', 'misses_included'] },
     limitations: ['Filing availability is proxied, not fully reconstructed.'],
   }
@@ -207,6 +212,11 @@ test('normalizes investigation and historical case-file indexes without dropping
   assert.deepEqual(story.verdicts, raw.verdicts)
   assert.deepEqual(story.outcomeWindow, raw.outcome_window)
   assert.equal(story.limitation, raw.limitations[0])
+  assert.deepEqual(story.corrections, [{
+    correctedAt: raw.corrections[0].corrected_at,
+    fields: raw.corrections[0].fields,
+    note: raw.corrections[0].note,
+  }])
 })
 
 test('channel merge deduplicates identical records and refuses conflicting copies', () => {
@@ -367,6 +377,28 @@ test('unchanged evidence keeps its first publication clocks', () => {
   const reread = { ...cached, published: '2026-08-12T11:00:00Z', knowledgeTime: '2026-08-12T10:59:00Z' }
   assert.deepEqual(preserveStableClocks([reread], [cached])[0], cached)
   assert.equal(preserveStableClocks([{ ...reread, fingerprint: 'changed' }], [cached])[0].published, '2026-08-12T11:00:00Z')
+})
+
+test('a declared source correction changes the fingerprint and releases corrected clocks', () => {
+  const source = { product: 'seiche', channel: 'article-index', home: 'https://seiche.info/investigations/' }
+  const original = normalizePayload({ articles: [{
+    id: 'seiche:investigation:clock-test', headline: 'Clock test', dek: 'Bounded evidence.',
+    publication_status: 'PUBLISHED', published_at: '2026-08-12T12:00:00+05:30',
+    clocks: { event_time: '2026-08-12T08:20:00Z', knowledge_time: '2026-08-12T12:00:00+05:30' },
+  }] }, source)[0]
+  const corrected = normalizePayload({ articles: [{
+    id: 'seiche:investigation:clock-test', headline: 'Clock test', dek: 'Bounded evidence.',
+    publication_status: 'PUBLISHED', published_at: '2026-08-12T16:04:29+05:30',
+    clocks: { event_time: '2026-08-12T08:20:00Z', knowledge_time: '2026-08-12T13:50:00+05:30' },
+    corrections: [{
+      corrected_at: '2026-08-14T00:58:39+05:30', fields: ['published_at', 'clocks.knowledge_time'],
+      note: 'The structured clocks were corrected; the analysis was unchanged.',
+    }],
+  }] }, source)[0]
+
+  assert.notEqual(corrected.fingerprint, original.fingerprint)
+  assert.equal(preserveStableClocks([corrected], [original])[0].published, corrected.published)
+  assert.equal(corrected.corrections[0].fields[1], 'clocks.knowledge_time')
 })
 
 test('signal pulse is anchored to published evidence and preserves missing days', () => {
