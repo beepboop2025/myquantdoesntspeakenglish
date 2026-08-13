@@ -5,6 +5,9 @@ const ALLOWED_PRODUCTS = new Set(['liquilens', 'seiche', 'liquilens-undertow', '
 export const SITE_ORIGIN = 'https://myquantdoesntspeakenglish.com'
 export const APP_FEED_SCHEMA = 'mqdnse.app-feed.v1'
 export const PUBLICATION_HOLDS_SCHEMA = 'mqdnse.publication-holds.v1'
+export const PUBLICATION_APPROVALS_SCHEMA = 'mqdnse.publication-approvals.v1'
+export const CONTENT_STATUS_SCHEMA = 'mqdnse.content-status.v1'
+export const RELEASE_POLICY_SCHEMA = 'mqdnse.release-policy.v1'
 
 export const SOURCES = [
   {
@@ -159,7 +162,7 @@ export function normalizeHouseArticle(raw) {
   if (!array(raw.sections).every((section) => string(section.heading) && array(section.paragraphs).every((p) => string(p)))) return null
   if (!raw.sources.every((source) => string(source.label) && validHttpsUrl(source.url, '') === source.url)) return null
 
-  return {
+  const record = {
     id: `myquant:${slug}`,
     product: 'myquant',
     title: string(raw.title),
@@ -177,6 +180,21 @@ export function normalizeHouseArticle(raw) {
     newsworthiness: Number.isFinite(raw.newsworthiness?.score) ? raw.newsworthiness.score : null,
     article: raw,
   }
+  record.fingerprint = createHash('sha256').update(JSON.stringify({
+    id: record.id,
+    title: record.title,
+    dek: record.dek,
+    beat: record.beat,
+    editorialClass: record.editorialClass,
+    published: record.published,
+    eventTime: record.eventTime,
+    evidenceStatus: record.evidenceStatus,
+    contribution: record.contribution,
+    limitation: record.limitation,
+    sections: raw.sections,
+    sources: raw.sources,
+  })).digest('hex')
+  return record
 }
 
 export function preserveStableClocks(records, cachedRecords = []) {
@@ -272,6 +290,105 @@ export function applyPublicationHolds(stories, holds, channel) {
     && !heldProducts.has(story.product))
 }
 
+const PUBLIC_CHANNELS = new Set(['site', 'app-feed'])
+const CONTENT_STATUSES = new Set(['CORRECTED', 'RETRACTED', 'SUPERSEDED'])
+
+function appliesToChannel(value, channel) {
+  return Array.isArray(value?.channels)
+    && (value.channels.includes('*') || value.channels.includes(channel))
+}
+
+/**
+ * Positive publication gate. A source record is publishable only while an
+ * approval for its exact content fingerprint is current on that channel.
+ * This is a distribution control, not a representation of legal clearance.
+ */
+export function applyPublicationApprovals(stories, approvals, channel, now = Date.now()) {
+  if (!PUBLIC_CHANNELS.has(channel)
+    || approvals?.schema !== PUBLICATION_APPROVALS_SCHEMA
+    || approvals.defaultAction !== 'DENY'
+    || !approvals.approvals || typeof approvals.approvals !== 'object' || Array.isArray(approvals.approvals)) {
+    throw new Error('invalid publication-approvals contract')
+  }
+
+  return array(stories).filter((story) => {
+    const approval = approvals.approvals[story?.id]
+    return story?.id
+      && string(story.fingerprint)
+      && approval?.status === 'APPROVED_FOR_RELEASE'
+      && approval.legalClearanceClaimed === false
+      && appliesToChannel(approval, channel)
+      && approval.sourceFingerprint === story.fingerprint
+      && Number.isFinite(Date.parse(approval.reviewedAt))
+      && Number.isFinite(Date.parse(approval.expiresAt))
+      && Date.parse(approval.expiresAt) > now
+  })
+}
+
+/**
+ * Apply visible correction notices and remove retracted/superseded stories
+ * from normal distribution. Notices are returned even when an old story is no
+ * longer present, allowing connected clients to reconcile saved snapshots.
+ */
+export function applyContentStatus(stories, contract, channel) {
+  if (!PUBLIC_CHANNELS.has(channel)
+    || contract?.schema !== CONTENT_STATUS_SCHEMA
+    || !contract.entries || typeof contract.entries !== 'object' || Array.isArray(contract.entries)) {
+    throw new Error('invalid content-status contract')
+  }
+
+  const notices = Object.entries(contract.entries)
+    .filter(([, entry]) => appliesToChannel(entry, channel))
+    .map(([id, entry]) => {
+      if (!CONTENT_STATUSES.has(entry.status)
+        || !Number.isFinite(Date.parse(entry.effectiveAt))
+        || !string(entry.summary)
+        || (entry.replacementUrl && validHttpsUrl(entry.replacementUrl, '') !== entry.replacementUrl)) {
+        throw new Error(`invalid content-status entry: ${id}`)
+      }
+      return {
+        id,
+        status: entry.status,
+        effectiveAt: new Date(entry.effectiveAt).toISOString(),
+        summary: entry.summary.trim(),
+        ...(string(entry.replacementId) ? { replacementId: entry.replacementId.trim() } : {}),
+        ...(string(entry.replacementUrl) ? { replacementUrl: entry.replacementUrl.trim() } : {}),
+      }
+    })
+    .sort((a, b) => a.id.localeCompare(b.id))
+
+  const noticeById = new Map(notices.map((notice) => [notice.id, notice]))
+  const publishable = array(stories).flatMap((story) => {
+    const notice = noticeById.get(story?.id)
+    if (!notice) return [story]
+    if (notice.status === 'RETRACTED' || notice.status === 'SUPERSEDED') return []
+    return [{ ...story, contentNotice: notice }]
+  })
+  return { stories: publishable, notices }
+}
+
+/**
+ * Emergency and volume policy sits outside editorial ranking. The environment
+ * override gives an operator a one-variable stop switch during an incident.
+ */
+export function applyReleasePolicy(stories, policy, channel, emergencyOverride = false) {
+  const channelPolicy = policy?.channels?.[channel]
+  if (!PUBLIC_CHANNELS.has(channel)
+    || policy?.schema !== RELEASE_POLICY_SCHEMA
+    || typeof policy.emergencyStop !== 'boolean'
+    || !channelPolicy
+    || channelPolicy.mode !== 'APPROVALS_ONLY'
+    || !Number.isInteger(channelPolicy.maxItems)
+    || channelPolicy.maxItems < 0) {
+    throw new Error('invalid release-policy contract')
+  }
+  if (policy.emergencyStop || emergencyOverride) {
+    return { stories: [], releaseStatus: 'SUSPENDED' }
+  }
+  const limited = array(stories).slice(0, channelPolicy.maxItems)
+  return { stories: limited, releaseStatus: limited.length ? 'ACTIVE' : 'SUSPENDED' }
+}
+
 function presentationLabel(value) {
   const readable = String(value || '').replaceAll(/[_-]+/g, ' ').replaceAll(/\s+/g, ' ').trim()
   return readable ? `${readable[0].toUpperCase()}${readable.slice(1)}` : 'Evidence wire'
@@ -331,10 +448,19 @@ function readingMinutes(story) {
  * Consumer wording is copied or deterministically expanded from the normalized
  * record; the original evidence fields remain alongside it for auditability.
  */
-export function buildAppFeed(stories, generatedAt = new Date().toISOString(), consumerCopy = {}) {
+export function buildAppFeed(
+  stories,
+  generatedAt = new Date().toISOString(),
+  consumerCopy = {},
+  notices = [],
+  releaseStatus = 'ACTIVE',
+) {
   if (!Number.isFinite(Date.parse(generatedAt))) throw new Error('invalid app-feed generation clock')
   if (!consumerCopy || typeof consumerCopy !== 'object' || Array.isArray(consumerCopy)) {
     throw new Error('invalid app-feed consumer copy')
+  }
+  if (!Array.isArray(notices) || !['ACTIVE', 'SUSPENDED'].includes(releaseStatus)) {
+    throw new Error('invalid app-feed release state')
   }
 
   const published = array(stories)
@@ -379,15 +505,23 @@ export function buildAppFeed(stories, generatedAt = new Date().toISOString(), co
         knowledgeTime: story.knowledgeTime,
         publicationStatus: story.publicationStatus,
       },
+      ...(story.contentNotice ? { contentNotice: story.contentNotice } : {}),
     }
     item.fingerprint = createHash('sha256').update(JSON.stringify(item)).digest('hex')
     return item
   })
 
+  const normalizedNotices = notices.map((notice) => ({ ...notice }))
   return {
     schema: APP_FEED_SCHEMA,
-    editionId: createHash('sha256').update(appStories.map(({ fingerprint }) => fingerprint).join('\n')).digest('hex'),
+    releaseStatus,
+    editionId: createHash('sha256').update(JSON.stringify({
+      releaseStatus,
+      stories: appStories.map(({ fingerprint }) => fingerprint),
+      notices: normalizedNotices,
+    })).digest('hex'),
     generatedAt: new Date(generatedAt).toISOString(),
     stories: appStories,
+    notices: normalizedNotices,
   }
 }

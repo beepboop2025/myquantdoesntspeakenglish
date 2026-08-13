@@ -1,0 +1,26 @@
+{
+  "schema": "mqdnse.publication-approvals.v1",
+  "updatedAt": "2026-08-13T10:30:00Z",
+  "defaultAction": "DENY",
+  "policy": "Temporary beta distribution control. Approval is locked to the exact source fingerprint, expires automatically, and does not represent legal or regulatory clearance.",
+  "approvals": {
+    "seiche:2026-08-12-daily": {
+      "status": "APPROVED_FOR_RELEASE",
+      "sourceFingerprint": "1184f9bc2e8466671cda96b23cc6624b680a7f7b00974bee7e5970832a7155b7",
+      "channels": ["site", "app-feed"],
+      "reviewedAt": "2026-08-13T10:30:00Z",
+      "expiresAt": "2026-09-12T23:59:59Z",
+      "reviewBasis": "General-market plumbing record with a reviewed denominator-first translation and the source limitation attached.",
+      "legalClearanceClaimed": false
+    },
+    "myquant:why-the-quant-needs-subtitles": {
+      "status": "APPROVED_FOR_RELEASE",
+      "sourceFingerprint": "0f841036008cddfb00d0da2bbfdedde1c378e1577f40083d9c05d8819a0a1264",
+      "channels": ["site", "app-feed"],
+      "reviewedAt": "2026-08-13T10:30:00Z",
+      "expiresAt": "2026-09-12T23:59:59Z",
+      "reviewBasis": "House editorial operating note; no issuer assessment, security recommendation, or transaction call.",
+      "legalClearanceClaimed": false
+    }
+  }
+}

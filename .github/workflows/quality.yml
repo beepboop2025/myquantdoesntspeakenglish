@@ -21,5 +21,6 @@ jobs:
       - run: npm ci
       - run: npm test
       - run: npm run build
+      - run: npm run verify
       - name: Require the core publication artifacts
         run: test -s dist/index.html && test -s dist/feed.json && test -s dist/feed.xml && test -s dist/sitemap.xml

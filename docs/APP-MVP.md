@@ -13,7 +13,7 @@ news service.
 
 The first release has four destinations:
 
-1. **Today** — a finite daily edition, led by the most useful current record.
+1. **Today** — a finite current edition, led by the most useful approved record.
 2. **Topics** — funding, institutions, market exits, and house investigations.
 3. **Saved** — device-local bookmarks that remain readable offline.
 4. **Settings** — accessibility state, privacy, support, methodology, and

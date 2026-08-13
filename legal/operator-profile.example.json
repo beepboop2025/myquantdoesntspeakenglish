@@ -1,0 +1,30 @@
+{
+  "schema": "mqdnse.operator-profile.v1",
+  "status": "DRAFT",
+  "legalName": "",
+  "publicBrandName": "my quant doesn’t speak english",
+  "entityType": "",
+  "registrationNumber": "",
+  "registeredAddress": {
+    "line1": "",
+    "line2": "",
+    "city": "",
+    "region": "",
+    "postalCode": "",
+    "country": ""
+  },
+  "privacyEmail": "mrinal@liquilens.in",
+  "supportEmail": "mrinal@liquilens.in",
+  "grievanceContact": {
+    "name": "",
+    "title": "",
+    "email": "mrinal@liquilens.in"
+  },
+  "approvedTerritories": [],
+  "counselApprovals": {
+    "securities": { "status": "PENDING", "reference": "", "signedAt": "" },
+    "mediaPublisher": { "status": "PENDING", "reference": "", "signedAt": "" },
+    "privacy": { "status": "PENDING", "reference": "", "signedAt": "" },
+    "ipAndContentRights": { "status": "PENDING", "reference": "", "signedAt": "" }
+  }
+}

@@ -2,8 +2,14 @@ import test from 'node:test'
 import assert from 'node:assert/strict'
 import {
   APP_FEED_SCHEMA,
+  CONTENT_STATUS_SCHEMA,
+  PUBLICATION_APPROVALS_SCHEMA,
   PUBLICATION_HOLDS_SCHEMA,
+  RELEASE_POLICY_SCHEMA,
+  applyContentStatus,
+  applyPublicationApprovals,
   applyPublicationHolds,
+  applyReleasePolicy,
   buildAppFeed,
   buildSignalPulse,
   chooseLead,
@@ -11,6 +17,79 @@ import {
   normalizeHouseArticle,
   preserveStableClocks,
 } from '../scripts/lib.mjs'
+
+test('positive approvals lock distribution to an exact fingerprint and expiry', () => {
+  const stories = [
+    { id: 'approved', fingerprint: 'hash-a' },
+    { id: 'changed', fingerprint: 'hash-new' },
+    { id: 'unlisted', fingerprint: 'hash-c' },
+  ]
+  const approvals = {
+    schema: PUBLICATION_APPROVALS_SCHEMA,
+    defaultAction: 'DENY',
+    approvals: {
+      approved: {
+        status: 'APPROVED_FOR_RELEASE', legalClearanceClaimed: false, sourceFingerprint: 'hash-a',
+        channels: ['site'], reviewedAt: '2026-08-13T00:00:00Z', expiresAt: '2026-09-01T00:00:00Z',
+      },
+      changed: {
+        status: 'APPROVED_FOR_RELEASE', legalClearanceClaimed: false, sourceFingerprint: 'hash-old',
+        channels: ['site'], reviewedAt: '2026-08-13T00:00:00Z', expiresAt: '2026-09-01T00:00:00Z',
+      },
+    },
+  }
+
+  assert.deepEqual(
+    applyPublicationApprovals(stories, approvals, 'site', Date.parse('2026-08-14T00:00:00Z')),
+    [{ id: 'approved', fingerprint: 'hash-a' }],
+  )
+  assert.deepEqual(
+    applyPublicationApprovals(stories, approvals, 'site', Date.parse('2026-09-02T00:00:00Z')),
+    [],
+  )
+})
+
+test('corrections remain visible while retractions produce client notices only', () => {
+  const stories = [{ id: 'corrected' }, { id: 'retracted' }, { id: 'unchanged' }]
+  const contract = {
+    schema: CONTENT_STATUS_SCHEMA,
+    entries: {
+      corrected: {
+        status: 'CORRECTED', channels: ['site'], effectiveAt: '2026-08-13T10:00:00Z',
+        summary: 'The denominator label was corrected.',
+      },
+      retracted: {
+        status: 'RETRACTED', channels: ['site', 'app-feed'], effectiveAt: '2026-08-13T11:00:00Z',
+        summary: 'The central claim could not be supported.',
+      },
+    },
+  }
+  const result = applyContentStatus(stories, contract, 'site')
+
+  assert.deepEqual(result.stories.map(({ id }) => id), ['corrected', 'unchanged'])
+  assert.equal(result.stories[0].contentNotice.status, 'CORRECTED')
+  assert.deepEqual(result.notices.map(({ id }) => id), ['corrected', 'retracted'])
+})
+
+test('release policy caps an approved edition and supports an emergency stop', () => {
+  const policy = {
+    schema: RELEASE_POLICY_SCHEMA,
+    emergencyStop: false,
+    channels: { site: { mode: 'APPROVALS_ONLY', maxItems: 1 } },
+  }
+  assert.deepEqual(applyReleasePolicy([{ id: 'a' }, { id: 'b' }], policy, 'site'), {
+    stories: [{ id: 'a' }],
+    releaseStatus: 'ACTIVE',
+  })
+  assert.deepEqual(applyReleasePolicy([{ id: 'a' }], policy, 'site', true), {
+    stories: [],
+    releaseStatus: 'SUSPENDED',
+  })
+  assert.deepEqual(applyReleasePolicy([], policy, 'site'), {
+    stories: [],
+    releaseStatus: 'SUSPENDED',
+  })
+})
 
 test('publication holds fail closed per public channel while preserving source input', () => {
   const stories = [

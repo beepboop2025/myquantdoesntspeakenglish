@@ -1,0 +1,6 @@
+{
+  "schema": "mqdnse.content-status.v1",
+  "updatedAt": "2026-08-13T10:30:00Z",
+  "policy": "Corrections remain visible; retracted and superseded stories leave normal distribution while notices remain available to connected clients.",
+  "entries": {}
+}

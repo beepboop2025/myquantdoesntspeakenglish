@@ -4,7 +4,10 @@ import { fileURLToPath } from 'node:url'
 import {
   SITE_ORIGIN,
   SOURCES,
+  applyContentStatus,
+  applyPublicationApprovals,
   applyPublicationHolds,
+  applyReleasePolicy,
   buildAppFeed,
   buildSignalPulse,
   chooseLead,
@@ -19,6 +22,9 @@ const dist = join(root, 'dist')
 const cachePath = join(root, 'data', 'cache.json')
 const appCopyPath = join(root, 'data', 'app-copy.json')
 const publicationHoldsPath = join(root, 'data', 'publication-holds.json')
+const publicationApprovalsPath = join(root, 'data', 'publication-approvals.json')
+const contentStatusPath = join(root, 'data', 'content-status.json')
+const releasePolicyPath = join(root, 'data', 'release-policy.json')
 const BRAND_NAME = 'my quant doesn’t speak english'
 const escapeHtml = (value = '') => String(value)
   .replaceAll('&', '&amp;')
@@ -109,9 +115,6 @@ function head({ title, description, canonical, type = 'website' }) {
   <meta property="og:url" content="${escapeHtml(canonical)}">
   <meta property="og:image" content="${SITE_ORIGIN}/assets/og-card.svg">
   <meta name="twitter:card" content="summary_large_image">
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wdth,wght@12..96,75..100,400..800&family=IBM+Plex+Mono:wght@400;500;600&family=Newsreader:opsz,wght@6..72,400;6..72,600&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="/assets/styles.css">`
 }
 
@@ -136,6 +139,7 @@ function storyCard(story, index) {
     <div class="story-index">${String(index + 1).padStart(2, '0')}</div>
     <article>
       <div class="story-meta"><span class="product product-${escapeHtml(story.product)}">${escapeHtml(label)}</span><time datetime="${escapeHtml(isoDate(story.published))}">${escapeHtml(shortDate(story.published))}</time><span>${escapeHtml(story.editorialClass.replaceAll('_', ' '))}</span></div>
+      ${story.contentNotice ? `<p class="content-notice"><strong>${escapeHtml(story.contentNotice.status)}</strong> · ${escapeHtml(story.contentNotice.summary)}</p>` : ''}
       <h3><a href="${escapeHtml(story.url)}">${escapeHtml(story.title)}</a></h3>
       <p>${escapeHtml(story.dek)}</p>
       <div class="evidence-line"><span>${escapeHtml(story.evidenceStatus)}</span><span>${escapeHtml(story.contribution)}</span></div>
@@ -269,7 +273,7 @@ function renderHome(stories, cache, consumerCopy) {
       </div>
       <div class="hero-proof" aria-labelledby="hero-proof-title">
         <div class="proof-card">
-          <div class="proof-head"><span>THE DAILY CONTRACT</span><span>FINITE EDITION</span></div>
+          <div class="proof-head"><span>THE READING CONTRACT</span><span>FINITE EDITION</span></div>
           <div class="proof-body">
             <span class="proof-number" aria-hidden="true">05</span>
             <p class="proof-kicker">UP TO FIVE STORIES</p>
@@ -347,7 +351,7 @@ function renderHome(stories, cache, consumerCopy) {
       </div>
     </aside>
   </main>
-  <footer><p>General market reporting and plain-English explanations—not personalised investment advice or a transaction recommendation. Jokes are not evidence. Evidence is linked.</p><p><a href="/feed.xml">Atom</a> · <a href="/feed.json">JSON Feed</a> · <a href="/advertise/">Advertise</a> · <a href="/privacy/">Privacy</a> · <a href="/support/">Support</a> · <a href="https://narcoscope.com/">NarcoScope</a></p></footer>
+  <footer><p>General market reporting and plain-English explanations—not personalised investment advice or a transaction recommendation. Jokes are not evidence. Evidence is linked.</p><p><a href="/feed.xml">Atom</a> · <a href="/feed.json">JSON Feed</a> · <a href="/editorial/">Editorial standards</a> · <a href="/corrections/">Corrections</a> · <a href="/privacy/">Privacy</a> · <a href="/support/">Support</a> · <a href="/accessibility/">Accessibility</a></p></footer>
   <script type="application/ld+json">${JSON.stringify(schema).replaceAll('<', '\\u003c')}</script>
   <script src="/assets/app.js" defer></script>
 </body></html>`
@@ -365,11 +369,12 @@ function renderArticle(story) {
     <a class="skip" href="#article">Skip to article</a>${masthead()}
     <main class="article-page" id="article">
       <header><p class="eyebrow">${escapeHtml(article.editorial_class.replaceAll('_', ' '))} / ${escapeHtml(article.evidence_status)}</p><h1>${escapeHtml(article.title)}</h1><p class="article-dek">${escapeHtml(article.dek)}</p><div class="byline"><span>${escapeHtml(article.author)}</span><time datetime="${escapeHtml(isoDate(article.published_at))}">${escapeHtml(shortDate(article.published_at))}</time></div></header>
+      ${story.contentNotice ? `<aside class="article-correction"><b>${escapeHtml(story.contentNotice.status)}</b><p>${escapeHtml(story.contentNotice.summary)}</p><time datetime="${escapeHtml(story.contentNotice.effectiveAt)}">Effective ${escapeHtml(shortDate(story.contentNotice.effectiveAt))}</time></aside>` : ''}
       <aside class="article-boundary"><b>What this adds</b><p>${escapeHtml(article.original_contribution)}</p><b>Boundary</b><p>${escapeHtml(article.limitations.join(' '))}</p></aside>
       <div class="article-body">${article.sections.map((section) => `<section><h2>${escapeHtml(section.heading)}</h2>${section.paragraphs.map((paragraph) => `<p>${escapeHtml(paragraph)}</p>`).join('')}</section>`).join('')}</div>
       <aside class="source-box"><p class="eyebrow">OPEN TABS, NOT MYSTERY MEAT</p><h2>Sources</h2><ol>${article.sources.map((source) => `<li><a href="${escapeHtml(source.url)}">${escapeHtml(source.label)} ↗</a></li>`).join('')}</ol></aside>
     </main>
-    <footer><p>General market reporting and plain-English explanations—not personalised investment advice or a transaction recommendation. Jokes are not evidence. Evidence is linked.</p><p><a href="/">Back to the wire</a> · <a href="/privacy/">Privacy</a> · <a href="/support/">Support</a></p></footer>
+    <footer><p>General market reporting and plain-English explanations—not personalised investment advice or a transaction recommendation. Jokes are not evidence. Evidence is linked.</p><p><a href="/">Back to the wire</a> · <a href="/editorial/">Editorial standards</a> · <a href="/corrections/">Corrections</a> · <a href="/privacy/">Privacy</a></p></footer>
     <script type="application/ld+json">${JSON.stringify(articleSchema).replaceAll('<', '\\u003c')}</script>
   </body></html>`
 }
@@ -393,7 +398,7 @@ function renderInfoPage({ slug, eyebrow, title, dek, sections }) {
       <header><p class="eyebrow">${escapeHtml(eyebrow)}</p><h1>${escapeHtml(title)}</h1><p>${escapeHtml(dek)}</p></header>
       <div class="info-sections">${sections.map((section) => `<section><h2>${escapeHtml(section.heading)}</h2>${section.paragraphs.map((paragraph) => `<p>${paragraph}</p>`).join('')}</section>`).join('')}</div>
     </main>
-    <footer><p>General market reporting and plain-English explanations—not personalised investment advice or a transaction recommendation.</p><p><a href="/">Home</a> · <a href="/privacy/">Privacy</a> · <a href="/support/">Support</a></p></footer>
+    <footer><p>General market reporting and plain-English explanations—not personalised investment advice or a transaction recommendation.</p><p><a href="/">Home</a> · <a href="/editorial/">Editorial standards</a> · <a href="/corrections/">Corrections</a> · <a href="/privacy/">Privacy</a> · <a href="/support/">Support</a> · <a href="/accessibility/">Accessibility</a> · <a href="/security/">Security</a></p></footer>
   </body></html>`
 }
 
@@ -402,20 +407,122 @@ function renderPrivacy() {
     slug: 'privacy',
     eyebrow: 'PLAIN-ENGLISH PRIVACY NOTE / EFFECTIVE 13 AUG 2026',
     title: 'Your reading list is not our business model.',
-    dek: `${BRAND_NAME} is designed to work without an account, advertising identifier, portfolio connection, or tracking profile.`,
+    dek: `${BRAND_NAME} is designed to work without an account, advertising identifier, portfolio connection, or behavioural tracking profile.`,
     sections: [
+      { heading: 'Who this covers', paragraphs: [
+        'This notice covers the public website, the app evidence feed, the iOS and Android app, and messages sent to the published support address. The legal operator/controller name and postal address must be added before public store release; that identity is an explicit release blocker, not a fact this page guesses.',
+      ] },
       { heading: 'What stays on your device', paragraphs: [
         'Stories you save and the topics you choose are stored locally on your device. We do not receive those choices. Removing the app or clearing its local data removes that local copy.',
       ] },
       { heading: 'What the app requests', paragraphs: [
-        `The app downloads a public daily evidence feed from <a href="${SITE_ORIGIN}/app-feed/v1.json">${SITE_ORIGIN}/app-feed/v1.json</a>. Our hosting and security providers may process ordinary request information such as an IP address, timestamp, and device or browser details to deliver and protect the service. We do not use that information to build advertising profiles.`,
+        `The app downloads a public evidence feed from <a href="${SITE_ORIGIN}/app-feed/v1.json">${SITE_ORIGIN}/app-feed/v1.json</a>. Vercel hosts the website and feed and may process ordinary request information such as IP address, IP-derived city/country, timestamp, requested path, protocol, user-agent or device/browser details, and service/security diagnostics to deliver and protect the service. See <a href="https://vercel.com/legal/privacy-notice">Vercel’s privacy notice</a>.`,
         'The current app contains no advertising SDK, third-party analytics SDK, account system, location request, contacts access, portfolio import, or cross-app tracking.',
+      ] },
+      { heading: 'Website measurement and hosting logs', paragraphs: [
+        'The delivered website does not load a client-side Vercel Web Analytics or Speed Insights script, and it does not contact a third-party font service. The current Vercel project has no log drain configured. On the current Hobby plan, available runtime logs are viewable for one hour; Vercel may retain separate service, abuse-prevention, billing, or security records under its own notice and terms.',
+        'We use request information only to serve, secure, debug, and maintain the public service. We do not sell it, use it for cross-site advertising, or combine it with saved-story and topic choices, which remain on the device.',
+      ] },
+      { heading: 'Store and support data', paragraphs: [
+        'Apple and Google process store-account, download, device, crash, diagnostics, and aggregate store-performance information under their own terms and privacy notices. The operator may access the reports those consoles make available.',
+        'If you email support, the sender address, message, attachments, and any device details you choose to provide are processed by the email provider and authorised support personnel to answer, secure, or document the request. Do not send brokerage credentials, account numbers, or financial records.',
       ] },
       { heading: 'Links and sources', paragraphs: [
         'Source links open websites operated by cited publishers. Their privacy practices apply after you leave this app.',
       ] },
-      { heading: 'Questions or deletion requests', paragraphs: [
-        'There is no server-side app account to delete. For privacy questions, email <a href="mailto:mrinal@liquilens.in?subject=my%20quant%20privacy">mrinal@liquilens.in</a>. If the data practices change, this page and the store disclosures will be updated before the new collection begins.',
+      { heading: 'Retention, questions, and requests', paragraphs: [
+        'There is no server-side app account to delete. Device data remains until you remove it, clear app storage, or uninstall, subject to operating-system backup behaviour. Routine support messages should be retained only as long as needed to resolve and secure the request; legal holds, complaints, and statutory records may require longer retention once the operator and launch territories are confirmed.',
+        'For access, correction, deletion, objection, or other privacy questions, email <a href="mailto:mrinal@liquilens.in?subject=my%20quant%20privacy">mrinal@liquilens.in</a>. The applicable rights, regulator contact, legal bases, international-transfer details, and final retention schedule will be completed for the approved launch territories before store release. If the data practices change, this page and the store disclosures will be updated before the new collection begins.',
+      ] },
+    ],
+  })
+}
+
+function renderEditorial() {
+  return renderInfoPage({
+    slug: 'editorial',
+    eyebrow: 'EDITORIAL STANDARD / PUBLIC BETA',
+    title: 'The joke can move. The evidence cannot.',
+    dek: 'How records become plain-English stories, what stays attached, and what is not allowed onto the public wire.',
+    sections: [
+      { heading: 'A translation is not a new market claim', paragraphs: [
+        'Every consumer story must preserve the source claim, canonical source link, evidence status, publication clock, and stated limitation. Plain language may explain scope or mechanism; it may not manufacture certainty, personalise advice, recommend a transaction, or predict an issuer outcome.',
+      ] },
+      { heading: 'Finite and positively approved', paragraphs: [
+        'The public app edition is capped at five items. A record needs reviewed consumer copy and an unexpired channel approval tied to its exact content fingerprint. Product and story holds override approvals. Any changed source fingerprint falls out of distribution until it is reviewed again.',
+      ] },
+      { heading: 'High-risk lanes stay held', paragraphs: [
+        'Named-issuer distress language, proprietary risk tiers, pre-registered market calls, ratings-like labels, personalised recommendations, and content lacking documented rights remain outside the public beta pending the required editorial, rights, securities, and media-law review.',
+      ] },
+      { heading: 'Conflicts and sponsorship', paragraphs: [
+        'Paid placements must be visibly labelled. A sponsor cannot buy a finding, ranking, omission, source choice, or softened limitation. Material interests and relationships relevant to a story must be checked and disclosed under the policy approved for the launch territory.',
+      ] },
+      { heading: 'Report a concern', paragraphs: [
+        'Send a precise concern, source, URL, and supporting record to <a href="mailto:mrinal@liquilens.in?subject=my%20quant%20editorial%20concern">mrinal@liquilens.in</a>. Do not send confidential financial credentials or unlawfully obtained material.',
+      ] },
+    ],
+  })
+}
+
+function renderCorrections(notices) {
+  const noticeParagraphs = notices.length
+    ? notices.map((notice) => `<strong>${escapeHtml(notice.status)}</strong> · ${escapeHtml(notice.id)} · <time datetime="${escapeHtml(notice.effectiveAt)}">${escapeHtml(shortDate(notice.effectiveAt))}</time><br>${escapeHtml(notice.summary)}${notice.replacementUrl ? ` <a href="${escapeHtml(notice.replacementUrl)}">Replacement record ↗</a>` : ''}`)
+    : ['No public correction, retraction, or supersession notices are recorded in the current edition.']
+  return renderInfoPage({
+    slug: 'corrections',
+    eyebrow: 'CORRECTIONS / VERSIONED AND VISIBLE',
+    title: 'Fix the record, not just the vibe.',
+    dek: 'Material errors receive a visible correction, retraction, or supersession notice that also travels to connected app clients.',
+    sections: [
+      { heading: 'Current notices', paragraphs: noticeParagraphs },
+      { heading: 'What each label means', paragraphs: [
+        '<strong>Corrected</strong> means the story remains available with a material change explained. <strong>Retracted</strong> means the central claim or publication basis is no longer supportable and normal distribution stops. <strong>Superseded</strong> means a replacement record should be used.',
+      ] },
+      { heading: 'Offline limitation', paragraphs: [
+        'A connected app receives the notice contract and reconciles saved snapshots. A device that stays offline cannot receive a later correction or retraction; reconnect and refresh before relying on a saved copy.',
+      ] },
+      { heading: 'Request a review', paragraphs: [
+        'Email <a href="mailto:mrinal@liquilens.in?subject=my%20quant%20correction%20request">mrinal@liquilens.in</a> with the exact URL, disputed words or number, the reason, and the best primary evidence available. A request does not guarantee removal; it triggers an evidence and rights review.',
+      ] },
+    ],
+  })
+}
+
+function renderAccessibility() {
+  return renderInfoPage({
+    slug: 'accessibility',
+    eyebrow: 'ACCESSIBILITY / WORKING STANDARD',
+    title: 'The translation should include everyone.',
+    dek: 'The site and app are built for system text, keyboard and screen-reader use, reduced motion, visible focus, and plain-language navigation.',
+    sections: [
+      { heading: 'Current support', paragraphs: [
+        'The website provides a skip link, semantic headings, visible keyboard focus, text alternatives for functional graphics, and reduced-motion handling. The app uses native accessibility labels, system text scaling, large tap targets, and labelled source links.',
+      ] },
+      { heading: 'Known verification boundary', paragraphs: [
+        'This is not a claim of formal certification. Final signed iOS and Android builds still require device testing with VoiceOver and TalkBack, largest text sizes, switch/keyboard navigation, contrast checks, orientation, and reduced motion before each public territory is approved.',
+      ] },
+      { heading: 'Get help or report a barrier', paragraphs: [
+        'Email <a href="mailto:mrinal@liquilens.in?subject=my%20quant%20accessibility">mrinal@liquilens.in</a> with the page or screen, device, assistive technology, and the task you could not complete. Do not include financial credentials.',
+      ] },
+    ],
+  })
+}
+
+function renderSecurity() {
+  return renderInfoPage({
+    slug: 'security',
+    eyebrow: 'SECURITY / RESPONSIBLE REPORTING',
+    title: 'Found a crack in the evidence pipe?',
+    dek: 'A narrow disclosure channel for vulnerabilities affecting the public site, app, feed integrity, or release controls.',
+    sections: [
+      { heading: 'What to report', paragraphs: [
+        'Report reproducible vulnerabilities that could alter published content, expose non-public records, bypass release controls, compromise deployment access, or affect user devices. Include the affected URL/version, steps, impact, and a safe proof of concept.',
+      ] },
+      { heading: 'Safe handling', paragraphs: [
+        'Do not access unnecessary data, disrupt service, trade on non-public information, phish people, use social engineering, or publish exploit details before there is a reasonable opportunity to investigate and mitigate. This page does not authorise conduct prohibited by law.',
+      ] },
+      { heading: 'Contact', paragraphs: [
+        'Email <a href="mailto:mrinal@liquilens.in?subject=my%20quant%20security%20report">mrinal@liquilens.in</a>. Do not send secrets in ordinary email; first ask for a secure exchange method. No bounty is promised unless agreed in writing before work is performed.',
       ] },
     ],
   })
@@ -426,9 +533,9 @@ function renderSupport() {
     slug: 'support',
     eyebrow: 'THE DESK BEHIND THE DESK',
     title: 'Something got lost in translation?',
-    dek: `Help with the free ${BRAND_NAME} app, its daily evidence feed, saved stories, and source links.`,
+    dek: `Help with the free ${BRAND_NAME} app, its current evidence feed, saved stories, and source links.`,
     sections: [
-      { heading: 'Refresh the daily edition', paragraphs: [
+      { heading: 'Refresh the current edition', paragraphs: [
         'Pull down on Today to request the newest edition. If the network or evidence feed is unavailable, the app keeps the last valid edition or opens its bundled offline edition. A saved edition is labelled clearly; it is never presented as live.',
       ] },
       { heading: 'Saved stories and topics', paragraphs: [
@@ -453,8 +560,8 @@ function renderFeedJson(stories) {
   }, null, 2)}\n`
 }
 
-function renderAppFeed(stories, generatedAt, consumerCopy) {
-  return `${JSON.stringify(buildAppFeed(stories, generatedAt, consumerCopy), null, 2)}\n`
+function renderAppFeed(stories, generatedAt, consumerCopy, notices, releaseStatus) {
+  return `${JSON.stringify(buildAppFeed(stories, generatedAt, consumerCopy, notices, releaseStatus), null, 2)}\n`
 }
 
 function renderFeedXml(stories) {
@@ -472,6 +579,9 @@ async function build() {
   const cache = await syncFeeds()
   const appCopy = await readJson(appCopyPath)
   const publicationHolds = await readJson(publicationHoldsPath)
+  const publicationApprovals = await readJson(publicationApprovalsPath)
+  const contentStatus = await readJson(contentStatusPath)
+  const releasePolicy = await readJson(releasePolicyPath)
   if (appCopy.schema !== 'mqdnse.app-copy.v1' || !appCopy.stories || typeof appCopy.stories !== 'object') {
     throw new Error('data/app-copy.json: invalid app-copy contract')
   }
@@ -479,8 +589,24 @@ async function build() {
   const allStories = [...Object.values(cache.feeds).flat(), ...house]
     .filter((story) => story.publicationStatus === 'PUBLISHED')
     .sort((a, b) => Date.parse(b.published) - Date.parse(a.published))
-  const stories = applyPublicationHolds(allStories, publicationHolds, 'site')
-  const appStories = applyPublicationHolds(allStories, publicationHolds, 'app-feed')
+  const emergencyOverride = process.env.MQ_PUBLICATION_STOP === '1'
+  const siteApproved = applyPublicationApprovals(
+    applyPublicationHolds(allStories, publicationHolds, 'site'),
+    publicationApprovals,
+    'site',
+  )
+  const appApproved = applyPublicationApprovals(
+    applyPublicationHolds(allStories, publicationHolds, 'app-feed'),
+    publicationApprovals,
+    'app-feed',
+  )
+  const siteStatus = applyContentStatus(siteApproved, contentStatus, 'site')
+  const appStatus = applyContentStatus(appApproved, contentStatus, 'app-feed')
+  const siteRelease = applyReleasePolicy(siteStatus.stories, releasePolicy, 'site', emergencyOverride)
+  const appRelease = applyReleasePolicy(appStatus.stories, releasePolicy, 'app-feed', emergencyOverride)
+  const stories = siteRelease.stories
+  const appStories = appRelease.stories
+  const publicHouse = stories.filter((story) => story.product === 'myquant')
 
   await rm(dist, { recursive: true, force: true })
   await mkdir(dist, { recursive: true })
@@ -489,17 +615,37 @@ async function build() {
   await write(join(dist, 'advertise', 'index.html'), renderAdvertise())
   await write(join(dist, 'privacy', 'index.html'), renderPrivacy())
   await write(join(dist, 'support', 'index.html'), renderSupport())
-  for (const article of house) await write(join(dist, 'articles', article.article.slug, 'index.html'), renderArticle(article))
+  await write(join(dist, 'editorial', 'index.html'), renderEditorial())
+  await write(join(dist, 'corrections', 'index.html'), renderCorrections(siteStatus.notices))
+  await write(join(dist, 'accessibility', 'index.html'), renderAccessibility())
+  await write(join(dist, 'security', 'index.html'), renderSecurity())
+  for (const article of publicHouse) await write(join(dist, 'articles', article.article.slug, 'index.html'), renderArticle(article))
   await write(join(dist, 'feed.json'), renderFeedJson(stories))
-  const appFeed = renderAppFeed(appStories, cache.syncedAt, appCopy.stories)
+  const appFeed = renderAppFeed(
+    appStories,
+    cache.syncedAt,
+    appCopy.stories,
+    appStatus.notices,
+    appRelease.releaseStatus,
+  )
   const appPublishedCount = JSON.parse(appFeed).stories.length
   await write(join(dist, 'app-feed', 'v1.json'), appFeed)
   await write(join(dist, 'feed.xml'), renderFeedXml(stories))
   await write(join(dist, 'robots.txt'), `User-agent: *\nAllow: /\nSitemap: ${SITE_ORIGIN}/sitemap.xml\n`)
-  const urls = [`${SITE_ORIGIN}/`, `${SITE_ORIGIN}/advertise/`, `${SITE_ORIGIN}/privacy/`, `${SITE_ORIGIN}/support/`, ...house.map((story) => story.url)]
+  const urls = [
+    `${SITE_ORIGIN}/`,
+    `${SITE_ORIGIN}/advertise/`,
+    `${SITE_ORIGIN}/privacy/`,
+    `${SITE_ORIGIN}/support/`,
+    `${SITE_ORIGIN}/editorial/`,
+    `${SITE_ORIGIN}/corrections/`,
+    `${SITE_ORIGIN}/accessibility/`,
+    `${SITE_ORIGIN}/security/`,
+    ...publicHouse.map((story) => story.url),
+  ]
   await write(join(dist, 'sitemap.xml'), `<?xml version="1.0" encoding="UTF-8"?><urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">${urls.map((url) => `<url><loc>${escapeXml(url)}</loc></url>`).join('')}</urlset>\n`)
-  await write(join(dist, 'llms.txt'), `# ${BRAND_NAME}\n\nA finite public edition of sourced market dispatches and plain-English editorial notes.\n\n- Home: ${SITE_ORIGIN}/\n- JSON Feed: ${SITE_ORIGIN}/feed.json\n- Atom: ${SITE_ORIGIN}/feed.xml\n- App feed: ${SITE_ORIGIN}/app-feed/v1.json\n- Source articles remain canonical at the cited publisher.\n- General market reporting and plain-English explanations, not personalised investment advice or a transaction recommendation.\n\n## Related evidence desk\n\n- NarcoScope, https://narcoscope.com/: an independent public-interest explorer for official drug-market records. It shares this network's evidence standards, not its financial subject.\n`)
-  process.stdout.write(`Built ${stories.length}/${allStories.length} public records and ${appPublishedCount} app stories (${house.length} house) into ${dist}\n`)
+  await write(join(dist, 'llms.txt'), `# ${BRAND_NAME}\n\nA finite public edition of sourced market dispatches and plain-English editorial notes.\n\n- Home: ${SITE_ORIGIN}/\n- JSON Feed: ${SITE_ORIGIN}/feed.json\n- Atom: ${SITE_ORIGIN}/feed.xml\n- App feed: ${SITE_ORIGIN}/app-feed/v1.json\n- Editorial standard: ${SITE_ORIGIN}/editorial/\n- Corrections: ${SITE_ORIGIN}/corrections/\n- Privacy: ${SITE_ORIGIN}/privacy/\n- Source articles remain canonical at the cited publisher.\n- General market reporting and plain-English explanations, not personalised investment advice or a transaction recommendation.\n\n## Related evidence desk\n\n- NarcoScope, https://narcoscope.com/: an independent public-interest explorer for official drug-market records. It shares this network's evidence standards, not its financial subject.\n`)
+  process.stdout.write(`Built ${stories.length}/${allStories.length} approved public records and ${appPublishedCount} app stories (${publicHouse.length}/${house.length} house; ${appRelease.releaseStatus}) into ${dist}\n`)
 }
 
 await build()

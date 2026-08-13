@@ -1,0 +1,15 @@
+{
+  "schema": "mqdnse.release-policy.v1",
+  "updatedAt": "2026-08-13T10:30:00Z",
+  "emergencyStop": false,
+  "channels": {
+    "site": {
+      "mode": "APPROVALS_ONLY",
+      "maxItems": 5
+    },
+    "app-feed": {
+      "mode": "APPROVALS_ONLY",
+      "maxItems": 5
+    }
+  }
+}

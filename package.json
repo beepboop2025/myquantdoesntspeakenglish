@@ -7,7 +7,9 @@
     "build": "node scripts/build.mjs",
     "sync": "node scripts/build.mjs",
     "dev": "node scripts/serve.mjs",
-    "test": "node --test"
+    "legal:check": "node scripts/check-operator-profile.mjs data/operator-profile.json",
+    "test": "node --test",
+    "verify": "node scripts/verify-build.mjs"
   },
   "engines": {
     "node": ">=22"

@@ -27,6 +27,7 @@ jobs:
       - run: npm ci
       - run: npm test
       - run: npm run sync
+      - run: npm run verify
       - name: Publish a changed wire cache
         run: |
           if git diff --quiet -- data/cache.json; then
