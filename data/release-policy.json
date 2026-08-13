@@ -1,15 +1,16 @@
 {
   "schema": "mqdnse.release-policy.v1",
-  "updatedAt": "2026-08-13T10:30:00Z",
+  "updatedAt": "2026-08-13T11:05:00Z",
   "emergencyStop": false,
+  "decision": "Operator-directed full website archive. Mobile app distribution remains paused. SOURCE_PUBLISHED is a channel instruction, not a representation of legal or regulatory clearance.",
   "channels": {
     "site": {
-      "mode": "APPROVALS_ONLY",
-      "maxItems": 5
+      "mode": "SOURCE_PUBLISHED",
+      "maxItems": 1000
     },
     "app-feed": {
-      "mode": "APPROVALS_ONLY",
-      "maxItems": 5
+      "mode": "SUSPENDED",
+      "maxItems": 0
     }
   }
 }

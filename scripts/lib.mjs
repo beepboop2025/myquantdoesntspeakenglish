@@ -292,6 +292,7 @@ export function applyPublicationHolds(stories, holds, channel) {
 
 const PUBLIC_CHANNELS = new Set(['site', 'app-feed'])
 const CONTENT_STATUSES = new Set(['CORRECTED', 'RETRACTED', 'SUPERSEDED'])
+const RELEASE_MODES = new Set(['APPROVALS_ONLY', 'SOURCE_PUBLISHED', 'SUSPENDED'])
 
 function appliesToChannel(value, channel) {
   return Array.isArray(value?.channels)
@@ -323,6 +324,35 @@ export function applyPublicationApprovals(stories, approvals, channel, now = Dat
       && Number.isFinite(Date.parse(approval.expiresAt))
       && Date.parse(approval.expiresAt) > now
   })
+}
+
+/**
+ * Choose which records enter a channel before corrections and volume policy.
+ * SOURCE_PUBLISHED is an operator-directed web archive mode: it republishes the
+ * source-supplied metadata for every PUBLISHED record without representing that
+ * each record received legal clearance. The app can remain independently
+ * suspended while the website uses this mode.
+ */
+export function selectPublicationCandidates(
+  stories,
+  holds,
+  approvals,
+  policy,
+  channel,
+  now = Date.now(),
+) {
+  const mode = policy?.channels?.[channel]?.mode
+  if (!PUBLIC_CHANNELS.has(channel) || !RELEASE_MODES.has(mode)) {
+    throw new Error('invalid release-policy contract')
+  }
+  if (mode === 'SUSPENDED') return []
+  if (mode === 'SOURCE_PUBLISHED') return array(stories).filter((story) => story?.id)
+  return applyPublicationApprovals(
+    applyPublicationHolds(stories, holds, channel),
+    approvals,
+    channel,
+    now,
+  )
 }
 
 /**
@@ -377,12 +407,12 @@ export function applyReleasePolicy(stories, policy, channel, emergencyOverride =
     || policy?.schema !== RELEASE_POLICY_SCHEMA
     || typeof policy.emergencyStop !== 'boolean'
     || !channelPolicy
-    || channelPolicy.mode !== 'APPROVALS_ONLY'
+    || !RELEASE_MODES.has(channelPolicy.mode)
     || !Number.isInteger(channelPolicy.maxItems)
     || channelPolicy.maxItems < 0) {
     throw new Error('invalid release-policy contract')
   }
-  if (policy.emergencyStop || emergencyOverride) {
+  if (policy.emergencyStop || emergencyOverride || channelPolicy.mode === 'SUSPENDED') {
     return { stories: [], releaseStatus: 'SUSPENDED' }
   }
   const limited = array(stories).slice(0, channelPolicy.maxItems)

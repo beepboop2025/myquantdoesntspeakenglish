@@ -5,8 +5,6 @@ import {
   SITE_ORIGIN,
   SOURCES,
   applyContentStatus,
-  applyPublicationApprovals,
-  applyPublicationHolds,
   applyReleasePolicy,
   buildAppFeed,
   buildSignalPulse,
@@ -15,6 +13,7 @@ import {
   normalizePayload,
   preserveStableClocks,
   productLabel,
+  selectPublicationCandidates,
 } from './lib.mjs'
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..')
@@ -126,7 +125,7 @@ function masthead() {
     <nav aria-label="Primary">
       <a href="/#signals">Signal map</a>
       <a href="/#wire">Every dispatch</a>
-      <a href="https://myquant-app.vercel.app/">Open app preview</a>
+      <a href="/#desk-tape">Desk tape</a>
       <a href="/articles/why-the-quant-needs-subtitles/">House rules</a>
       <a class="nav-ad" href="/advertise/">Advertise, tastefully</a>
     </nav>
@@ -158,6 +157,8 @@ function sourceStatus(cache, product, publicCount) {
 
 const GRAPH_PRODUCTS = [
   { id: 'seiche', label: 'Seiche', layer: 'System' },
+  { id: 'liquilens', label: 'LiquiLens', layer: 'Institution' },
+  { id: 'liquilens-undertow', label: 'Undertow', layer: 'Market' },
   { id: 'myquant', label: 'House', layer: 'Editorial' },
 ]
 
@@ -217,21 +218,23 @@ function mixGraphic(pulse) {
 
 function signalMap() {
   return `<svg class="signal-map" viewBox="0 0 920 278" role="group" aria-labelledby="signal-map-title signal-map-desc">
-    <title id="signal-map-title">The public evidence route</title>
-    <desc id="signal-map-desc">Select Seiche for broad system-funding records or the house desk for plain-English editorial notes.</desc>
-    <path class="route-line" d="M274 132 C380 30 540 30 646 132"/>
-    <path class="route-current" d="M274 132 C380 30 540 30 646 132"/>
-    <g class="route-node route-seiche" data-route-filter="seiche" role="button" tabindex="0" aria-label="Filter to Seiche system-funding dispatches" transform="translate(200 82)"><rect width="148" height="100" rx="50"/><text x="74" y="43" text-anchor="middle">01 / SYSTEM</text><text class="node-name" x="74" y="66" text-anchor="middle">SEICHE</text></g>
-    <g class="route-node route-myquant" data-route-filter="myquant" role="button" tabindex="0" aria-label="Filter to original house reporting" transform="translate(562 82)"><rect width="168" height="100" rx="50"/><text x="84" y="43" text-anchor="middle">02 / EDITORIAL</text><text class="node-name" x="84" y="66" text-anchor="middle">SUBTITLES</text></g>
+    <title id="signal-map-title">The complete public evidence route</title>
+    <desc id="signal-map-desc">Select Seiche for system funding, LiquiLens for institutions, Undertow for market exits, or the house desk for plain-English editorial notes.</desc>
+    <path class="route-line" d="M126 132 C220 30 248 30 342 132 S464 234 558 132 S680 30 774 132"/>
+    <path class="route-current" d="M126 132 C220 30 248 30 342 132 S464 234 558 132 S680 30 774 132"/>
+    <g class="route-node route-seiche" data-route-filter="seiche" role="button" tabindex="0" aria-label="Filter to Seiche system-funding dispatches" transform="translate(52 82)"><rect width="148" height="100" rx="50"/><text x="74" y="43" text-anchor="middle">01 / SYSTEM</text><text class="node-name" x="74" y="66" text-anchor="middle">SEICHE</text></g>
+    <g class="route-node route-liquilens" data-route-filter="liquilens" role="button" tabindex="0" aria-label="Filter to LiquiLens institution dispatches" transform="translate(268 82)"><rect width="148" height="100" rx="50"/><text x="74" y="43" text-anchor="middle">02 / INSTITUTION</text><text class="node-name" x="74" y="66" text-anchor="middle">LIQUILENS</text></g>
+    <g class="route-node route-undertow" data-route-filter="liquilens-undertow" role="button" tabindex="0" aria-label="Filter to Undertow market-exit dispatches" transform="translate(484 82)"><rect width="148" height="100" rx="50"/><text x="74" y="43" text-anchor="middle">03 / MARKET</text><text class="node-name" x="74" y="66" text-anchor="middle">UNDERTOW</text></g>
+    <g class="route-node route-myquant" data-route-filter="myquant" role="button" tabindex="0" aria-label="Filter to original house reporting" transform="translate(700 82)"><rect width="168" height="100" rx="50"/><text x="84" y="43" text-anchor="middle">04 / EDITORIAL</text><text class="node-name" x="84" y="66" text-anchor="middle">SUBTITLES</text></g>
     <text class="map-hint" x="460" y="254" text-anchor="middle">CLICK A LAYER TO TUNE THE WIRE</text>
   </svg>`
 }
 
 function signalCockpit(pulse) {
   return `<section class="signal-cockpit" id="signals" aria-labelledby="signals-title">
-    <header class="cockpit-head"><div><p class="eyebrow">THE PUBLIC EDITION, MAPPED</p><h2 id="signals-title">One evidence wire.<br><em>A translator at the end.</em></h2></div><p>Every mark below comes from records in the current public edition. Material held for review does not enter these counts.</p></header>
+    <header class="cockpit-head"><div><p class="eyebrow">THE FULL WEB ARCHIVE, MAPPED</p><h2 id="signals-title">One chain. Three instruments.<br><em>A translator at the end.</em></h2></div><p>Every mark below comes from a source-published record in the public website archive. Source labels and evidence boundaries remain attached.</p></header>
     <div class="cockpit-grid">
-      <article class="flow-panel"><header><span>A / SIGNAL ROUTE</span><p>Broad system data becomes an explanation you can inspect.</p></header>${signalMap()}</article>
+      <article class="flow-panel"><header><span>A / SIGNAL ROUTE</span><p>System pressure becomes institution context, market-exit context, then an explanation you can inspect.</p></header>${signalMap()}</article>
       <article class="cadence-panel"><header><div><span>B / DISPATCH CADENCE</span><p>Daily output, stacked by the desk that published it.</p></div><div class="range-buttons" role="group" aria-label="Dispatch cadence range"><button type="button" data-window="7">7D</button><button type="button" data-window="14" class="active">14D</button><button type="button" data-window="28">28D</button></div></header>${cadenceSvg(pulse)}</article>
       <article class="mix-panel"><header><span>C / SOURCE MIX</span><p>What this edition of the wire is actually made of.</p></header>${mixGraphic(pulse)}</article>
     </div>
@@ -250,15 +253,15 @@ function renderHome(stories, cache, consumerCopy) {
     '@type': 'CollectionPage',
     name: BRAND_NAME,
     url: SITE_ORIGIN,
-    description: 'A finite public edition of sourced market dispatches and plain-English editorial notes.',
+    description: 'The complete public website archive of sourced market dispatches and plain-English editorial notes.',
     relatedLink: 'https://narcoscope.com/',
-    hasPart: ordered.slice(0, 20).map((story) => ({ '@type': 'Article', headline: story.title, url: story.url, datePublished: isoDate(story.published) })),
+    hasPart: ordered.map((story) => ({ '@type': 'Article', headline: story.title, url: story.url, datePublished: isoDate(story.published) })),
   }
 
   return `<!doctype html>
 <html lang="en"><head>${head({
     title: `${BRAND_NAME} — finance, with subtitles`,
-    description: 'A finite public edition of sourced market dispatches, caveats, and plain-English explanations.',
+    description: 'The complete public website archive of sourced market dispatches, caveats, and plain-English explanations.',
     canonical: `${SITE_ORIGIN}/`,
   })}</head><body>
   <a class="skip" href="#wire">Skip to every dispatch</a>
@@ -268,24 +271,30 @@ function renderHome(stories, cache, consumerCopy) {
       <div class="hero-copy">
         <p class="eyebrow">MARKET JARGON / TRANSLATED</p>
         <h1 id="hero-title">The numbers are fluent.<br><em>The headlines need subtitles.</em></h1>
-        <p class="hero-dek">One finite wire for market plumbing and the explanation it deserves. Serious evidence. Less-serious furniture.</p>
+        <p class="hero-dek">The full public wire for market plumbing, institutions, market exits, and the explanation they deserve. Serious evidence. Less-serious furniture.</p>
         <a class="hero-jump" href="#wire">Read the evidence ↓</a>
       </div>
-      <div class="hero-proof" aria-labelledby="hero-proof-title">
-        <div class="proof-card">
-          <div class="proof-head"><span>THE READING CONTRACT</span><span>FINITE EDITION</span></div>
-          <div class="proof-body">
-            <span class="proof-number" aria-hidden="true">05</span>
-            <p class="proof-kicker">UP TO FIVE STORIES</p>
-            <h2 id="hero-proof-title">Read the market.<br><em>Reach the end.</em></h2>
-            <ul class="proof-list">
-              <li><span>01</span> Plain-English translation</li>
-              <li><span>02</span> The number that matters</li>
-              <li><span>03</span> Sources and caveats attached</li>
-            </ul>
-          </div>
-          <p class="proof-foot">NO INFINITE SCROLL / NO MYSTERY RECEIPTS</p>
+      <div class="hero-reel" id="desk-tape" aria-labelledby="desk-tape-title">
+        <div class="reel-chrome">
+          <span><i aria-hidden="true"></i> ORIGINAL DESK TAPE / SILENT</span>
+          <span>11.6 SEC / LOOP</span>
         </div>
+        <div class="reel-stage">
+          <div class="reel-frame">
+            <video controls autoplay muted loop playsinline preload="metadata" poster="/assets/media/original-app-teaser-poster.png" aria-describedby="desk-tape-transcript">
+              <source src="/assets/media/original-app-teaser-1080x1920.mp4" type="video/mp4">
+              Your browser cannot play the original silent teaser.
+            </video>
+            <span class="reel-bug" aria-hidden="true">MQDSE / ORIGINAL</span>
+          </div>
+          <div class="reel-note">
+            <p class="eyebrow">THE COLD OPEN</p>
+            <h2 id="desk-tape-title">The quant did the math.<br><em>Now make it speak English.</em></h2>
+            <p>Four panels. Zero borrowed movie scenes. Exactly the right amount of office confusion.</p>
+          </div>
+        </div>
+        <p class="reel-foot">ORIGINAL APP UI / NO AUDIO / NO FILM FOOTAGE</p>
+        <p class="sr-only" id="desk-tape-transcript">A silent original motion graphic presents four speech panels: “Look at my quant.” “Your what?” “The model did the math.” “Good. Now make it speak English.” It then shows the app’s finite-edition reading interface.</p>
       </div>
     </section>
 
@@ -295,18 +304,18 @@ function renderHome(stories, cache, consumerCopy) {
       ${lead ? `<a href="${escapeHtml(lead.url)}">Open the evidence, not just the vibe ↗</a>` : ''}
     </section>
 
-    <section class="app-launch" aria-labelledby="app-launch-title">
+    <section class="archive-launch" aria-labelledby="archive-launch-title">
       <div>
-        <p class="eyebrow">FREE APP PREVIEW</p>
-        <h2 id="app-launch-title">my quant doesn’t speak english<br><em>now fits in your pocket.</em></h2>
-        <p>Up to five market translations, each with its original claim, source, and evidence boundary attached. No account. No infinite scroll.</p>
+        <p class="eyebrow">WEB ARCHIVE LIVE / APP RELEASE PAUSED</p>
+        <h2 id="archive-launch-title">Every published dispatch.<br><em>One very public filing cabinet.</em></h2>
+        <p>${ordered.length} source-published records are available on the website with their canonical links and evidence boundaries attached. The mobile app feed remains suspended.</p>
       </div>
-      <a href="https://myquant-app.vercel.app/">Open the free app preview <span aria-hidden="true">↗</span></a>
+      <a href="#wire">Open all ${ordered.length} web records <span aria-hidden="true">↓</span></a>
     </section>
 
     <section class="status-band" aria-labelledby="status-title">
       <div><p class="eyebrow" id="status-title">WIRE CHECK</p><p>Missing data prints as missing. A surprisingly radical feature.</p></div>
-      <ul>${sourceStatus(cache, 'seiche', counts.seiche)}</ul>
+      <ul>${['liquilens', 'seiche', 'liquilens-undertow'].map((product) => sourceStatus(cache, product, counts[product])).join('')}</ul>
     </section>
 
     ${signalCockpit(pulse)}
@@ -324,6 +333,8 @@ function renderHome(stories, cache, consumerCopy) {
       <div class="filters" role="group" aria-label="Filter the evidence wire">
         <button type="button" class="active" data-filter="all">All <span>${ordered.length}</span></button>
         <button type="button" data-filter="seiche">Seiche <span>${counts.seiche}</span></button>
+        <button type="button" data-filter="liquilens">LiquiLens <span>${counts.liquilens}</span></button>
+        <button type="button" data-filter="liquilens-undertow">Undertow <span>${counts['liquilens-undertow']}</span></button>
         <button type="button" data-filter="myquant">House <span>${counts.myquant}</span></button>
         <label><span>Find a nervous noun</span><input id="storySearch" type="search" placeholder="funding, caveat, liquidity…" autocomplete="off"></label>
       </div>
@@ -332,9 +343,11 @@ function renderHome(stories, cache, consumerCopy) {
     </section>
 
     <section class="products" aria-labelledby="products-title">
-      <p class="eyebrow">CURRENT PUBLIC INPUT</p><h2 id="products-title">The source that cleared today’s gate.</h2>
+      <p class="eyebrow">CURRENT PUBLIC INPUT</p><h2 id="products-title">Three instruments. One complete web archive.</h2>
       <div>
         <a href="https://seiche.info"><span>01 / SYSTEM</span><h3>Seiche</h3><p>What changed in broad dollar-funding data?</p></a>
+        <a href="https://liquilens.in"><span>02 / INSTITUTION</span><h3>LiquiLens</h3><p>What do the source records say about institutions?</p></a>
+        <a href="https://liquilens-undertow.com"><span>03 / MARKET</span><h3>Undertow</h3><p>What changed across market-exit and liquidity measures?</p></a>
       </div>
     </section>
 
@@ -443,16 +456,18 @@ function renderEditorial() {
     slug: 'editorial',
     eyebrow: 'EDITORIAL STANDARD / PUBLIC BETA',
     title: 'The joke can move. The evidence cannot.',
-    dek: 'How records become plain-English stories, what stays attached, and what is not allowed onto the public wire.',
+    dek: 'How source-published records appear in the website archive, what stays attached, and how corrections remain visible.',
     sections: [
       { heading: 'A translation is not a new market claim', paragraphs: [
         'Every consumer story must preserve the source claim, canonical source link, evidence status, publication clock, and stated limitation. Plain language may explain scope or mechanism; it may not manufacture certainty, personalise advice, recommend a transaction, or predict an issuer outcome.',
       ] },
-      { heading: 'Finite and positively approved', paragraphs: [
-        'The public app edition is capped at five items. A record needs reviewed consumer copy and an unexpired channel approval tied to its exact content fingerprint. Product and story holds override approvals. Any changed source fingerprint falls out of distribution until it is reviewed again.',
+      { heading: 'Website archive and app are separate channels', paragraphs: [
+        'At the operator’s direction, the website archive lists every normalized record that its source marks PUBLISHED, plus published house articles. The archive reproduces summary metadata and sends the reader to the canonical source; this channel setting is not a representation that every record received legal or regulatory clearance.',
+        'The mobile app feed is suspended and contains zero stories. A future app release still requires reviewed consumer copy, exact-fingerprint approvals, and its separate production-build authorization.',
       ] },
-      { heading: 'High-risk lanes stay held', paragraphs: [
-        'Named-issuer distress language, proprietary risk tiers, pre-registered market calls, ratings-like labels, personalised recommendations, and content lacking documented rights remain outside the public beta pending the required editorial, rights, securities, and media-law review.',
+      { heading: 'Known high-risk lanes', paragraphs: [
+        'The web archive can include source records with named-issuer language, proprietary tiers, rankings, or pre-registered market calls. Their canonical source, evidence status, contribution, and limitation remain visible. Publication does not convert those records into personalised advice, a transaction recommendation, or a claim of legal clearance.',
+        'A challenged record can be corrected, retracted, superseded, or removed through the content-status ledger. The emergency stop remains available for the complete website archive.',
       ] },
       { heading: 'Conflicts and sponsorship', paragraphs: [
         'Paid placements must be visibly labelled. A sponsor cannot buy a finding, ranking, omission, source choice, or softened limitation. Material interests and relationships relevant to a story must be checked and disclosed under the policy approved for the launch territory.',
@@ -555,7 +570,7 @@ function renderFeedJson(stories) {
   return `${JSON.stringify({
     version: 'https://jsonfeed.org/version/1.1', title: BRAND_NAME,
     home_page_url: `${SITE_ORIGIN}/`, feed_url: `${SITE_ORIGIN}/feed.json`,
-    description: 'A finite public edition of sourced market dispatches and plain-English editorial notes.',
+    description: 'The complete public website archive of sourced market dispatches and plain-English editorial notes.',
     items: stories.map((story) => ({ id: story.id, url: story.url, title: story.title, summary: story.dek, date_published: isoDate(story.published), tags: [story.product, story.beat, story.evidenceStatus] })),
   }, null, 2)}\n`
 }
@@ -590,18 +605,22 @@ async function build() {
     .filter((story) => story.publicationStatus === 'PUBLISHED')
     .sort((a, b) => Date.parse(b.published) - Date.parse(a.published))
   const emergencyOverride = process.env.MQ_PUBLICATION_STOP === '1'
-  const siteApproved = applyPublicationApprovals(
-    applyPublicationHolds(allStories, publicationHolds, 'site'),
+  const siteCandidates = selectPublicationCandidates(
+    allStories,
+    publicationHolds,
     publicationApprovals,
+    releasePolicy,
     'site',
   )
-  const appApproved = applyPublicationApprovals(
-    applyPublicationHolds(allStories, publicationHolds, 'app-feed'),
+  const appCandidates = selectPublicationCandidates(
+    allStories,
+    publicationHolds,
     publicationApprovals,
+    releasePolicy,
     'app-feed',
   )
-  const siteStatus = applyContentStatus(siteApproved, contentStatus, 'site')
-  const appStatus = applyContentStatus(appApproved, contentStatus, 'app-feed')
+  const siteStatus = applyContentStatus(siteCandidates, contentStatus, 'site')
+  const appStatus = applyContentStatus(appCandidates, contentStatus, 'app-feed')
   const siteRelease = applyReleasePolicy(siteStatus.stories, releasePolicy, 'site', emergencyOverride)
   const appRelease = applyReleasePolicy(appStatus.stories, releasePolicy, 'app-feed', emergencyOverride)
   const stories = siteRelease.stories
@@ -644,8 +663,8 @@ async function build() {
     ...publicHouse.map((story) => story.url),
   ]
   await write(join(dist, 'sitemap.xml'), `<?xml version="1.0" encoding="UTF-8"?><urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">${urls.map((url) => `<url><loc>${escapeXml(url)}</loc></url>`).join('')}</urlset>\n`)
-  await write(join(dist, 'llms.txt'), `# ${BRAND_NAME}\n\nA finite public edition of sourced market dispatches and plain-English editorial notes.\n\n- Home: ${SITE_ORIGIN}/\n- JSON Feed: ${SITE_ORIGIN}/feed.json\n- Atom: ${SITE_ORIGIN}/feed.xml\n- App feed: ${SITE_ORIGIN}/app-feed/v1.json\n- Editorial standard: ${SITE_ORIGIN}/editorial/\n- Corrections: ${SITE_ORIGIN}/corrections/\n- Privacy: ${SITE_ORIGIN}/privacy/\n- Source articles remain canonical at the cited publisher.\n- General market reporting and plain-English explanations, not personalised investment advice or a transaction recommendation.\n\n## Related evidence desk\n\n- NarcoScope, https://narcoscope.com/: an independent public-interest explorer for official drug-market records. It shares this network's evidence standards, not its financial subject.\n`)
-  process.stdout.write(`Built ${stories.length}/${allStories.length} approved public records and ${appPublishedCount} app stories (${publicHouse.length}/${house.length} house; ${appRelease.releaseStatus}) into ${dist}\n`)
+  await write(join(dist, 'llms.txt'), `# ${BRAND_NAME}\n\nThe complete public website archive of sourced market dispatches and plain-English editorial notes. The mobile app feed is suspended.\n\n- Home: ${SITE_ORIGIN}/\n- JSON Feed: ${SITE_ORIGIN}/feed.json\n- Atom: ${SITE_ORIGIN}/feed.xml\n- Suspended app feed: ${SITE_ORIGIN}/app-feed/v1.json\n- Editorial standard: ${SITE_ORIGIN}/editorial/\n- Corrections: ${SITE_ORIGIN}/corrections/\n- Privacy: ${SITE_ORIGIN}/privacy/\n- Source articles remain canonical at the cited publisher.\n- General market reporting and plain-English explanations, not personalised investment advice or a transaction recommendation.\n\n## Related evidence desk\n\n- NarcoScope, https://narcoscope.com/: an independent public-interest explorer for official drug-market records. It shares this network's evidence standards, not its financial subject.\n`)
+  process.stdout.write(`Built ${stories.length}/${allStories.length} website archive records and ${appPublishedCount} app stories (${publicHouse.length}/${house.length} house; app ${appRelease.releaseStatus}) into ${dist}\n`)
 }
 
 await build()

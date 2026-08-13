@@ -16,6 +16,7 @@ import {
   normalizePayload,
   normalizeHouseArticle,
   preserveStableClocks,
+  selectPublicationCandidates,
 } from '../scripts/lib.mjs'
 
 test('positive approvals lock distribution to an exact fingerprint and expiry', () => {
@@ -89,6 +90,49 @@ test('release policy caps an approved edition and supports an emergency stop', (
     stories: [],
     releaseStatus: 'SUSPENDED',
   })
+
+  const suspended = {
+    ...policy,
+    channels: { 'app-feed': { mode: 'SUSPENDED', maxItems: 0 } },
+  }
+  assert.deepEqual(applyReleasePolicy([{ id: 'a' }], suspended, 'app-feed'), {
+    stories: [],
+    releaseStatus: 'SUSPENDED',
+  })
+})
+
+test('source-published web archive and suspended app remain independent', () => {
+  const stories = [
+    { id: 'held', product: 'liquilens', fingerprint: 'hash-a' },
+    { id: 'ordinary', product: 'seiche', fingerprint: 'hash-b' },
+  ]
+  const holds = {
+    schema: PUBLICATION_HOLDS_SCHEMA,
+    products: { liquilens: { channels: ['site', 'app-feed'] } },
+    stories: {},
+  }
+  const approvals = {
+    schema: PUBLICATION_APPROVALS_SCHEMA,
+    defaultAction: 'DENY',
+    approvals: {},
+  }
+  const policy = {
+    schema: RELEASE_POLICY_SCHEMA,
+    emergencyStop: false,
+    channels: {
+      site: { mode: 'SOURCE_PUBLISHED', maxItems: 1000 },
+      'app-feed': { mode: 'SUSPENDED', maxItems: 0 },
+    },
+  }
+
+  assert.deepEqual(
+    selectPublicationCandidates(stories, holds, approvals, policy, 'site'),
+    stories,
+  )
+  assert.deepEqual(
+    selectPublicationCandidates(stories, holds, approvals, policy, 'app-feed'),
+    [],
+  )
 })
 
 test('publication holds fail closed per public channel while preserving source input', () => {
