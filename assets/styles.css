@@ -52,6 +52,20 @@ main { overflow: hidden; }
 .hero-dek { max-width: 610px; margin: 36px 0 0; font-size: clamp(1.16rem, 1.6vw, 1.5rem); line-height: 1.25; }
 .hero-jump { align-self: flex-start; margin-top: 36px; padding: 13px 16px; border: 1px solid rgba(255,255,255,.55); font-family: var(--mono); font-size: .7rem; font-weight: 600; text-decoration: none; text-transform: uppercase; }
 .hero-jump:hover { border-color: var(--lemon); background: var(--lemon); color: var(--carbon); text-decoration: none; }
+.hero-reel { min-width: 0; display: flex; flex-direction: column; justify-content: center; padding: clamp(30px, 4vw, 58px) clamp(20px, 3.5vw, 52px); border-left: 2px solid var(--carbon); background: var(--cobalt); }
+.reel-chrome, .reel-stage, .reel-foot { width: 100%; max-width: 980px; margin-inline: auto; }
+.reel-chrome { min-height: 46px; display: flex; align-items: center; justify-content: space-between; gap: 18px; padding: 10px 14px; border: 2px solid var(--carbon); border-bottom: 0; background: var(--lemon); font-family: var(--mono); font-size: .59rem; font-weight: 600; letter-spacing: .04em; text-transform: uppercase; }
+.reel-chrome span { display: flex; align-items: center; gap: 8px; }
+.reel-chrome i { width: 8px; height: 8px; flex: 0 0 auto; border: 1px solid var(--carbon); border-radius: 50%; background: var(--papaya); }
+.reel-stage { display: grid; grid-template-columns: minmax(250px, .62fr) minmax(270px, 1fr); border: 2px solid var(--carbon); background: #050608; }
+.reel-frame { position: relative; display: grid; place-items: center; min-height: 560px; overflow: hidden; background: #050608; }
+.reel-frame video { display: block; width: auto; max-width: 100%; height: min(570px, 70vh); aspect-ratio: 9 / 16; object-fit: contain; background: #050608; }
+.reel-bug { position: absolute; top: 12px; right: 12px; padding: 7px 9px; background: rgba(17,19,24,.82); color: white; font-family: var(--mono); font-size: .5rem; letter-spacing: .06em; }
+.reel-note { display: flex; flex-direction: column; justify-content: center; padding: clamp(30px, 4vw, 58px); border-left: 2px solid var(--carbon); background: var(--paper); }
+.reel-note h2 { margin: 0; font-family: var(--display); font-size: clamp(2.7rem, 5vw, 5.7rem); font-weight: 700; line-height: .84; letter-spacing: -.065em; }
+.reel-note h2 em { color: var(--cobalt); font-family: var(--body); font-size: .72em; font-weight: 400; letter-spacing: -.04em; }
+.reel-note > p:last-child { margin: 30px 0 0; line-height: 1.35; }
+.reel-foot { margin-top: 0; padding: 15px 18px; border: 2px solid var(--carbon); border-top: 0; background: var(--papaya); font-family: var(--mono); font-size: .62rem; font-weight: 600; letter-spacing: .05em; text-align: center; }
 .hero-screening { min-width: 0; display: grid; align-items: center; padding: clamp(24px, 4vw, 58px); border-left: 2px solid var(--carbon); background: var(--periwinkle); }
 .film-reel { width: 100%; max-width: 1080px; margin: 0 auto; background: var(--carbon); color: white; box-shadow: 14px 14px 0 rgba(13,16,18,.12); }
 .film-chrome { min-height: 44px; display: flex; align-items: center; justify-content: space-between; gap: 18px; padding: 10px 14px; border: 1px solid rgba(255,255,255,.24); border-bottom: 0; color: rgba(255,255,255,.74); font-family: var(--mono); font-size: .58rem; font-weight: 600; letter-spacing: .07em; text-transform: uppercase; }
@@ -358,6 +372,7 @@ footer p { margin: 0; }
   .hero { grid-template-columns: 1fr; }
   .hero-copy { min-height: 570px; }
   .hero-screening { padding: 42px 28px 54px; border-top: 2px solid var(--carbon); border-left: 0; }
+  .hero-reel { border-top: 2px solid var(--carbon); border-left: 0; }
   .dialogue-cut { grid-template-columns: 1fr; }
   .dialogue-cut > header { min-height: 0; flex-direction: row; align-items: end; gap: 24px; border-right: 0; border-bottom: 2px solid var(--carbon); }
   .dialogue-cut h2 { margin: 0; text-align: right; }
@@ -401,6 +416,13 @@ footer p { margin: 0; }
   .hero-copy { min-height: 0; padding: 70px 22px; }
   .hero h1 { font-size: 3.55rem; }
   .hero-screening { padding: 24px 12px 34px; }
+  .hero-reel { padding: 24px 14px 34px; }
+  .reel-chrome { min-height: 42px; gap: 8px; padding-inline: 10px; font-size: .48rem; }
+  .reel-stage { grid-template-columns: 1fr; }
+  .reel-frame { min-height: 0; }
+  .reel-frame video { width: 100%; height: auto; max-height: 72vh; }
+  .reel-note { padding: 36px 24px; border-top: 2px solid var(--carbon); border-left: 0; }
+  .reel-note h2 { font-size: 3.35rem; }
   .film-reel { box-shadow: 7px 7px 0 rgba(13,16,18,.12); }
   .film-chrome { min-height: 38px; gap: 8px; padding-inline: 9px; font-size: .45rem; }
   .film-frame { aspect-ratio: 16 / 10; }
