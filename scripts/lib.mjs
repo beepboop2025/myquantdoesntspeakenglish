@@ -4,6 +4,7 @@ const ALLOWED_PRODUCTS = new Set(['liquilens', 'seiche', 'liquilens-undertow', '
 
 export const SITE_ORIGIN = 'https://myquantdoesntspeakenglish.com'
 export const APP_FEED_SCHEMA = 'mqdnse.app-feed.v1'
+export const INTERPRETATION_SCHEMA = 'mqdnse.interpretation.v1'
 export const PUBLICATION_HOLDS_SCHEMA = 'mqdnse.publication-holds.v1'
 export const PUBLICATION_APPROVALS_SCHEMA = 'mqdnse.publication-approvals.v1'
 export const CONTENT_STATUS_SCHEMA = 'mqdnse.content-status.v1'
@@ -62,6 +63,12 @@ const APP_TOPICS = Object.freeze({
   liquilens: 'institutions',
   'liquilens-undertow': 'market-exits',
   myquant: 'house',
+})
+
+const MENTAL_MODELS = Object.freeze({
+  seiche: 'Picture the market funding system as plumbing. Seiche watches pressure, buffers, and dates when several pipes may tighten together. A stress label describes that system; it does not predict a crash.',
+  liquilens: 'Think of a smoke detector, not a verdict. LiquiLens points to public records that deserve a closer look. A review tier does not prove that an institution will fail or that a loan is bad.',
+  'liquilens-undertow': 'Picture a crowded room with a narrow exit. Undertow asks whether many holders could try to leave while the doorway is getting tighter. An unscored market stays unknown; it does not become calm.',
 })
 
 const string = (...values) => values.find((value) => typeof value === 'string' && value.trim())?.trim() || ''
@@ -424,13 +431,23 @@ function presentationLabel(value) {
   return readable ? `${readable[0].toUpperCase()}${readable.slice(1)}` : 'Evidence wire'
 }
 
-function appSlug(story) {
+export function storySlug(story) {
   const preferred = story.article?.slug || story.id
   return String(preferred || '')
     .normalize('NFKD')
     .toLowerCase()
     .replaceAll(/[^a-z0-9]+/g, '-')
     .replaceAll(/^-+|-+$/g, '')
+}
+
+/**
+ * Source articles keep their specialist canonical URL, while the audience gets
+ * a stable MyQuant reading URL. House reporting is already canonical here.
+ */
+export function publicStoryUrl(story) {
+  if (story?.product === 'myquant') return story.url
+  const slug = storySlug(story)
+  return slug ? `${SITE_ORIGIN}/interpreted/${slug}/` : ''
 }
 
 function contributionExplanation(value) {
@@ -460,6 +477,126 @@ function keyNumber(value) {
     .filter((index) => index !== -1)
   const end = candidates.length ? Math.min(...candidates) + 1 : summary.length
   return { value: match[0].trim(), label: summary.slice(start, end).trim() }
+}
+
+function reviewedKeyNumber(value) {
+  return value?.keyNumber && typeof value.keyNumber === 'object'
+    && string(value.keyNumber.value) && string(value.keyNumber.label)
+    ? { value: value.keyNumber.value.trim(), label: value.keyNumber.label.trim() }
+    : null
+}
+
+function signedWord(value) {
+  const number = Number.parseFloat(value)
+  if (!Number.isFinite(number) || number === 0) return 'unchanged'
+  return `${Math.abs(number)} point${Math.abs(number) === 1 ? '' : 's'} ${number > 0 ? 'higher' : 'lower'}`
+}
+
+function sourceGroundedPlainEnglish(story) {
+  const dek = String(story.dek || '').trim()
+  if (story.product === 'seiche') {
+    const current = dek.match(/^The board reads ([\d.]+) out of 100, ([A-Z_]+); the dated reserve path contributes ([+-]?[\d.]+) points; the pooled five-business-day event read is ([\d.]+)%; plumbing leads market pricing by ([+-]?[\d.]+) percentile points\. The index is ([+-]?[\d.]+) against the last published letter\.$/)
+    if (current) {
+      return `Seiche's funding score is ${current[1]} out of 100, in its ${current[2]} regime, and is ${signedWord(current[6])} than in the previous letter. Its plumbing measures lead its market-price screens by ${current[5]} percentile points. The dated reserve path adds ${current[3]} points, and the five-business-day event reading is ${current[4]}%.`
+    }
+    const legacy = dek.match(/^The composite reads ([\d.]+), regime ([A-Z_]+)\.(?: That is ([+-]?[\d.]+) on the day\.)? The Tell reads ([+-]?[\d.]+)\./)
+    if (legacy) {
+      const move = legacy[3] ? ` It is ${signedWord(legacy[3])} on the day.` : ''
+      return `Seiche's funding composite is ${legacy[1]}, classified ${legacy[2]}.${move} Its internal plumbing-versus-price gap, called the Tell, is ${legacy[4]}.`
+    }
+    const weekAhead = dek.match(/^Issue (\d+) of the Monday letter\. The composite reads ([\d.]+), regime ([A-Z_]+)\. (\d+) pre-registered calls for the week and (\d+) dated items on the calendar\.(?: Last week's calls graded (\d+) of (\d+), misses first\.| The first issue, so there is nothing to grade yet\.)$/)
+    if (weekAhead) {
+      const grade = weekAhead[6]
+        ? ` The previous week's calls graded ${weekAhead[6]} out of ${weekAhead[7]}, with misses disclosed first.`
+        : ' This was the first edition, so no earlier calls could be graded.'
+      return `Before the week began, Seiche registered ${weekAhead[4]} calls and ${weekAhead[5]} dated events. Its funding composite was ${weekAhead[2]}, classified ${weekAhead[3]}.${grade}`
+    }
+  }
+
+  if (story.product === 'liquilens-undertow') {
+    const coverage = dek.match(/^(\d+) of (\d+) segments score today; (.+?) still accrue history\. The funding overlay reads ([A-Z_]+)\./)
+    if (coverage) {
+      const disagreement = /disagree inside at least one scored cell/i.test(dek)
+        ? ' At least one scored segment contains measures pointing in different directions.'
+        : ''
+      return `Undertow can score ${coverage[1]} of ${coverage[2]} market segments today. ${coverage[3]} still lack enough history, so those gaps are not an all-clear. Its separate funding overlay reads ${coverage[4]}.${disagreement}`
+    }
+  }
+
+  if (story.product === 'liquilens') {
+    const breadth = story.title.match(/^(\d+) of (\d+) covered (.+?) sit above green$/i)
+    if (breadth) {
+      return `${breadth[1]} of the ${breadth[2]} covered ${breadth[3]} are in a review tier above green. This is a count inside the freshly checked list, not a score for the whole financial system.`
+    }
+    const concentration = story.title.match(/^(.+?) reports (.+?) equal to ([\d.]+) times (.+)$/i)
+    if (concentration) {
+      return `${concentration[1]} reports ${concentration[2]} equal to ${concentration[3]} times ${concentration[4]}. LiquiLens uses that ratio as a concentration screen; by itself, it is not a finding of failure or liquidity stress.`
+    }
+    const ranking = story.title.match(/^(.+?) ranks highest on the current within-quarter (.+?) screen$/i)
+    if (ranking) {
+      return `${ranking[1]} ranks highest on this quarter's covered ${ranking[2]} screen. The ranking compares only this run and is not a default forecast.`
+    }
+    const reviewTier = story.title.match(/^(.+?) sits in the (.+?) public-record review tier$/i)
+    if (reviewTier) {
+      return `${reviewTier[1]} is in LiquiLens's ${reviewTier[2]} review queue. That is an instruction to inspect its public records, not a prediction of distress or failure.`
+    }
+  }
+
+  return dek
+}
+
+/**
+ * Build an auditable plain-language wrapper around a specialist record. This
+ * function never changes the source claim, source URL, fingerprint, or caveat.
+ * Reviewed wording is optional; the deterministic fallback only rearranges
+ * fields the source already published and expands a controlled taxonomy.
+ */
+export function buildInterpretation(story, consumerCopy = {}) {
+  if (!story || story.product === 'myquant' || story.publicationStatus !== 'PUBLISHED') return null
+  const slug = storySlug(story)
+  const url = publicStoryUrl(story)
+  if (!slug || !url || !MENTAL_MODELS[story.product]) return null
+
+  const reviewed = reviewedConsumerCopy(consumerCopy)
+  const inEnglish = reviewed ? consumerCopy.inEnglish.trim() : sourceGroundedPlainEnglish(story)
+  const number = reviewedKeyNumber(consumerCopy) || keyNumber(inEnglish) || keyNumber(story.dek) || keyNumber(story.title)
+  const interpretation = {
+    schema: INTERPRETATION_SCHEMA,
+    id: story.id,
+    slug,
+    url,
+    lane: 'INTERPRETED',
+    copyState: reviewed ? 'REVIEWED' : 'SOURCE_GROUNDED',
+    title: story.title,
+    quantSays: story.title,
+    sourceSummary: story.dek,
+    inEnglish,
+    whyItMatters: reviewed ? consumerCopy.whyItMatters.trim() : contributionExplanation(story.contribution),
+    mentalModel: MENTAL_MODELS[story.product],
+    ...(number ? { keyNumber: number } : {}),
+    uncertainty: story.limitation,
+    publishedAt: new Date(story.published).toISOString(),
+    evidence: {
+      status: story.evidenceStatus,
+      contribution: story.contribution,
+      limitation: story.limitation,
+      eventTime: story.eventTime,
+      knowledgeTime: story.knowledgeTime,
+      publicationStatus: story.publicationStatus,
+    },
+    source: {
+      id: story.id,
+      product: story.product,
+      label: productLabel(story.product),
+      url: story.url,
+      fingerprint: story.fingerprint,
+      beat: story.beat,
+      editorialClass: story.editorialClass,
+    },
+    ...(story.contentNotice ? { contentNotice: story.contentNotice } : {}),
+  }
+  interpretation.fingerprint = createHash('sha256').update(JSON.stringify(interpretation)).digest('hex')
+  return interpretation
 }
 
 function readingMinutes(story) {
@@ -498,7 +635,7 @@ export function buildAppFeed(
     .sort((a, b) => Date.parse(b.published) - Date.parse(a.published) || String(a.id).localeCompare(String(b.id)))
   const slugs = new Set()
   const appStories = published.map((story) => {
-    const slug = appSlug(story)
+    const slug = storySlug(story)
     if (!slug || slugs.has(slug)) throw new Error(`invalid or duplicate app-feed slug: ${slug || '(empty)'}`)
     slugs.add(slug)
 
@@ -507,10 +644,7 @@ export function buildAppFeed(
       ? story.article.sources.map(({ label, url }) => ({ label, url }))
       : [{ label: source.label, url: story.url }]
     const reviewed = consumerCopy[story.id]
-    const reviewedNumber = reviewed.keyNumber && typeof reviewed.keyNumber === 'object'
-      && string(reviewed.keyNumber.value) && string(reviewed.keyNumber.label)
-      ? { value: reviewed.keyNumber.value.trim(), label: reviewed.keyNumber.label.trim() }
-      : null
+    const reviewedNumber = reviewedKeyNumber(reviewed)
     const number = reviewedNumber || keyNumber(story.dek)
     const item = {
       id: story.id,

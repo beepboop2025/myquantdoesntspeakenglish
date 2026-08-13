@@ -1,5 +1,6 @@
 import { readFile, readdir } from 'node:fs/promises'
 import { join } from 'node:path'
+import { publicStoryUrl, storySlug } from './lib.mjs'
 
 const root = process.cwd()
 const dist = join(root, 'dist')
@@ -43,6 +44,8 @@ const expectedWebIds = [
     .map((article) => `myquant:${article.slug}`),
 ].filter((id) => !withdrawnIds.has(id)).sort()
 const actualWebIds = webFeed.items.map((item) => item.id).sort()
+const expectedSourceRecords = Object.values(cache.feeds || {}).flat()
+  .filter((story) => story?.publicationStatus === 'PUBLISHED' && !withdrawnIds.has(story.id))
 
 if (appFeed.schema !== 'mqdnse.app-feed.v1') throw new Error('unexpected app-feed schema')
 if (releasePolicy.channels?.site?.mode !== 'SOURCE_PUBLISHED') throw new Error('website archive mode is not enabled')
@@ -59,6 +62,23 @@ if ((homepage.match(/data-story(?:\s|>)/g) || []).length !== expectedWebIds.leng
 if ((atomFeed.match(/<entry>/g) || []).length !== expectedWebIds.length) {
   throw new Error('Atom feed does not contain every website archive record')
 }
+for (const story of expectedSourceRecords) {
+  const page = await read(join('interpreted', storySlug(story), 'index.html'))
+  const expectedUrl = publicStoryUrl(story)
+  const feedItem = webFeed.items.find((item) => item.id === story.id)
+  if (feedItem?.url !== expectedUrl || feedItem?.external_url !== story.url) {
+    throw new Error(`interpretation feed routes are incomplete for ${story.id}`)
+  }
+  if (!page.includes(`href="${story.url.replaceAll('&', '&amp;')}"`)
+    || !page.includes('INTERPRETED /')
+    || !page.includes(story.limitation.replaceAll('&', '&amp;').replaceAll('<', '&lt;').replaceAll('>', '&gt;').replaceAll('"', '&quot;').replaceAll("'", '&#39;'))) {
+    throw new Error(`interpretation page lost source provenance or boundary for ${story.id}`)
+  }
+}
+const sitemap = await read('sitemap.xml')
+if (expectedSourceRecords.some((story) => !sitemap.includes(publicStoryUrl(story)))) {
+  throw new Error('sitemap omits a specialist interpretation page')
+}
 if (publicText.includes('fonts.googleapis.com') || publicText.includes('fonts.gstatic.com')) {
   throw new Error('public HTML contacts a third-party font host')
 }
@@ -72,4 +92,4 @@ if (homepage.includes('myquant-app.vercel.app')) throw new Error('paused app pre
 const originalTeaser = await readFile(join(dist, 'assets', 'media', 'original-app-teaser-1080x1920.mp4'))
 if (originalTeaser.byteLength < 100_000) throw new Error('original website teaser is missing or truncated')
 
-process.stdout.write(`Verified the complete ${webFeed.items.length}-record web archive, suspended zero-story app feed, original teaser, ${appFeed.notices.length} notices, and ${requiredPages.length} trust pages\n`)
+process.stdout.write(`Verified ${expectedSourceRecords.length} specialist interpretations, ${webFeed.items.length} total web articles, suspended zero-story app feed, original teaser, ${appFeed.notices.length} notices, and ${requiredPages.length} trust pages\n`)

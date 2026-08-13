@@ -3,6 +3,7 @@ import assert from 'node:assert/strict'
 import {
   APP_FEED_SCHEMA,
   CONTENT_STATUS_SCHEMA,
+  INTERPRETATION_SCHEMA,
   PUBLICATION_APPROVALS_SCHEMA,
   PUBLICATION_HOLDS_SCHEMA,
   RELEASE_POLICY_SCHEMA,
@@ -11,12 +12,15 @@ import {
   applyPublicationHolds,
   applyReleasePolicy,
   buildAppFeed,
+  buildInterpretation,
   buildSignalPulse,
   chooseLead,
   normalizePayload,
   normalizeHouseArticle,
   preserveStableClocks,
+  publicStoryUrl,
   selectPublicationCandidates,
+  storySlug,
 } from '../scripts/lib.mjs'
 
 test('positive approvals lock distribution to an exact fingerprint and expiry', () => {
@@ -173,6 +177,85 @@ test('normalizes all three product feed shapes', () => {
   const undertow = normalizePayload({ entries: ['2026-08-12'], letters: { '2026-08-12': { story: base } } }, sources.undertow)[0]
   assert.equal(undertow.product, 'liquilens-undertow')
   assert.equal(undertow.url, 'https://liquilens-undertow.com/dispatch/2026-08-12.json')
+})
+
+test('specialist records receive stable MyQuant reading URLs while house articles stay canonical', () => {
+  const specialist = { id: 'seiche:daily/2026-08-13', product: 'seiche' }
+  const house = { id: 'myquant:house-note', product: 'myquant', url: 'https://myquantdoesntspeakenglish.com/articles/house-note/' }
+
+  assert.equal(storySlug(specialist), 'seiche-daily-2026-08-13')
+  assert.equal(publicStoryUrl(specialist), 'https://myquantdoesntspeakenglish.com/interpreted/seiche-daily-2026-08-13/')
+  assert.equal(publicStoryUrl(house), house.url)
+})
+
+test('interpretation preserves the specialist claim, canonical source, fingerprint, and caveat', () => {
+  const story = {
+    id: 'liquilens:bounded', product: 'liquilens', title: 'Technical source claim',
+    dek: '4 of 19 covered institutions sit above green.', url: 'https://liquilens.in/desk/bounded/',
+    beat: 'institution-risk', editorialClass: 'desk_brief', publicationStatus: 'PUBLISHED',
+    published: '2026-08-12T10:00:00Z', eventTime: '2026-08-11T00:00:00Z',
+    knowledgeTime: '2026-08-12T09:50:00Z', evidenceStatus: 'DERIVED',
+    contribution: 'cross_sectional_review_breadth',
+    limitation: 'The denominator is the covered board, not the whole system.', fingerprint: 'source-hash',
+  }
+  const copy = {
+    inEnglish: 'Four names on this covered list need a closer look.',
+    whyItMatters: 'The denominator keeps a review queue from becoming a system-wide claim.',
+    keyNumber: { value: '4 / 19', label: 'covered names above green' },
+  }
+  const interpretation = buildInterpretation(story, copy)
+
+  assert.equal(interpretation.schema, INTERPRETATION_SCHEMA)
+  assert.equal(interpretation.lane, 'INTERPRETED')
+  assert.equal(interpretation.copyState, 'REVIEWED')
+  assert.equal(interpretation.quantSays, story.title)
+  assert.equal(interpretation.inEnglish, copy.inEnglish)
+  assert.equal(interpretation.uncertainty, story.limitation)
+  assert.equal(interpretation.source.url, story.url)
+  assert.equal(interpretation.source.fingerprint, story.fingerprint)
+  assert.deepEqual(interpretation.keyNumber, copy.keyNumber)
+  assert.match(interpretation.fingerprint, /^[a-f0-9]{64}$/)
+})
+
+test('unreviewed interpretation is explicitly source-grounded and never invents consumer copy', () => {
+  const story = {
+    id: 'liquilens-undertow:2026-08-13', product: 'liquilens-undertow', title: 'No tier changed',
+    dek: '1 of 9 segments score today; UST, HY, EQUITY, ETF, FX, CN, CRYPTO, BSTOCK still accrue history. The funding overlay reads EROSION. Qualifying measures disagree inside at least one scored cell.', url: 'https://liquilens-undertow.com/dispatch/2026-08-13.json',
+    beat: 'market-liquidity', editorialClass: 'watch_note', publicationStatus: 'PUBLISHED',
+    published: '2026-08-13T03:45:22Z', eventTime: '2026-08-13', knowledgeTime: '2026-08-13T03:45:22Z',
+    evidenceStatus: 'PARTIAL', contribution: 'bounded_no_change_record',
+    limitation: 'Unscored means still accruing, not calm.', fingerprint: 'source-hash',
+  }
+  const interpretation = buildInterpretation(story)
+
+  assert.equal(interpretation.copyState, 'SOURCE_GROUNDED')
+  assert.match(interpretation.inEnglish, /score 1 of 9 market segments/i)
+  assert.match(interpretation.inEnglish, /gaps are not an all-clear/i)
+  assert.equal(interpretation.whyItMatters, 'It records that no qualifying change was observed within the stated boundary.')
+  assert.match(interpretation.mentalModel, /unscored market stays unknown/i)
+})
+
+test('source-grounded translators retain Seiche values and LiquiLens denominators', () => {
+  const shared = {
+    beat: 'wire', editorialClass: 'full_story', publicationStatus: 'PUBLISHED',
+    published: '2026-08-13T10:00:00Z', eventTime: '2026-08-13', knowledgeTime: '2026-08-13T10:00:00Z',
+    evidenceStatus: 'DERIVED', contribution: 'fresh_longitudinal_delta', limitation: 'A bounded source caveat.',
+    fingerprint: 'source-hash',
+  }
+  const seiche = buildInterpretation({
+    ...shared, id: 'seiche:daily', product: 'seiche', title: 'Daily funding letter', url: 'https://seiche.info/dispatches/daily.html',
+    dek: 'The board reads 45 out of 100, EROSION; the dated reserve path contributes 11.0 points; the pooled five-business-day event read is 6.1%; plumbing leads market pricing by +29 percentile points. The index is +0.0 against the last published letter.',
+  })
+  const liquilens = buildInterpretation({
+    ...shared, id: 'liquilens:breadth', product: 'liquilens', title: '4 of 19 covered Indian institutions sit above green',
+    url: 'https://liquilens.in/desk/', dek: 'The denominator is the fresh-vetted board.',
+  })
+
+  assert.match(seiche.inEnglish, /45 out of 100/)
+  assert.match(seiche.inEnglish, /29 percentile points/)
+  assert.match(seiche.inEnglish, /five-business-day event reading is 6\.1%/)
+  assert.match(liquilens.inEnglish, /4 of the 19 covered Indian institutions/)
+  assert.match(liquilens.inEnglish, /not a score for the whole financial system/)
 })
 
 test('lead ranking prefers a fresh full story over an ordinary watch note', () => {

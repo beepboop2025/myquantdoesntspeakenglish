@@ -9,6 +9,14 @@
         "label": "covered names above green"
       }
     },
+    "liquilens-india-breadth-2026-08-13": {
+      "inEnglish": "Four names on this specific, freshly checked list need more attention than the green group. The list is not the whole Indian financial system.",
+      "whyItMatters": "The denominator changes the story. This is a review queue for covered institutions, not a nationwide health score.",
+      "keyNumber": {
+        "value": "4 / 19",
+        "label": "covered names above green"
+      }
+    },
     "liquilens-undertow:2026-08-13": {
       "inEnglish": "The parts with enough history did not change category. Most market sections still do not have enough observations to score, so quiet cannot be read as all clear.",
       "whyItMatters": "A missing score is a coverage gap, not reassuring evidence. The app keeps that boundary attached to the headline.",

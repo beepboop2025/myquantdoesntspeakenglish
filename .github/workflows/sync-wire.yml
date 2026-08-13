@@ -2,7 +2,8 @@ name: sync evidence wire
 
 on:
   schedule:
-    - cron: "17 12 * * *"
+    # Check four times daily; the job commits only when the evidence fingerprint changes.
+    - cron: "17 2,8,14,20 * * *"
   workflow_dispatch:
 
 permissions:
@@ -37,5 +38,5 @@ jobs:
           git config user.name "myquant-wire"
           git config user.email "wire@myquantdoesntspeakenglish.com"
           git add data/cache.json
-          git commit -m "content: refresh evidence wire $(date -u +%F)"
+          git commit -m "content: refresh editorial network $(date -u +%FT%H:%MZ)"
           git push
