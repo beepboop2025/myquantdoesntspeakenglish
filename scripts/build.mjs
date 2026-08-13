@@ -395,10 +395,10 @@ function renderHome(stories, cache, consumerCopy) {
           <div class="reel-note">
             <p class="eyebrow">THE COLD OPEN</p>
             <h2 id="desk-tape-title">The quant did the math.<br><em>Now make it speak English.</em></h2>
-            <p>Four panels. Zero borrowed movie scenes. Exactly the right amount of office confusion.</p>
+            <p>Four panels. Exactly the right amount of office confusion.</p>
           </div>
         </div>
-        <p class="reel-foot">ORIGINAL APP UI / NO AUDIO / NO FILM FOOTAGE</p>
+        <p class="reel-foot">ORIGINAL APP UI / NO AUDIO</p>
         <p class="sr-only" id="desk-tape-transcript">A silent original motion graphic presents four speech panels: “Look at my quant.” “Your what?” “The model did the math.” “Good. Now make it speak English.” It then shows the app’s finite-edition reading interface.</p>
       </div>
     </section>

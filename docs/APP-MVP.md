@@ -64,8 +64,7 @@ and Periwinkle palette. The signature component is a two-part subtitle card:
 `QUANT SAYS` preserves the source wording and `IN ENGLISH` carries the consumer
 translation. Everything else stays quiet enough for that contrast to work.
 
-Movie footage and unlicensed third-party stills are excluded from the app and
-store listing. The cinematic tone comes from original typography, pacing, and
+The cinematic tone comes from original typography, pacing, and
 copy.
 
 ## Release gate
