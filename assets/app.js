@@ -124,5 +124,115 @@
       renderCadence(windowSize)
     })
   })
+
+  const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)')
+  const filmReels = Array.from(document.querySelectorAll('[data-film-reel]'))
+
+  filmReels.forEach(function (reel) {
+    const video = reel.querySelector('video')
+    const toggle = reel.querySelector('[data-film-toggle]')
+    const icon = reel.querySelector('[data-film-icon]')
+    const label = reel.querySelector('[data-film-label]')
+    if (!video || !toggle) return
+
+    let userChoice = null
+    let isInViewport = !('IntersectionObserver' in window)
+    let playRequest = 0
+
+    video.muted = true
+    video.defaultMuted = true
+    video.playsInline = true
+    video.autoplay = false
+    video.controls = false
+    video.setAttribute('muted', '')
+    video.setAttribute('playsinline', '')
+
+    function wantsPlayback() {
+      return userChoice === 'play' || (userChoice === null && !reducedMotion.matches)
+    }
+
+    function canPlay() {
+      return isInViewport && document.visibilityState !== 'hidden'
+    }
+
+    function paint(state) {
+      const isPlaying = state === 'playing' || state === 'loading'
+      reel.dataset.state = state
+      toggle.setAttribute('aria-pressed', String(isPlaying))
+      toggle.setAttribute('aria-label', `${isPlaying ? 'Pause' : 'Play'} ${reel.querySelector('.film-chrome span')?.textContent?.trim().toLowerCase() || 'desk tape'}`)
+      if (icon) icon.textContent = isPlaying ? 'Ⅱ' : '▶'
+      if (label) label.textContent = state === 'blocked' ? 'Press play' : isPlaying ? 'Pause reel' : 'Play reel'
+    }
+
+    function pause() {
+      playRequest += 1
+      video.pause()
+      paint('paused')
+    }
+
+    function play() {
+      if (!wantsPlayback() || !canPlay()) {
+        pause()
+        return
+      }
+      const request = ++playRequest
+      paint('loading')
+      try {
+        const pending = video.play()
+        if (!pending?.then) {
+          paint('playing')
+          return
+        }
+        pending.then(function () {
+          if (request !== playRequest) return
+          if (!wantsPlayback() || !canPlay()) {
+            pause()
+            return
+          }
+          paint('playing')
+        }).catch(function () {
+          if (request !== playRequest) return
+          paint('blocked')
+        })
+      } catch {
+        paint('blocked')
+      }
+    }
+
+    function syncPlayback() {
+      if (wantsPlayback() && canPlay()) play()
+      else pause()
+    }
+
+    toggle.addEventListener('click', function () {
+      if (!video.paused) {
+        userChoice = 'pause'
+        pause()
+        return
+      }
+      userChoice = 'play'
+      play()
+    })
+
+    video.addEventListener('play', function () { paint('playing') })
+    video.addEventListener('pause', function () {
+      if (reel.dataset.state !== 'blocked') paint('paused')
+    })
+
+    if ('IntersectionObserver' in window) {
+      const observer = new IntersectionObserver(function (entries) {
+        isInViewport = entries[0]?.isIntersecting || false
+        syncPlayback()
+      }, { threshold: 0.24 })
+      observer.observe(reel)
+    }
+
+    document.addEventListener('visibilitychange', syncPlayback)
+    reducedMotion.addEventListener?.('change', function () {
+      if (userChoice === null) syncPlayback()
+    })
+    syncPlayback()
+  })
+
   selectProduct('all', false)
 }())

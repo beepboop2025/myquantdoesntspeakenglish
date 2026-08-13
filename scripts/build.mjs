@@ -290,6 +290,28 @@ function signalCockpit(pulse) {
   </section>`
 }
 
+function filmReel({ id, src, poster, label, runtime, copy, caption, transcript }) {
+  return `<figure class="film-reel" data-film-reel data-state="ready">
+    <div class="film-chrome" aria-hidden="true">
+      <span><i></i>${escapeHtml(label)}</span>
+      <span>${escapeHtml(runtime)} / SILENT</span>
+    </div>
+    <div class="film-frame">
+      <video id="${escapeHtml(id)}" muted loop playsinline preload="metadata" poster="${escapeHtml(poster)}" aria-describedby="${escapeHtml(id)}-transcript">
+        <source src="${escapeHtml(src)}" type="video/mp4">
+        Your browser cannot play this silent, subtitled field tape.
+      </video>
+      <span class="film-grain" aria-hidden="true"></span>
+      <span class="film-bug" aria-hidden="true">MQDSE / ${escapeHtml(copy)}</span>
+      <button class="film-toggle" type="button" data-film-toggle aria-controls="${escapeHtml(id)}" aria-label="Play ${escapeHtml(label.toLowerCase())}">
+        <span data-film-icon aria-hidden="true">▶</span><span data-film-label>Play reel</span>
+      </button>
+    </div>
+    <figcaption><span>${escapeHtml(copy)}</span><p>${escapeHtml(caption)}</p></figcaption>
+    <p class="sr-only" id="${escapeHtml(id)}-transcript">${escapeHtml(transcript)}</p>
+  </figure>`
+}
+
 function renderHome(stories, cache, consumerCopy) {
   const lead = chooseLead(stories)
   const leadTranslation = consumerCopy?.[lead?.id]?.inEnglish || lead?.dek
@@ -385,6 +407,35 @@ function renderHome(stories, cache, consumerCopy) {
       <div><span id="translation-title">QUANT SAYS</span><p>${escapeHtml(lead?.title || 'No lead passed the evidence gate.')}</p></div>
       <div><span>NORMAL PERSON HEARS</span><p>${escapeHtml(leadTranslation || 'The desk is checking the wires.')}</p></div>
       ${lead ? `<a href="${escapeHtml(publicStoryUrl(lead))}">Open the explanation and its evidence →</a>` : ''}
+    </section>
+
+    <section class="screening-room" aria-labelledby="screening-title">
+      <header>
+        <p class="eyebrow">FIELD TAPES / THE SCENES THE DESK QUOTES</p>
+        <h2 id="screening-title">The receipts,<br><em>projected silent.</em></h2>
+      </header>
+      <div class="screening-grid">
+        ${filmReel({
+          id: 'myQuantScene',
+          src: '/assets/media/field-tape-my-quant.mp4',
+          poster: '/assets/media/field-tape-my-quant-poster.jpg',
+          label: 'Field tape / the quant',
+          runtime: '00:35',
+          copy: 'COPY 02 / FIELD CUT',
+          caption: '“Look at him. That’s my quant.” The scene this desk is named after.',
+          transcript: 'A silent, subtitled excerpt from The Big Short. Jared Vennett introduces his quantitative analyst: “Look at him. That’s my quant.” Mark Baum asks “Your what?” and checks “You’re completely sure of the math?” Ted Jiang confirms the math and notes he came second in a national math competition. “Actually, my name’s Jiang… and I do speak English.”',
+        })}
+        ${filmReel({
+          id: 'vennettScene',
+          src: '/assets/media/field-tape-vennett.mp4',
+          poster: '/assets/media/field-tape-vennett-poster.jpg',
+          label: 'Field tape / the salesman',
+          runtime: '00:09',
+          copy: 'COPY 03 / FIELD CUT',
+          caption: '“I can’t hate him. He’s so transparent in his self-interest, that I kind of respect him.”',
+          transcript: 'A silent, subtitled excerpt from The Big Short. Mark Baum sizes up Jared Vennett: “I can’t hate him. He’s so transparent in his self-interest, that I kind of respect him. Would I buy a car from him? No.”',
+        })}
+      </div>
     </section>
 
     <section class="archive-launch" aria-labelledby="archive-launch-title">

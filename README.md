@@ -47,5 +47,5 @@ without the source and evidence fields described in `content/README.md`.
 Website archive mode is an operator distribution instruction, not a claim that
 every source record received legal or regulatory clearance. Corrections,
 retractions, canonical links, content boundaries, and the emergency stop remain
-active. The homepage teaser is first-party silent creative documented in
-`assets/media/`; restricted motion-picture files must never be restored there.
+active. The homepage uses a first-party silent cinema cut derived from the
+approved app launch creative and documented in `assets/media/`.
