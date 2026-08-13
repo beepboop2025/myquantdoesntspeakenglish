@@ -123,7 +123,7 @@ function masthead() {
     <nav aria-label="Primary">
       <a href="/#signals">Signal map</a>
       <a href="/#wire">Every dispatch</a>
-      <a href="https://myquant-app.vercel.app/">Open app beta</a>
+      <a href="https://myquant-app.vercel.app/">Open app preview</a>
       <a href="/articles/why-the-quant-needs-subtitles/">House rules</a>
       <a class="nav-ad" href="/advertise/">Advertise, tastefully</a>
     </nav>
@@ -235,8 +235,9 @@ function signalCockpit(pulse) {
   </section>`
 }
 
-function renderHome(stories, cache) {
+function renderHome(stories, cache, consumerCopy) {
   const lead = chooseLead(stories)
+  const leadTranslation = consumerCopy?.[lead?.id]?.inEnglish || lead?.dek
   const counts = Object.fromEntries(['liquilens', 'seiche', 'liquilens-undertow', 'myquant'].map((product) => [product, stories.filter((story) => story.product === product).length]))
   const ordered = [...stories].sort((a, b) => Date.parse(b.published) - Date.parse(a.published))
   const pulse = buildSignalPulse(ordered, 28)
@@ -261,7 +262,7 @@ function renderHome(stories, cache) {
   <main>
     <section class="hero" aria-labelledby="hero-title">
       <div class="hero-copy">
-        <p class="eyebrow">WALL STREET / TRANSLATED LIVE</p>
+        <p class="eyebrow">MARKET JARGON / TRANSLATED</p>
         <h1 id="hero-title">The numbers are fluent.<br><em>The headlines need subtitles.</em></h1>
         <p class="hero-dek">One finite wire for market plumbing and the explanation it deserves. Serious evidence. Less-serious furniture.</p>
         <a class="hero-jump" href="#wire">Read the evidence ↓</a>
@@ -286,17 +287,17 @@ function renderHome(stories, cache) {
 
     <section class="subtitle-machine" aria-labelledby="translation-title">
       <div><span id="translation-title">QUANT SAYS</span><p>${escapeHtml(lead?.title || 'No lead passed the evidence gate.')}</p></div>
-      <div><span>NORMAL PERSON HEARS</span><p>${escapeHtml(lead?.dek || 'The desk is checking the wires.')}</p></div>
+      <div><span>NORMAL PERSON HEARS</span><p>${escapeHtml(leadTranslation || 'The desk is checking the wires.')}</p></div>
       ${lead ? `<a href="${escapeHtml(lead.url)}">Open the evidence, not just the vibe ↗</a>` : ''}
     </section>
 
     <section class="app-launch" aria-labelledby="app-launch-title">
       <div>
-        <p class="eyebrow">FREE PUBLIC BETA</p>
+        <p class="eyebrow">FREE APP PREVIEW</p>
         <h2 id="app-launch-title">my quant doesn’t speak english<br><em>now fits in your pocket.</em></h2>
         <p>Up to five market translations, each with its original claim, source, and evidence boundary attached. No account. No infinite scroll.</p>
       </div>
-      <a href="https://myquant-app.vercel.app/">Open the free app beta <span aria-hidden="true">↗</span></a>
+      <a href="https://myquant-app.vercel.app/">Open the free app preview <span aria-hidden="true">↗</span></a>
     </section>
 
     <section class="status-band" aria-labelledby="status-title">
@@ -484,7 +485,7 @@ async function build() {
   await rm(dist, { recursive: true, force: true })
   await mkdir(dist, { recursive: true })
   await cp(join(root, 'assets'), join(dist, 'assets'), { recursive: true })
-  await write(join(dist, 'index.html'), renderHome(stories, cache))
+  await write(join(dist, 'index.html'), renderHome(stories, cache, appCopy.stories))
   await write(join(dist, 'advertise', 'index.html'), renderAdvertise())
   await write(join(dist, 'privacy', 'index.html'), renderPrivacy())
   await write(join(dist, 'support', 'index.html'), renderSupport())
