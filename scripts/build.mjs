@@ -416,7 +416,28 @@ function renderHome(stories, cache, consumerCopy) {
 
 function renderArticle(story) {
   const article = story.article
-  const lane = article.editorial_class === 'house_investigation' ? 'MYQUANT ANALYSIS' : 'HOUSE NOTE'
+  const lane = story.articleType === 'news_analysis'
+    ? 'MYQUANT NEWS ANALYSIS'
+    : article.editorial_class === 'house_investigation' ? 'MYQUANT ANALYSIS' : 'HOUSE NOTE'
+  const preciseClock = (value) => new Intl.DateTimeFormat('en-GB', {
+    day: '2-digit', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit',
+    hourCycle: 'h23', timeZone: 'UTC', timeZoneName: 'short',
+  }).format(new Date(value))
+  const newsLedger = story.newsGate
+    ? `<section class="news-analysis-ledger" aria-labelledby="news-analysis-ledger-title">
+        <header><p class="eyebrow">NEWS ANALYSIS LEDGER / FAIL-CLOSED</p><h2 id="news-analysis-ledger-title">The claim has an exit door.</h2><p>This article passed the house news gate. These fields are part of the public record, not an invisible model score.</p></header>
+        <dl>
+          <div><dt>Event clock</dt><dd><time datetime="${escapeHtml(story.eventTime)}">${escapeHtml(preciseClock(story.eventTime))}</time></dd></div>
+          <div><dt>Knowledge clock</dt><dd><time datetime="${escapeHtml(story.knowledgeTime)}">${escapeHtml(preciseClock(story.knowledgeTime))}</time></dd></div>
+          <div><dt>Why this belongs here</dt><dd>${escapeHtml(story.newsGate.networkRelevance)}</dd></div>
+          <div><dt>Best countercase</dt><dd>${escapeHtml(story.newsGate.countercase)}</dd></div>
+          <div><dt>What would change the read</dt><dd>${escapeHtml(story.newsGate.falsifier)}</dd></div>
+          <div><dt>Revision risk</dt><dd>${escapeHtml(story.newsGate.revisionRisk)}</dd></div>
+          <div><dt>Forecast boundary</dt><dd>${escapeHtml(story.newsGate.forecastBoundary)}</dd></div>
+          <div><dt>Recommendation</dt><dd>${escapeHtml(story.newsGate.recommendationStatus)}</dd></div>
+        </dl>
+      </section>`
+    : ''
   const articleSchema = {
     '@context': 'https://schema.org', '@type': 'Article', headline: article.title,
     description: article.dek, datePublished: isoDate(article.published_at), dateModified: isoDate(article.published_at),
@@ -429,8 +450,9 @@ function renderArticle(story) {
       <header><p class="eyebrow">${lane} / ${escapeHtml(article.evidence_status)}</p><h1>${escapeHtml(article.title)}</h1><p class="article-dek">${escapeHtml(article.dek)}</p><div class="byline"><span>${escapeHtml(article.author)}</span><time datetime="${escapeHtml(isoDate(article.published_at))}">${escapeHtml(shortDate(article.published_at))}</time></div></header>
       ${story.contentNotice ? `<aside class="article-correction"><b>${escapeHtml(story.contentNotice.status)}</b><p>${escapeHtml(story.contentNotice.summary)}</p><time datetime="${escapeHtml(story.contentNotice.effectiveAt)}">Effective ${escapeHtml(shortDate(story.contentNotice.effectiveAt))}</time></aside>` : ''}
       <aside class="article-boundary"><b>What this adds</b><p>${escapeHtml(article.original_contribution)}</p><b>Boundary</b><p>${escapeHtml(article.limitations.join(' '))}</p></aside>
+      ${newsLedger}
       <div class="article-body">${article.sections.map((section) => `<section><h2>${escapeHtml(section.heading)}</h2>${section.paragraphs.map((paragraph) => `<p>${escapeHtml(paragraph)}</p>`).join('')}</section>`).join('')}</div>
-      <aside class="source-box"><p class="eyebrow">OPEN TABS, NOT MYSTERY MEAT</p><h2>Sources</h2><ol>${article.sources.map((source) => `<li><a href="${escapeHtml(source.url)}">${escapeHtml(source.label)} ↗</a></li>`).join('')}</ol></aside>
+      <aside class="source-box"><p class="eyebrow">OPEN TABS, NOT MYSTERY MEAT</p><h2>Sources</h2><ol>${article.sources.map((source) => `<li><a href="${escapeHtml(source.url)}">${escapeHtml(source.label)} ↗</a>${source.release_id ? `<small>${escapeHtml(source.release_id)} · event record ${escapeHtml(preciseClock(source.event_time))}</small>` : ''}</li>`).join('')}</ol></aside>
     </main>
     <footer><p>General market reporting and plain-English explanations—not personalised investment advice or a transaction recommendation. Jokes are not evidence. Evidence is linked.</p><p><a href="/">Back to the wire</a> · <a href="/editorial/">Editorial standards</a> · <a href="/corrections/">Corrections</a> · <a href="/privacy/">Privacy</a></p></footer>
     <script type="application/ld+json">${JSON.stringify(articleSchema).replaceAll('<', '\\u003c')}</script>

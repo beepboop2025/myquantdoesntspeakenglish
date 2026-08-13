@@ -46,6 +46,12 @@ const expectedWebIds = [
 const actualWebIds = webFeed.items.map((item) => item.id).sort()
 const expectedSourceRecords = Object.values(cache.feeds || {}).flat()
   .filter((story) => story?.publicationStatus === 'PUBLISHED' && !withdrawnIds.has(story.id))
+const escapeHtml = (value = '') => String(value)
+  .replaceAll('&', '&amp;')
+  .replaceAll('<', '&lt;')
+  .replaceAll('>', '&gt;')
+  .replaceAll('"', '&quot;')
+  .replaceAll("'", '&#39;')
 
 if (appFeed.schema !== 'mqdnse.app-feed.v1') throw new Error('unexpected app-feed schema')
 if (releasePolicy.channels?.site?.mode !== 'SOURCE_PUBLISHED') throw new Error('website archive mode is not enabled')
@@ -80,6 +86,29 @@ for (const story of expectedSourceRecords) {
       || !page.includes('HISTORICAL CASE FILE / MISSES INCLUDED')
       || !Object.values(story.verdicts).every((verdict) => page.includes(`>${verdict}<`))) {
       throw new Error(`historical case file lost grading or point-in-time status for ${story.id}`)
+    }
+  }
+}
+for (const article of houseRecords.filter((record) => record.publication_status === 'PUBLISHED')) {
+  const page = await read(join('articles', article.slug, 'index.html'))
+  if (!page.includes(escapeHtml(article.original_contribution))
+    || !article.limitations.every((limitation) => page.includes(escapeHtml(limitation)))
+    || !article.sources.every((source) => page.includes(`href="${escapeHtml(source.url)}"`))) {
+    throw new Error(`house article lost contribution, boundary, or sources: ${article.slug}`)
+  }
+  if (article.article_type === 'news_analysis') {
+    const gateValues = [
+      article.news_gate?.network_relevance,
+      article.news_gate?.countercase,
+      article.news_gate?.falsifier,
+      article.news_gate?.revision_risk,
+      article.news_gate?.forecast_boundary,
+    ]
+    if (!page.includes('NEWS ANALYSIS LEDGER / FAIL-CLOSED')
+      || !gateValues.every((value) => page.includes(escapeHtml(value)))
+      || !article.sources.filter((source) => source.type === 'primary_event')
+        .every((source) => page.includes(escapeHtml(source.release_id)))) {
+      throw new Error(`news analysis lost its public evidence ledger: ${article.slug}`)
     }
   }
 }

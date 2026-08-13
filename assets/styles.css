@@ -244,6 +244,18 @@ footer p { margin: 0; }
 .article-body p { font-size: 1.25rem; line-height: 1.55; }
 .source-box { margin-top: 80px; padding: 38px; background: var(--periwinkle); border: 2px solid var(--carbon); }
 .source-box li { margin: 12px 0; }
+.source-box small { display: block; margin-top: 4px; font-family: var(--mono); font-size: .62rem; text-transform: uppercase; }
+
+.news-analysis-ledger { margin: 60px 0 80px; border: 2px solid var(--carbon); background: var(--paper); }
+.news-analysis-ledger > header { display: grid; grid-template-columns: minmax(0, 1.15fr) minmax(260px, .85fr); gap: 22px 60px; padding: clamp(30px, 5vw, 62px); background: var(--papaya); }
+.news-analysis-ledger > header .eyebrow { grid-column: 1 / -1; }
+.news-analysis-ledger > header h2 { margin: 0; font-family: var(--display); font-size: clamp(2.5rem, 5vw, 5rem); line-height: .9; letter-spacing: -.055em; }
+.news-analysis-ledger > header > p:last-child { margin: 0; line-height: 1.45; }
+.news-analysis-ledger dl { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); margin: 0; }
+.news-analysis-ledger dl > div { padding: 26px 30px; border-top: 2px solid var(--carbon); }
+.news-analysis-ledger dl > div:nth-child(odd) { border-right: 2px solid var(--carbon); }
+.news-analysis-ledger dt { margin-bottom: 9px; font-family: var(--mono); font-size: .65rem; font-weight: 700; text-transform: uppercase; }
+.news-analysis-ledger dd { margin: 0; line-height: 1.4; }
 
 .interpretation-page { max-width: 1380px; }
 .interpretation-provenance { display: grid; grid-template-columns: 190px minmax(0, 1fr) auto; gap: 18px 28px; align-items: center; margin: 58px 0 0; padding: 24px 28px; border: 2px solid var(--carbon); background: var(--lemon); }
@@ -382,6 +394,8 @@ footer p { margin: 0; }
   .products { padding-inline: 22px; }
   .placements > div { grid-template-columns: 1fr; }
   .article-boundary { grid-template-columns: 1fr; }
+  .news-analysis-ledger > header, .news-analysis-ledger dl { grid-template-columns: 1fr; }
+  .news-analysis-ledger dl > div:nth-child(odd) { border-right: 0; }
   .article-body { margin-left: 0; }
   .interpretation-provenance { grid-template-columns: 1fr; }
   .translation-ledger { grid-template-columns: 1fr; }

@@ -262,9 +262,59 @@ export function normalizeHouseArticle(raw) {
   if (!raw || raw.publication_status !== 'PUBLISHED' || !array(raw.sources).length) return null
   const slug = string(raw.slug)
   const published = string(raw.published_at)
+  const articleType = string(raw.article_type, raw.editorial_class, 'analysis')
   if (!/^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(slug) || !Number.isFinite(Date.parse(published))) return null
-  if (!array(raw.sections).every((section) => string(section.heading) && array(section.paragraphs).every((p) => string(p)))) return null
-  if (!raw.sources.every((source) => string(source.label) && validHttpsUrl(source.url, '') === source.url)) return null
+  if (!string(raw.title) || !string(raw.dek) || !string(raw.author) || !string(raw.original_contribution)) return null
+  if (!array(raw.limitations).length || !raw.limitations.every((limitation) => string(limitation))) return null
+  if (!array(raw.sections).length || !raw.sections.every((section) => (
+    string(section.heading)
+    && array(section.paragraphs).length
+    && section.paragraphs.every((paragraph) => string(paragraph))
+  ))) return null
+  if (!raw.sources.every((source) => source && string(source.label) && validHttpsUrl(source.url, '') === source.url)) return null
+
+  let newsGate = null
+  if (articleType === 'news_analysis') {
+    const gate = raw.news_gate && typeof raw.news_gate === 'object' && !Array.isArray(raw.news_gate)
+      ? raw.news_gate
+      : {}
+    const eventTime = string(raw.event_time)
+    const knowledgeTime = string(raw.knowledge_time)
+    const eventClock = Date.parse(eventTime)
+    const knowledgeClock = Date.parse(knowledgeTime)
+    const publicationClock = Date.parse(published)
+    const primarySources = raw.sources.filter((source) => source.type === 'primary_event')
+    const primaryEventClocks = primarySources.map((source) => Date.parse(string(source.event_time)))
+    const primaryReleaseIds = primarySources.map((source) => string(source.release_id))
+    const validPrimarySources = primarySources.length > 0
+      && primaryReleaseIds.every(Boolean)
+      && new Set(primaryReleaseIds).size === primaryReleaseIds.length
+      && primaryEventClocks.every((sourceClock) => Number.isFinite(sourceClock) && sourceClock <= knowledgeClock)
+      && Math.max(...primaryEventClocks) === eventClock
+    const gateStrings = ['network_relevance', 'countercase', 'falsifier', 'revision_risk', 'forecast_boundary']
+    const newsworthiness = raw.newsworthiness && typeof raw.newsworthiness === 'object'
+      ? raw.newsworthiness
+      : {}
+    if (!Number.isFinite(eventClock)
+      || !Number.isFinite(knowledgeClock)
+      || eventClock > knowledgeClock
+      || knowledgeClock > publicationClock
+      || !validPrimarySources
+      || !gateStrings.every((field) => string(gate[field]))
+      || !Number.isInteger(newsworthiness.score)
+      || newsworthiness.score < 3
+      || newsworthiness.score > 5
+      || !string(newsworthiness.why)
+      || gate.recommendation_status !== 'NONE') return null
+    newsGate = {
+      networkRelevance: gate.network_relevance.trim(),
+      countercase: gate.countercase.trim(),
+      falsifier: gate.falsifier.trim(),
+      revisionRisk: gate.revision_risk.trim(),
+      forecastBoundary: gate.forecast_boundary.trim(),
+      recommendationStatus: 'NONE',
+    }
+  }
 
   const record = {
     id: `myquant:${slug}`,
@@ -282,7 +332,7 @@ export function normalizeHouseArticle(raw) {
     contribution: string(raw.original_contribution, 'original house analysis'),
     limitation: string(array(raw.limitations)[0], 'Read the cited sources and stated boundaries.'),
     newsworthiness: Number.isFinite(raw.newsworthiness?.score) ? raw.newsworthiness.score : null,
-    articleType: string(raw.article_type, raw.editorial_class, 'analysis'),
+    articleType,
     pointInTimeStatus: string(raw.point_in_time_status),
     verdicts: raw.verdicts && typeof raw.verdicts === 'object' && !Array.isArray(raw.verdicts)
       ? { ...raw.verdicts }
@@ -291,6 +341,7 @@ export function normalizeHouseArticle(raw) {
       ? { ...raw.outcome_window }
       : null,
     fraudMasked: raw.fraud_masked === true,
+    newsGate,
     article: raw,
   }
   record.fingerprint = createHash('sha256').update(JSON.stringify({
@@ -307,6 +358,7 @@ export function normalizeHouseArticle(raw) {
     sections: raw.sections,
     sources: raw.sources,
     articleType: record.articleType,
+    newsGate: record.newsGate,
     pointInTimeStatus: record.pointInTimeStatus,
     verdicts: record.verdicts,
     outcomeWindow: record.outcomeWindow,

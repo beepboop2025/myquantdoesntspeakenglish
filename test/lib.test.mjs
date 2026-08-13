@@ -313,11 +313,53 @@ test('lead ranking prefers a fresh full story over an ordinary watch note', () =
 test('house articles require sources and published status', () => {
   const raw = {
     slug: 'bounded-story', title: 'A title', dek: 'A dek', publication_status: 'PUBLISHED',
+    author: 'House desk', original_contribution: 'A bounded synthesis.', limitations: ['One known limit.'],
     published_at: '2026-08-12T10:00:00Z', sources: [{ label: 'Primary', url: 'https://example.com/' }],
     sections: [{ heading: 'Finding', paragraphs: ['The bounded paragraph.'] }],
   }
   assert.equal(normalizeHouseArticle(raw).product, 'myquant')
   assert.equal(normalizeHouseArticle({ ...raw, sources: [] }), null)
+  assert.equal(normalizeHouseArticle({ ...raw, sections: [] }), null)
+  assert.equal(normalizeHouseArticle({ ...raw, limitations: [] }), null)
+})
+
+test('news analysis fails closed without primary clocks, counterevidence, or a no-recommendation boundary', () => {
+  const raw = {
+    schema: 'mqdnse.house-article.v1', slug: 'bounded-news-analysis', product: 'myquant',
+    title: 'The headline moved; the internals split', dek: 'A primary-source cross-release reading.',
+    beat: 'macro-to-funding', article_type: 'news_analysis', editorial_class: 'house_investigation',
+    publication_status: 'PUBLISHED', published_at: '2026-08-14T00:40:00+05:30',
+    event_time: '2026-08-13T12:30:00Z', knowledge_time: '2026-08-13T19:06:53Z',
+    author: 'MyQuant news desk', evidence_status: 'PRIMARY_RELEASE_CROSSCHECKED',
+    original_contribution: 'A comparison that does not appear in any single release.',
+    limitations: ['The releases measure different populations and concepts.'],
+    newsworthiness: { score: 4, why: 'The release is material to the network beat.' },
+    news_gate: {
+      network_relevance: 'It is relevant context for rate-sensitive funding conditions.',
+      countercase: 'Several underlying measures also cooled.',
+      falsifier: 'Broad cooling in the next releases would change the read.',
+      revision_risk: 'Some inputs can be revised.',
+      forecast_boundary: 'This does not predict rates or asset prices.',
+      recommendation_status: 'NONE',
+    },
+    sources: [
+      {
+        label: 'Primary release', url: 'https://example.com/release', type: 'primary_event',
+        release_id: 'OFFICIAL-2026-01', event_time: '2026-08-13T12:30:00Z',
+      },
+    ],
+    sections: [{ heading: 'Finding', paragraphs: ['The bounded paragraph.'] }],
+  }
+
+  const valid = normalizeHouseArticle(raw)
+  assert.equal(valid.articleType, 'news_analysis')
+  assert.equal(valid.newsGate.recommendationStatus, 'NONE')
+  assert.equal(normalizeHouseArticle({ ...raw, news_gate: { ...raw.news_gate, countercase: '' } }), null)
+  assert.equal(normalizeHouseArticle({ ...raw, news_gate: { ...raw.news_gate, recommendation_status: 'BUY' } }), null)
+  assert.equal(normalizeHouseArticle({ ...raw, sources: [{ ...raw.sources[0], type: 'commentary' }] }), null)
+  assert.equal(normalizeHouseArticle({ ...raw, event_time: '2026-08-12T12:30:00Z' }), null)
+  assert.equal(normalizeHouseArticle({ ...raw, knowledge_time: '2026-08-14T00:00:01Z' }), null)
+  assert.equal(normalizeHouseArticle({ ...raw, newsworthiness: { score: 2, why: 'Too weak.' } }), null)
 })
 
 test('unchanged evidence keeps its first publication clocks', () => {

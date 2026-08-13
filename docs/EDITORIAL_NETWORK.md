@@ -60,4 +60,8 @@ Neither label represents legal or regulatory clearance.
 MyQuant Analysis may cover a relevant outside event when it has a primary-source
 event record, a material connection to the network's beats, an original analytical
 contribution, an explicit countercase, and a named limitation. Speed never waives
-those fields. If the desk cannot establish them, the correct output is no article.
+those fields. The build also requires ordered event, knowledge, and publication
+clocks; unique primary release IDs; a newsworthiness score of at least 3 out of 5;
+a falsifier; revision risk; a forecast boundary; and an explicit `NONE` for any
+transaction recommendation. The page exposes that ledger to readers. If the desk
+cannot establish every field, the correct output is no article.

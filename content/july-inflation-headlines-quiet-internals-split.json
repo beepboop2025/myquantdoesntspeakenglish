@@ -1,0 +1,116 @@
+{
+  "schema": "mqdnse.house-article.v1",
+  "slug": "july-inflation-headlines-quiet-internals-split",
+  "product": "myquant",
+  "title": "July’s inflation headlines were quiet. The internals were not unanimous.",
+  "dek": "Consumer prices rose 0.1%, headline producer prices were flat, and real hourly earnings fell 0.1%. Energy pulled down both price headlines while several underlying measures still rose.",
+  "beat": "macro-to-funding",
+  "article_type": "news_analysis",
+  "editorial_class": "house_investigation",
+  "publication_status": "PUBLISHED",
+  "published_at": "2026-08-14T00:39:00+05:30",
+  "event_time": "2026-08-13T12:30:00Z",
+  "knowledge_time": "2026-08-13T19:08:44Z",
+  "author": "MyQuant news desk",
+  "evidence_status": "PRIMARY_RELEASE_CROSSCHECKED",
+  "original_contribution": "A cross-release comparison of July consumer prices, producer prices, and real earnings that separates energy-driven headline relief from the mixed measures underneath and from workers’ realized purchasing power.",
+  "newsworthiness": {
+    "score": 5,
+    "why": "The CPI, PPI, and real-earnings releases are major dated macro events with direct relevance to rate-sensitive funding context and household purchasing power."
+  },
+  "news_gate": {
+    "network_relevance": "Inflation releases are inputs to rate expectations and therefore context for Seiche’s and Undertow’s funding work. This article interprets that context; it does not alter either specialist model’s signal.",
+    "countercase": "The 12-month core CPI rate eased to 2.5%, shelter rose only 0.1% in July, and headline final-demand producer prices were flat. Those readings support a genuine-cooling interpretation alongside the firmer producer measure excluding food, energy, and trade services.",
+    "falsifier": "Broad monthly cooling across core consumer prices and final demand excluding food, energy, and trade services, accompanied by improving real earnings, would remove the split described here. Revisions that erase July’s producer-price divergence would also change the conclusion.",
+    "revision_risk": "The CPI-U and CPI-W indexes are final when first released, but seasonally adjusted series can be revised annually. July PPI data are subject to revision as later reports and corrections arrive; this article uses the initial releases available at its knowledge clock.",
+    "forecast_boundary": "This comparison does not predict the next inflation print, a Federal Reserve decision, interest rates, funding conditions, or asset prices.",
+    "recommendation_status": "NONE"
+  },
+  "limitations": [
+    "CPI, PPI, and real-earnings statistics measure different populations and concepts; they are not sequential stages of one accounting pipeline.",
+    "This is a one-month cross-section built from initial July 2026 releases, not a forecast or proof of a new trend.",
+    "The all-items CPI is a sample-based estimate, seasonally adjusted CPI series can be revised annually, and recent PPI observations can be revised as additional reports arrive.",
+    "No market-price reaction, policy outcome, funding move, or transaction recommendation is claimed."
+  ],
+  "publication_approval": {
+    "type": "explicit_operator_instruction",
+    "approved_at": "2026-08-14T00:39:00+05:30",
+    "legal_clearance_claimed": false
+  },
+  "sources": [
+    {
+      "label": "U.S. Bureau of Labor Statistics: Consumer Price Index — July 2026",
+      "url": "https://www.bls.gov/news.release/cpi.nr0.htm",
+      "type": "primary_event",
+      "release_id": "USDL-26-1378",
+      "event_time": "2026-08-12T12:30:00Z"
+    },
+    {
+      "label": "U.S. Bureau of Labor Statistics: Producer Price Indexes — July 2026",
+      "url": "https://www.bls.gov/news.release/ppi.nr0.htm",
+      "type": "primary_event",
+      "release_id": "USDL-26-1380",
+      "event_time": "2026-08-13T12:30:00Z"
+    },
+    {
+      "label": "U.S. Bureau of Labor Statistics: Real Earnings — July 2026",
+      "url": "https://www.bls.gov/news.release/realer.nr0.htm",
+      "type": "primary_event",
+      "release_id": "USDL-26-1379",
+      "event_time": "2026-08-12T12:30:00Z"
+    }
+  ],
+  "sections": [
+    {
+      "heading": "Three releases, one split screen",
+      "paragraphs": [
+        "The consumer-price headline was restrained: the CPI for all urban consumers rose 0.1% in July after falling 0.4% in June. Its 12-month rate eased to 3.4% from 3.5%.",
+        "The producer-price headline was quieter still. Final-demand prices were unchanged in July and stood 4.7% above a year earlier. But the measure excluding food, energy, and trade services rose 0.4% in the month and 4.7% over the year.",
+        "The household-facing check did not deliver an uncomplicated win. Real average hourly earnings for all employees on private nonfarm payrolls fell 0.1% from June to July, while real average weekly earnings were unchanged. The three releases therefore do not tell one neat story."
+      ]
+    },
+    {
+      "heading": "Energy made both front pages look calmer",
+      "paragraphs": [
+        "Consumer energy prices fell 1.5% in July. Once food and energy were removed, consumer prices rose 0.2%. Shelter rose 0.1% and accounted for roughly two-thirds of the increase in the all-items index.",
+        "Producer goods prices fell 0.7%, with final-demand energy down 3.1%. BLS attributed more than half of the goods decline to a 5.7% fall in gasoline prices. On the other side of the ledger, final-demand services rose 0.2% and final-demand construction rose 2.2%.",
+        "Picture a restaurant bill where the wine gets cheaper while rent, staff, and insurance do not all move the same way. The total can look calm without every cost line cooling. That analogy is a map, not an accounting identity: CPI and PPI cover different transactions and should not be stacked into a mechanical pipeline."
+      ]
+    },
+    {
+      "heading": "The strongest countercase is real",
+      "paragraphs": [
+        "A split reading is not a disguised claim that inflation accelerated everywhere. Core consumer inflation eased to 2.5% over 12 months from 2.6%, shelter’s monthly rise was modest, and headline producer prices were flat. Those are meaningful cooling signals.",
+        "The narrower conclusion is that the quiet headlines did not amount to broad, uniform cooling inside July’s releases. Energy declines pulled down the totals while selected consumer services and the producer measure excluding food, energy, and trade services still rose. Both halves belong in the story."
+      ]
+    },
+    {
+      "heading": "Real pay is the receipt, not a footnote",
+      "paragraphs": [
+        "For all employees on private nonfarm payrolls, real average hourly earnings fell 0.1% in July and 0.2% over the year. Real weekly earnings were unchanged in July and rose 0.1% over the year because the average workweek was longer than a year earlier.",
+        "Production and nonsupervisory employees had a different monthly result: real hourly earnings were unchanged and real weekly earnings rose 0.1%. That distinction matters. A national price headline does not translate into the same realized outcome for every worker group."
+      ]
+    },
+    {
+      "heading": "Why this matters to a funding newsroom",
+      "paragraphs": [
+        "Inflation data can change expectations about policy rates, and policy-rate expectations can affect the context in which funding markets operate. That makes the releases relevant to this network. It does not make them a Seiche or Undertow signal.",
+        "The defensible use is as a dated macro input: headline relief was partly energy-driven, underlying measures disagreed, and real hourly pay for all employees slipped. Any claim about actual funding pressure must come from the funding data and coverage rules, not from this inflation comparison."
+      ]
+    },
+    {
+      "heading": "What changes this read",
+      "paragraphs": [
+        "The next releases could show broad cooling across both core consumer prices and final demand excluding food, energy, and trade services, while real earnings improve. That would replace July’s split screen with a more coherent cooling picture.",
+        "Revisions matter too. BLS says March through June producer-price figures in this release were revised as late reports and corrections arrived. July’s PPI observations may also change. The article therefore freezes what was available at its knowledge clock and names the evidence that would make the interpretation stale."
+      ]
+    },
+    {
+      "heading": "The boundary",
+      "paragraphs": [
+        "This article compares three official releases. It does not forecast inflation, Federal Reserve policy, yields, funding conditions, or asset prices. It does not recommend a trade.",
+        "The clean conclusion is smaller and more useful: July’s top-line inflation numbers were quiet, energy did substantial work in producing that appearance, the measures underneath disagreed, and real hourly earnings for all employees did not improve."
+      ]
+    }
+  ]
+}

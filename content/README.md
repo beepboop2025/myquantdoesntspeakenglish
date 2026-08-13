@@ -11,10 +11,21 @@ Each JSON file in this directory is an original house article. On the public sit
 - structured sections containing paragraphs, never fetched third-party HTML.
 
 For live-news articles, record the event clock separately from the publication
-clock. A story may explain or investigate a reported event, but the house's own
-contribution must be named. Prefer primary sources, expose disagreements, and
-state what evidence would change the conclusion. Specialist copy remains linked
-at its canonical URL and is never silently presented as house reporting.
+clock and use `article_type: "news_analysis"`. The build rejects the article
+unless all of the following are present:
+
+- a newsworthiness score from 3 to 5 with a written reason;
+- one or more `primary_event` sources, each with a unique release ID and event
+  time; the article event clock must equal the newest primary event;
+- a knowledge clock after every primary event and no later than publication;
+- a named original contribution and network relevance;
+- the best countercase, a falsifier, revision risk, and a forecast boundary;
+- `recommendation_status: "NONE"`.
+
+Those gate fields render in a public news-analysis ledger. A story may explain
+or investigate a reported event, but the house's own contribution must be named.
+Specialist copy remains linked at its canonical URL and is never silently
+presented as house reporting.
 
 The subjective editorial choice is isolated in `EDITORIAL_WEIGHTS` inside
 `scripts/lib.mjs`. Changing those few values changes which qualifying story leads
