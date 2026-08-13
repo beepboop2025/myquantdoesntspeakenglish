@@ -1,17 +1,27 @@
 import test from 'node:test'
 import assert from 'node:assert/strict'
-import { buildSignalPulse, chooseLead, normalizePayload, normalizeHouseArticle, preserveStableClocks } from '../scripts/lib.mjs'
+import {
+  APP_FEED_SCHEMA,
+  buildAppFeed,
+  buildSignalPulse,
+  chooseLead,
+  normalizePayload,
+  normalizeHouseArticle,
+  preserveStableClocks,
+} from '../scripts/lib.mjs'
 
 test('normalizes all three product feed shapes', () => {
   const sources = {
     liquilens: { product: 'liquilens', home: 'https://liquilens.in/desk/' },
     seiche: { product: 'seiche', home: 'https://seiche.info/dispatches/' },
-    undertow: { product: 'liquilens-undertow', home: 'https://liquilens-undertow.com/dispatch/' },
+    undertow: { product: 'liquilens-undertow', home: 'https://liquilens-undertow.com/' },
   }
   const base = { headline: 'Evidence moved', dek: 'A bounded finding.', published_at: '2026-08-12T10:00:00Z', publication_status: 'PUBLISHED' }
   assert.equal(normalizePayload({ bits: [base] }, sources.liquilens)[0].product, 'liquilens')
   assert.equal(normalizePayload({ entries: [base] }, sources.seiche)[0].product, 'seiche')
-  assert.equal(normalizePayload({ entries: ['2026-08-12'], letters: { '2026-08-12': { story: base } } }, sources.undertow)[0].product, 'liquilens-undertow')
+  const undertow = normalizePayload({ entries: ['2026-08-12'], letters: { '2026-08-12': { story: base } } }, sources.undertow)[0]
+  assert.equal(undertow.product, 'liquilens-undertow')
+  assert.equal(undertow.url, 'https://liquilens-undertow.com/dispatch/2026-08-12.json')
 })
 
 test('lead ranking prefers a fresh full story over an ordinary watch note', () => {
@@ -61,4 +71,168 @@ test('signal pulse clamps an explicit zero horizon instead of treating it as mis
   ], 0)
   assert.equal(pulse.days.length, 1)
   assert.equal(pulse.days[0].date, '2026-08-12')
+})
+
+test('app feed exposes plain-language fields without dropping evidence', () => {
+  const story = {
+    id: 'seiche:daily/2026-08-12',
+    product: 'seiche',
+    title: 'Funding stress moved',
+    dek: 'The board reads 45 out of 100; the composite is unchanged.',
+    url: 'https://seiche.info/dispatches/2026-08-12-daily.html',
+    beat: 'dollar-funding-plumbing',
+    publicationStatus: 'PUBLISHED',
+    published: '2026-08-12T11:43:48+00:00',
+    eventTime: '2026-08-11T00:00:00Z',
+    knowledgeTime: '2026-08-12T11:43:48Z',
+    evidenceStatus: 'DERIVED',
+    contribution: 'fresh_longitudinal_delta · cross_signal_divergence',
+    limitation: 'The composite is a derivation, not an observed market price.',
+  }
+  const feed = buildAppFeed([story], '2026-08-12T12:00:00+00:00', {
+    [story.id]: {
+      inEnglish: story.dek,
+      whyItMatters: "It identifies what changed over time. It shows where the source's signals disagree.",
+    },
+  })
+  const item = feed.stories[0]
+
+  assert.equal(feed.schema, APP_FEED_SCHEMA)
+  assert.match(feed.editionId, /^[a-f0-9]{64}$/)
+  assert.equal(feed.generatedAt, '2026-08-12T12:00:00.000Z')
+  assert.equal(item.slug, 'seiche-daily-2026-08-12')
+  assert.deepEqual(item.source, { id: 'seiche', label: 'Seiche' })
+  assert.equal(item.topic, 'funding')
+  assert.equal(item.beat, 'Dollar funding plumbing')
+  assert.equal(item.quantSays, story.title)
+  assert.equal(item.inEnglish, story.dek)
+  assert.equal(item.whyItMatters, "It identifies what changed over time. It shows where the source's signals disagree.")
+  assert.deepEqual(item.keyNumber, { value: '45 out of 100', label: story.dek })
+  assert.equal(item.uncertainty, story.limitation)
+  assert.equal(item.publishedAt, '2026-08-12T11:43:48.000Z')
+  assert.equal(item.readingMinutes, 1)
+  assert.equal(item.sourceUrl, story.url)
+  assert.deepEqual(item.sources, [{ label: 'Seiche', url: story.url }])
+  assert.deepEqual(item.evidence, {
+    status: story.evidenceStatus,
+    contribution: story.contribution,
+    limitation: story.limitation,
+    eventTime: story.eventTime,
+    knowledgeTime: story.knowledgeTime,
+    publicationStatus: story.publicationStatus,
+  })
+  assert.match(item.fingerprint, /^[a-f0-9]{64}$/)
+})
+
+test('app feed keeps house citations, omits absent key numbers, and sorts newest first', () => {
+  const shared = {
+    product: 'myquant', beat: 'house-rules', publicationStatus: 'PUBLISHED',
+    eventTime: '2026-08-12T00:00:00Z', knowledgeTime: '2026-08-12T10:30:00Z',
+    evidenceStatus: 'EDITORIAL', contribution: 'An operating note.', limitation: 'Not investment advice.',
+  }
+  const older = {
+    ...shared, id: 'myquant:older', title: 'Older', dek: 'No numeral here.', published: '2026-08-11T10:30:00Z',
+    url: 'https://myquantdoesntspeakenglish.com/articles/older/', article: { slug: 'older', sections: [], sources: [] },
+  }
+  const newer = {
+    ...shared, id: 'myquant:newer', title: 'Newer', dek: 'Still written without digits.', published: '2026-08-12T10:30:00Z',
+    url: 'https://myquantdoesntspeakenglish.com/articles/newer/',
+    article: { slug: 'newer', sections: [], sources: [{ label: 'Primary record', url: 'https://example.com/record' }] },
+  }
+  const feed = buildAppFeed(
+    [older, { ...older, id: 'draft', publicationStatus: 'DRAFT' }, newer],
+    '2026-08-12T12:00:00Z',
+    {
+      [older.id]: { inEnglish: older.dek, whyItMatters: older.contribution },
+      [newer.id]: { inEnglish: newer.dek, whyItMatters: newer.contribution },
+      draft: { inEnglish: 'Draft translation.', whyItMatters: 'Draft context.' },
+    },
+  )
+
+  assert.deepEqual(feed.stories.map(({ id }) => id), ['myquant:newer', 'myquant:older'])
+  assert.deepEqual(feed.stories.map(({ topic }) => topic), ['house', 'house'])
+  assert.equal('keyNumber' in feed.stories[0], false)
+  assert.deepEqual(feed.stories[0].sources, [{ label: 'Primary record', url: 'https://example.com/record' }])
+})
+
+test('app-feed edition identity changes with content, not generation time', () => {
+  const record = {
+    id: 'seiche:daily', product: 'seiche', title: 'Title', dek: 'Summary', url: 'https://seiche.info/dispatches/',
+    beat: 'dollar-funding-plumbing', publicationStatus: 'PUBLISHED', published: '2026-08-12T10:00:00Z',
+    eventTime: '2026-08-12T09:00:00Z', knowledgeTime: '2026-08-12T10:00:00Z', evidenceStatus: 'DECLARED',
+    contribution: 'A contribution.', limitation: 'A limitation.',
+  }
+  const copy = { [record.id]: { inEnglish: 'Plain summary.', whyItMatters: 'Why this record matters.' } }
+  const first = buildAppFeed([record], '2026-08-12T12:00:00Z', copy)
+  const later = buildAppFeed([record], '2026-08-13T12:00:00Z', copy)
+  const changed = buildAppFeed([record], '2026-08-13T12:00:00Z', {
+    [record.id]: { ...copy[record.id], inEnglish: 'Changed plain summary.' },
+  })
+
+  assert.equal(first.editionId, later.editionId)
+  assert.equal(first.stories[0].fingerprint, later.stories[0].fingerprint)
+  assert.notEqual(first.editionId, changed.editionId)
+})
+
+test('app feed rejects slug collisions instead of publishing ambiguous routes', () => {
+  const record = {
+    product: 'seiche', title: 'Title', dek: 'Summary', url: 'https://seiche.info/dispatches/', beat: 'wire',
+    publicationStatus: 'PUBLISHED', published: '2026-08-12T10:00:00Z', eventTime: '2026-08-12T09:00:00Z',
+    knowledgeTime: '2026-08-12T10:00:00Z', evidenceStatus: 'DECLARED', contribution: 'A contribution.', limitation: 'A limitation.',
+  }
+  assert.throws(
+    () => buildAppFeed(
+      [{ ...record, id: 'same:id' }, { ...record, id: 'same/id' }],
+      '2026-08-12T12:00:00Z',
+      {
+        'same:id': { inEnglish: 'First translation.', whyItMatters: 'First context.' },
+        'same/id': { inEnglish: 'Second translation.', whyItMatters: 'Second context.' },
+      },
+    ),
+    /duplicate app-feed slug/,
+  )
+})
+
+test('app feed applies reviewed consumer copy without changing the source claim or evidence', () => {
+  const story = {
+    id: 'liquilens:reviewed', product: 'liquilens', title: 'Technical source claim',
+    dek: 'Technical source summary.', url: 'https://liquilens.in/desk/', beat: 'institution-risk',
+    publicationStatus: 'PUBLISHED', published: '2026-08-12T10:00:00Z', eventTime: '2026-08-12T09:00:00Z',
+    knowledgeTime: '2026-08-12T10:00:00Z', evidenceStatus: 'DERIVED', contribution: 'peer_relative_change',
+    limitation: 'The source limitation remains attached.',
+  }
+  const copy = {
+    'liquilens:reviewed': {
+      inEnglish: 'A reviewed explanation for a non-specialist.',
+      whyItMatters: 'A reviewed explanation of the mechanism.',
+      keyNumber: { value: '4 / 19', label: 'covered names' },
+    },
+  }
+  const item = buildAppFeed([story], '2026-08-12T12:00:00Z', copy).stories[0]
+
+  assert.equal(item.quantSays, story.title)
+  assert.equal(item.inEnglish, copy[story.id].inEnglish)
+  assert.equal(item.whyItMatters, copy[story.id].whyItMatters)
+  assert.deepEqual(item.keyNumber, copy[story.id].keyNumber)
+  assert.equal(item.uncertainty, story.limitation)
+  assert.equal(item.evidence.limitation, story.limitation)
+})
+
+test('app feed keeps unreviewed and incomplete translations out of the consumer edition', () => {
+  const shared = {
+    product: 'seiche', title: 'Technical title', dek: 'Technical source summary.',
+    url: 'https://seiche.info/dispatches/', beat: 'funding', publicationStatus: 'PUBLISHED',
+    published: '2026-08-12T10:00:00Z', eventTime: '2026-08-12T09:00:00Z',
+    knowledgeTime: '2026-08-12T10:00:00Z', evidenceStatus: 'DERIVED',
+    contribution: 'fresh_longitudinal_delta', limitation: 'A source limitation.',
+  }
+  const reviewed = { ...shared, id: 'reviewed' }
+  const missingWhy = { ...shared, id: 'missing-why' }
+  const unreviewed = { ...shared, id: 'unreviewed' }
+  const feed = buildAppFeed([reviewed, missingWhy, unreviewed], '2026-08-12T12:00:00Z', {
+    reviewed: { inEnglish: 'A complete translation.', whyItMatters: 'A complete mechanism.' },
+    'missing-why': { inEnglish: 'Only half of the required consumer copy.' },
+  })
+
+  assert.deepEqual(feed.stories.map(({ id }) => id), ['reviewed'])
 })

@@ -4,6 +4,7 @@ import { fileURLToPath } from 'node:url'
 import {
   SITE_ORIGIN,
   SOURCES,
+  buildAppFeed,
   buildSignalPulse,
   chooseLead,
   normalizeHouseArticle,
@@ -15,6 +16,8 @@ import {
 const root = join(dirname(fileURLToPath(import.meta.url)), '..')
 const dist = join(root, 'dist')
 const cachePath = join(root, 'data', 'cache.json')
+const appCopyPath = join(root, 'data', 'app-copy.json')
+const BRAND_NAME = 'my quant doesn’t speak english'
 const escapeHtml = (value = '') => String(value)
   .replaceAll('&', '&amp;')
   .replaceAll('<', '&lt;')
@@ -95,8 +98,8 @@ function head({ title, description, canonical, type = 'website' }) {
   <meta name="description" content="${escapeHtml(description)}">
   <link rel="canonical" href="${escapeHtml(canonical)}">
   <link rel="icon" href="/assets/favicon.svg" type="image/svg+xml">
-  <link rel="alternate" type="application/feed+json" href="${SITE_ORIGIN}/feed.json" title="My Quant Doesn't Speak English">
-  <link rel="alternate" type="application/atom+xml" href="${SITE_ORIGIN}/feed.xml" title="My Quant Doesn't Speak English">
+  <link rel="alternate" type="application/feed+json" href="${SITE_ORIGIN}/feed.json" title="${BRAND_NAME}">
+  <link rel="alternate" type="application/atom+xml" href="${SITE_ORIGIN}/feed.xml" title="${BRAND_NAME}">
   <meta name="theme-color" content="#1746d1">
   <meta property="og:type" content="${type}">
   <meta property="og:title" content="${escapeHtml(title)}">
@@ -112,7 +115,7 @@ function head({ title, description, canonical, type = 'website' }) {
 
 function masthead() {
   return `<header class="site-head">
-    <a class="wordmark" href="/" aria-label="My Quant Doesn't Speak English home">
+    <a class="wordmark" href="/" aria-label="${BRAND_NAME} home">
       <span>my quant</span><span>doesn’t speak</span><span>english.com</span>
     </a>
     <nav aria-label="Primary">
@@ -249,7 +252,7 @@ function renderHome(stories, cache) {
   const schema = {
     '@context': 'https://schema.org',
     '@type': 'CollectionPage',
-    name: "My Quant Doesn't Speak English",
+    name: BRAND_NAME,
     url: SITE_ORIGIN,
     description: 'Evidence-led dispatches and investigations from Seiche, LiquiLens, and LiquiLens—Undertow.',
     relatedLink: 'https://narcoscope.com/',
@@ -258,7 +261,7 @@ function renderHome(stories, cache) {
 
   return `<!doctype html>
 <html lang="en"><head>${head({
-    title: "My Quant Doesn't Speak English — finance, with subtitles",
+    title: `${BRAND_NAME} — finance, with subtitles`,
     description: 'Every Seiche, LiquiLens, and Undertow dispatch in one evidence-led, occasionally funny wire.',
     canonical: `${SITE_ORIGIN}/`,
   })}</head><body>
@@ -299,6 +302,15 @@ function renderHome(stories, cache) {
       <div><span id="translation-title">QUANT SAYS</span><p>${escapeHtml(lead?.title || 'No lead passed the evidence gate.')}</p></div>
       <div><span>NORMAL PERSON HEARS</span><p>${escapeHtml(lead?.dek || 'The desk is checking the wires.')}</p></div>
       ${lead ? `<a href="${escapeHtml(lead.url)}">Open the evidence, not just the vibe ↗</a>` : ''}
+    </section>
+
+    <section class="app-launch" aria-labelledby="app-launch-title">
+      <div>
+        <p class="eyebrow">FREE PUBLIC BETA</p>
+        <h2 id="app-launch-title">my quant doesn’t speak english<br><em>now fits in your pocket.</em></h2>
+        <p>Five human-reviewed market translations. The original claim, source, and evidence boundary stay attached. No account. No infinite scroll.</p>
+      </div>
+      <a href="https://myquant-app.vercel.app/">Open the free app beta <span aria-hidden="true">↗</span></a>
     </section>
 
     <section class="status-band" aria-labelledby="status-title">
@@ -354,7 +366,7 @@ function renderHome(stories, cache) {
       </div>
     </aside>
   </main>
-  <footer><p>Research and market data, not investment advice. Jokes are not evidence. Evidence is linked.</p><p><a href="/feed.xml">Atom</a> · <a href="/feed.json">JSON Feed</a> · <a href="#telegram">Telegram desks</a> · <a href="/advertise/">Advertise</a> · <a href="https://narcoscope.com/">NarcoScope</a></p></footer>
+  <footer><p>Research and market data, not investment advice. Jokes are not evidence. Evidence is linked.</p><p><a href="/feed.xml">Atom</a> · <a href="/feed.json">JSON Feed</a> · <a href="#telegram">Telegram desks</a> · <a href="/advertise/">Advertise</a> · <a href="/privacy/">Privacy</a> · <a href="/support/">Support</a> · <a href="https://narcoscope.com/">NarcoScope</a></p></footer>
   <script type="application/ld+json">${JSON.stringify(schema).replaceAll('<', '\\u003c')}</script>
   <script src="/assets/app.js" defer></script>
 </body></html>`
@@ -365,10 +377,10 @@ function renderArticle(story) {
   const articleSchema = {
     '@context': 'https://schema.org', '@type': 'Article', headline: article.title,
     description: article.dek, datePublished: isoDate(article.published_at), dateModified: isoDate(article.published_at),
-    author: { '@type': 'Organization', name: article.author }, publisher: { '@type': 'Organization', name: "My Quant Doesn't Speak English" },
+    author: { '@type': 'Organization', name: article.author }, publisher: { '@type': 'Organization', name: BRAND_NAME },
     mainEntityOfPage: story.url, isAccessibleForFree: true,
   }
-  return `<!doctype html><html lang="en"><head>${head({ title: `${article.title} — My Quant Doesn't Speak English`, description: article.dek, canonical: story.url, type: 'article' })}</head><body>
+  return `<!doctype html><html lang="en"><head>${head({ title: `${article.title} — ${BRAND_NAME}`, description: article.dek, canonical: story.url, type: 'article' })}</head><body>
     <a class="skip" href="#article">Skip to article</a>${masthead()}
     <main class="article-page" id="article">
       <header><p class="eyebrow">${escapeHtml(article.editorial_class.replaceAll('_', ' '))} / ${escapeHtml(article.evidence_status)}</p><h1>${escapeHtml(article.title)}</h1><p class="article-dek">${escapeHtml(article.dek)}</p><div class="byline"><span>${escapeHtml(article.author)}</span><time datetime="${escapeHtml(isoDate(article.published_at))}">${escapeHtml(shortDate(article.published_at))}</time></div></header>
@@ -376,35 +388,98 @@ function renderArticle(story) {
       <div class="article-body">${article.sections.map((section) => `<section><h2>${escapeHtml(section.heading)}</h2>${section.paragraphs.map((paragraph) => `<p>${escapeHtml(paragraph)}</p>`).join('')}</section>`).join('')}</div>
       <aside class="source-box"><p class="eyebrow">OPEN TABS, NOT MYSTERY MEAT</p><h2>Sources</h2><ol>${article.sources.map((source) => `<li><a href="${escapeHtml(source.url)}">${escapeHtml(source.label)} ↗</a></li>`).join('')}</ol></aside>
     </main>
-    <footer><p>Research and market data, not investment advice. Jokes are not evidence. Evidence is linked.</p><p><a href="/">Back to the wire</a></p></footer>
+    <footer><p>Research and market data, not investment advice. Jokes are not evidence. Evidence is linked.</p><p><a href="/">Back to the wire</a> · <a href="/privacy/">Privacy</a> · <a href="/support/">Support</a></p></footer>
     <script type="application/ld+json">${JSON.stringify(articleSchema).replaceAll('<', '\\u003c')}</script>
   </body></html>`
 }
 
 function renderAdvertise() {
-  return `<!doctype html><html lang="en"><head>${head({ title: "Advertise — My Quant Doesn't Speak English", description: 'Clearly labelled sponsorship around evidence-led finance reporting.', canonical: `${SITE_ORIGIN}/advertise/` })}</head><body>
+  return `<!doctype html><html lang="en"><head>${head({ title: `Advertise — ${BRAND_NAME}`, description: 'Clearly labelled sponsorship around evidence-led finance reporting.', canonical: `${SITE_ORIGIN}/advertise/` })}</head><body>
     <a class="skip" href="#advertise">Skip to media card</a>${masthead()}
     <main class="advertise-page" id="advertise">
       <section class="advertise-hero"><p class="eyebrow">BUY ATTENTION. RENT ZERO CONCLUSIONS.</p><h1>Advertise beside the argument.<br><em>Never inside it.</em></h1><p>Reach readers who care about market plumbing, institution risk, liquidity, and where the caveat went.</p><a class="big-cta" href="mailto:mrinal@liquilens.in?subject=Advertising%20on%20myquantdoesntspeakenglish.com">Ask for the launch media card →</a></section>
       <section class="ad-principles"><article><span>01</span><h2>Clearly labelled</h2><p>Every paid placement says advertisement. Native camouflage is not a product.</p></article><article><span>02</span><h2>Evidence firewall</h2><p>Sponsors cannot buy a finding, ranking, omission, or friendlier adjective.</p></article><article><span>03</span><h2>Useful audience</h2><p>Finance, treasury, risk, data, and research readers arriving through three specialist products.</p></article></section>
       <section class="placements"><p class="eyebrow">LAUNCH INVENTORY</p><h2>Two placements. Both visible. Neither sticky.</h2><div><article><b>A / THE INTERMISSION</b><p>Wide placement between the lead package and evidence wire.</p><span>Desktop 1200×180 · mobile 680×240</span></article><article><b>B / THE LAST WORD</b><p>End-of-wire placement before the product family routes.</p><span>Desktop 600×300 · mobile 680×300</span></article></div></section>
-    </main><footer><p>No investment solicitation, illegal products, deceptive returns, or unlabeled advertorial.</p><p><a href="/">Back to the wire</a></p></footer>
+    </main><footer><p>No investment solicitation, illegal products, deceptive returns, or unlabeled advertorial.</p><p><a href="/">Back to the wire</a> · <a href="/privacy/">Privacy</a> · <a href="/support/">Support</a></p></footer>
   </body></html>`
+}
+
+function renderInfoPage({ slug, eyebrow, title, dek, sections }) {
+  const canonical = `${SITE_ORIGIN}/${slug}/`
+  return `<!doctype html><html lang="en"><head>${head({ title: `${title} — ${BRAND_NAME}`, description: dek, canonical })}</head><body>
+    <a class="skip" href="#content">Skip to content</a>${masthead()}
+    <main class="info-page" id="content">
+      <header><p class="eyebrow">${escapeHtml(eyebrow)}</p><h1>${escapeHtml(title)}</h1><p>${escapeHtml(dek)}</p></header>
+      <div class="info-sections">${sections.map((section) => `<section><h2>${escapeHtml(section.heading)}</h2>${section.paragraphs.map((paragraph) => `<p>${paragraph}</p>`).join('')}</section>`).join('')}</div>
+    </main>
+    <footer><p>Research and market data, not investment advice.</p><p><a href="/">Home</a> · <a href="/privacy/">Privacy</a> · <a href="/support/">Support</a></p></footer>
+  </body></html>`
+}
+
+function renderPrivacy() {
+  return renderInfoPage({
+    slug: 'privacy',
+    eyebrow: 'PLAIN-ENGLISH PRIVACY NOTE / EFFECTIVE 13 AUG 2026',
+    title: 'Your reading list is not our business model.',
+    dek: `${BRAND_NAME} is designed to work without an account, advertising identifier, portfolio connection, or tracking profile.`,
+    sections: [
+      { heading: 'What stays on your device', paragraphs: [
+        'Stories you save and the topics you choose are stored locally on your device. We do not receive those choices. Removing the app or clearing its local data removes that local copy.',
+      ] },
+      { heading: 'What the app requests', paragraphs: [
+        `The app downloads a public daily evidence feed from <a href="${SITE_ORIGIN}/app-feed/v1.json">${SITE_ORIGIN}/app-feed/v1.json</a>. Our hosting and security providers may process ordinary request information such as an IP address, timestamp, and device or browser details to deliver and protect the service. We do not use that information to build advertising profiles.`,
+        'The current app contains no advertising SDK, third-party analytics SDK, account system, location request, contacts access, portfolio import, or cross-app tracking.',
+      ] },
+      { heading: 'Links and sources', paragraphs: [
+        'Source links open websites operated by LiquiLens, Seiche, Undertow, or another cited publisher. Their privacy practices apply after you leave this app.',
+      ] },
+      { heading: 'Questions or deletion requests', paragraphs: [
+        'There is no server-side app account to delete. For privacy questions, email <a href="mailto:mrinal@liquilens.in?subject=my%20quant%20privacy">mrinal@liquilens.in</a>. If the data practices change, this page and the store disclosures will be updated before the new collection begins.',
+      ] },
+    ],
+  })
+}
+
+function renderSupport() {
+  return renderInfoPage({
+    slug: 'support',
+    eyebrow: 'THE DESK BEHIND THE DESK',
+    title: 'Something got lost in translation?',
+    dek: `Help with the free ${BRAND_NAME} app, its daily evidence feed, saved stories, and source links.`,
+    sections: [
+      { heading: 'Refresh the daily edition', paragraphs: [
+        'Pull down on Today to request the newest edition. If the network or evidence feed is unavailable, the app keeps the last valid edition or opens its bundled offline edition. A saved edition is labelled clearly; it is never presented as live.',
+      ] },
+      { heading: 'Saved stories and topics', paragraphs: [
+        'Bookmarks and topic choices live only on the device. Reinstalling the app or clearing its storage resets them. The app intentionally has no login or cloud sync in this release.',
+      ] },
+      { heading: 'Report a problem', paragraphs: [
+        'Email <a href="mailto:mrinal@liquilens.in?subject=my%20quant%20app%20support">mrinal@liquilens.in</a> with your device model, operating-system version, and what you expected to happen. Do not send brokerage credentials, account numbers, or other financial information.',
+      ] },
+      { heading: 'Research boundary', paragraphs: [
+        'The app provides research, market data, and plain-language explanations. It does not provide investment advice, executable quotes, credit ratings, or predictions that an institution will fail.',
+      ] },
+    ],
+  })
 }
 
 function renderFeedJson(stories) {
   return `${JSON.stringify({
-    version: 'https://jsonfeed.org/version/1.1', title: "My Quant Doesn't Speak English",
+    version: 'https://jsonfeed.org/version/1.1', title: BRAND_NAME,
     home_page_url: `${SITE_ORIGIN}/`, feed_url: `${SITE_ORIGIN}/feed.json`,
     description: 'Evidence-led dispatches from Seiche, LiquiLens, Undertow, and the house desk.',
     items: stories.map((story) => ({ id: story.id, url: story.url, title: story.title, summary: story.dek, date_published: isoDate(story.published), tags: [story.product, story.beat, story.evidenceStatus] })),
   }, null, 2)}\n`
 }
 
+function renderAppFeed(stories, generatedAt, consumerCopy) {
+  return `${JSON.stringify(buildAppFeed(stories, generatedAt, consumerCopy), null, 2)}\n`
+}
+
 function renderFeedXml(stories) {
   const updated = stories[0]?.published || new Date().toISOString()
   return `<?xml version="1.0" encoding="utf-8"?>
-<feed xmlns="http://www.w3.org/2005/Atom"><title>My Quant Doesn't Speak English</title><subtitle>Finance, with subtitles and evidence links.</subtitle><id>${SITE_ORIGIN}/</id><link rel="alternate" href="${SITE_ORIGIN}/"/><link rel="self" href="${SITE_ORIGIN}/feed.xml"/><updated>${escapeXml(isoDate(updated))}</updated>${stories.map((story) => `<entry><id>${escapeXml(story.id)}</id><title>${escapeXml(story.title)}</title><link href="${escapeXml(story.url)}"/><published>${escapeXml(isoDate(story.published))}</published><updated>${escapeXml(isoDate(story.published))}</updated><summary>${escapeXml(story.dek)}</summary><category term="${escapeXml(story.product)}"/></entry>`).join('')}</feed>\n`
+<feed xmlns="http://www.w3.org/2005/Atom"><title>${BRAND_NAME}</title><subtitle>Finance, with subtitles and evidence links.</subtitle><id>${SITE_ORIGIN}/</id><link rel="alternate" href="${SITE_ORIGIN}/"/><link rel="self" href="${SITE_ORIGIN}/feed.xml"/><updated>${escapeXml(isoDate(updated))}</updated>${stories.map((story) => `<entry><id>${escapeXml(story.id)}</id><title>${escapeXml(story.title)}</title><link href="${escapeXml(story.url)}"/><published>${escapeXml(isoDate(story.published))}</published><updated>${escapeXml(isoDate(story.published))}</updated><summary>${escapeXml(story.dek)}</summary><category term="${escapeXml(story.product)}"/></entry>`).join('')}</feed>\n`
 }
 
 async function write(path, value) {
@@ -414,6 +489,10 @@ async function write(path, value) {
 
 async function build() {
   const cache = await syncFeeds()
+  const appCopy = await readJson(appCopyPath)
+  if (appCopy.schema !== 'mqdnse.app-copy.v1' || !appCopy.stories || typeof appCopy.stories !== 'object') {
+    throw new Error('data/app-copy.json: invalid app-copy contract')
+  }
   const house = await loadHouseArticles()
   const stories = [...Object.values(cache.feeds).flat(), ...house]
     .filter((story) => story.publicationStatus === 'PUBLISHED')
@@ -424,13 +503,16 @@ async function build() {
   await cp(join(root, 'assets'), join(dist, 'assets'), { recursive: true })
   await write(join(dist, 'index.html'), renderHome(stories, cache))
   await write(join(dist, 'advertise', 'index.html'), renderAdvertise())
+  await write(join(dist, 'privacy', 'index.html'), renderPrivacy())
+  await write(join(dist, 'support', 'index.html'), renderSupport())
   for (const article of house) await write(join(dist, 'articles', article.article.slug, 'index.html'), renderArticle(article))
   await write(join(dist, 'feed.json'), renderFeedJson(stories))
+  await write(join(dist, 'app-feed', 'v1.json'), renderAppFeed(stories, cache.syncedAt, appCopy.stories))
   await write(join(dist, 'feed.xml'), renderFeedXml(stories))
   await write(join(dist, 'robots.txt'), `User-agent: *\nAllow: /\nSitemap: ${SITE_ORIGIN}/sitemap.xml\n`)
-  const urls = [`${SITE_ORIGIN}/`, `${SITE_ORIGIN}/advertise/`, ...house.map((story) => story.url)]
+  const urls = [`${SITE_ORIGIN}/`, `${SITE_ORIGIN}/advertise/`, `${SITE_ORIGIN}/privacy/`, `${SITE_ORIGIN}/support/`, ...house.map((story) => story.url)]
   await write(join(dist, 'sitemap.xml'), `<?xml version="1.0" encoding="UTF-8"?><urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">${urls.map((url) => `<url><loc>${escapeXml(url)}</loc></url>`).join('')}</urlset>\n`)
-  await write(join(dist, 'llms.txt'), `# My Quant Doesn't Speak English\n\nEditorial and advertising hub for Seiche, LiquiLens, and LiquiLens—Undertow.\n\n- Home: ${SITE_ORIGIN}/\n- JSON Feed: ${SITE_ORIGIN}/feed.json\n- Atom: ${SITE_ORIGIN}/feed.xml\n- Source articles remain canonical at their product domains.\n- Research and market data, not investment advice.\n\n## Telegram desks\n\n- Seiche bot: https://t.me/seiche_desk_bot\n- LiquiLens bot: https://t.me/LiquiLens_bot\n- Undertow bot: https://t.me/undertow_LiquiLens_bot\n- Free reviewed dispatch channel: https://t.me/LiquidityLabDesk\n\n## Related evidence desk\n\n- NarcoScope, https://narcoscope.com/: an independent public-interest explorer for official drug-market records. It shares this network's evidence standards, not its financial subject.\n`)
+  await write(join(dist, 'llms.txt'), `# ${BRAND_NAME}\n\nEditorial and advertising hub for Seiche, LiquiLens, and LiquiLens—Undertow.\n\n- Home: ${SITE_ORIGIN}/\n- JSON Feed: ${SITE_ORIGIN}/feed.json\n- Atom: ${SITE_ORIGIN}/feed.xml\n- Source articles remain canonical at their product domains.\n- Research and market data, not investment advice.\n\n## Telegram desks\n\n- Seiche bot: https://t.me/seiche_desk_bot\n- LiquiLens bot: https://t.me/LiquiLens_bot\n- Undertow bot: https://t.me/undertow_LiquiLens_bot\n- Free reviewed dispatch channel: https://t.me/LiquidityLabDesk\n\n## Related evidence desk\n\n- NarcoScope, https://narcoscope.com/: an independent public-interest explorer for official drug-market records. It shares this network's evidence standards, not its financial subject.\n`)
   process.stdout.write(`Built ${stories.length} records (${house.length} house) into ${dist}\n`)
 }
 

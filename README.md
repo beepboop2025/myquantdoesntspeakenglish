@@ -1,4 +1,4 @@
-# myquantdoesntspeakenglish.com
+# my quant doesn’t speak english
 
 The public editorial and advertising front door for the Liquidity Lab family:
 Seiche, LiquiLens, and LiquiLens—Undertow.

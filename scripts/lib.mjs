@@ -3,6 +3,7 @@ import { createHash } from 'node:crypto'
 const ALLOWED_PRODUCTS = new Set(['liquilens', 'seiche', 'liquilens-undertow', 'myquant'])
 
 export const SITE_ORIGIN = 'https://myquantdoesntspeakenglish.com'
+export const APP_FEED_SCHEMA = 'mqdnse.app-feed.v1'
 
 export const SOURCES = [
   {
@@ -21,7 +22,7 @@ export const SOURCES = [
     product: 'liquilens-undertow',
     label: 'Undertow',
     url: 'https://api.seiche.info/undertow/dispatch.json',
-    home: 'https://liquilens-undertow.com/dispatch/',
+    home: 'https://liquilens-undertow.com/',
   },
 ]
 
@@ -35,8 +36,38 @@ export const EDITORIAL_WEIGHTS = Object.freeze({
   watch_note: 14,
 })
 
+// These are presentation-only expansions of contribution labels already
+// supplied by the evidence feeds. Keeping the table explicit prevents the
+// consumer feed from generating a new market claim while making desk taxonomy
+// readable outside the specialist products.
+const CONTRIBUTION_TRANSLATIONS = Object.freeze({
+  bounded_no_change_record: 'It records that no qualifying change was observed within the stated boundary.',
+  cross_bank_private_credit_concentration: 'It compares private-credit concentration across banks.',
+  cross_engine_institution_synthesis: 'It brings signals from multiple institution screens together.',
+  cross_sectional_review_breadth: 'It shows how broadly the review signal appears across the group.',
+  cross_signal_divergence: "It shows where the source's signals disagree.",
+  dated_forward_test: 'It names a dated check that can be revisited.',
+  fresh_longitudinal_delta: 'It identifies what changed over time.',
+  measurement_coverage_change: 'It records a change in measurement coverage.',
+  peer_relative_change: 'It shows how the institution changed relative to its peers.',
+  within_quarter_cross_bank_ranking: 'It compares banks within the same quarter.',
+})
+
+const APP_TOPICS = Object.freeze({
+  seiche: 'funding',
+  liquilens: 'institutions',
+  'liquilens-undertow': 'market-exits',
+  myquant: 'house',
+})
+
 const string = (...values) => values.find((value) => typeof value === 'string' && value.trim())?.trim() || ''
 const array = (value) => Array.isArray(value) ? value : []
+
+function reviewedConsumerCopy(value) {
+  return value && typeof value === 'object' && !Array.isArray(value)
+    && Boolean(string(value.inEnglish))
+    && Boolean(string(value.whyItMatters))
+}
 
 export function validHttpsUrl(value, fallback) {
   try {
@@ -104,7 +135,15 @@ export function normalizePayload(payload, source) {
   if (source.product === 'liquilens-undertow') {
     const letters = payload.letters && typeof payload.letters === 'object' ? payload.letters : {}
     const dates = array(payload.entries).length ? payload.entries : Object.keys(letters).sort().reverse()
-    rows = dates.map((date) => letters[date]?.story || letters[date]).filter(Boolean)
+    const normalized = dates.map((date) => {
+      const row = letters[date]?.story || letters[date]
+      const datedRecord = /^\d{4}-\d{2}-\d{2}$/.test(date)
+        ? `https://liquilens-undertow.com/dispatch/${date}.json`
+        : source.home
+      return normalizeRecord(row, source.product, datedRecord)
+    }).filter(Boolean)
+    if (!normalized.length) throw new Error('source supplied no usable records')
+    return normalized
   }
   const normalized = rows.map((row) => normalizeRecord(row, source.product, source.home)).filter(Boolean)
   if (!normalized.length) throw new Error('source supplied no usable records')
@@ -207,4 +246,124 @@ export function productLabel(product) {
     'liquilens-undertow': 'Undertow',
     myquant: 'House desk',
   })[product] || product
+}
+
+function presentationLabel(value) {
+  const readable = String(value || '').replaceAll(/[_-]+/g, ' ').replaceAll(/\s+/g, ' ').trim()
+  return readable ? `${readable[0].toUpperCase()}${readable.slice(1)}` : 'Evidence wire'
+}
+
+function appSlug(story) {
+  const preferred = story.article?.slug || story.id
+  return String(preferred || '')
+    .normalize('NFKD')
+    .toLowerCase()
+    .replaceAll(/[^a-z0-9]+/g, '-')
+    .replaceAll(/^-+|-+$/g, '')
+}
+
+function contributionExplanation(value) {
+  const contribution = String(value || '').trim()
+  if (!contribution) return 'Read the source record for what this adds.'
+
+  const parts = contribution.split(/\s*·\s*/).filter(Boolean)
+  if (parts.every((part) => /^[a-z0-9_-]+$/.test(part))) {
+    return parts.map((part) => CONTRIBUTION_TRANSLATIONS[part]
+      || `It adds ${part.replaceAll(/[_-]+/g, ' ')}.`).join(' ')
+  }
+  return contribution
+}
+
+function keyNumber(value) {
+  const summary = String(value || '').trim()
+  if (!summary) return null
+  const match = summary.match(/(?:[$£€₹]\s*)?[+-]?(?:\d{1,3}(?:,\d{3})+|\d+)(?:\.\d+)?(?:\s+(?:out of|of)\s+(?:\d{1,3}(?:,\d{3})+|\d+)(?:\.\d+)?)?(?:\s?(?:%|bps?|basis points?|[$£€₹][KMBT]?|[KMBT](?:n|illion)?))?/i)
+  if (!match) return null
+
+  const start = Math.max(
+    summary.lastIndexOf('.', match.index - 1),
+    summary.lastIndexOf('!', match.index - 1),
+    summary.lastIndexOf('?', match.index - 1),
+  ) + 1
+  const candidates = [summary.indexOf('.', match.index), summary.indexOf('!', match.index), summary.indexOf('?', match.index)]
+    .filter((index) => index !== -1)
+  const end = candidates.length ? Math.min(...candidates) + 1 : summary.length
+  return { value: match[0].trim(), label: summary.slice(start, end).trim() }
+}
+
+function readingMinutes(story) {
+  const articleCopy = array(story.article?.sections)
+    .flatMap((section) => array(section?.paragraphs))
+    .join(' ')
+  const copy = [story.title, story.dek, story.contribution, story.limitation, articleCopy]
+    .filter(Boolean)
+    .join(' ')
+  const words = copy.match(/\S+/g)?.length || 0
+  return Math.max(1, Math.ceil(words / 225))
+}
+
+/**
+ * Convert normalized evidence records into the versioned mobile-app contract.
+ * Consumer wording is copied or deterministically expanded from the normalized
+ * record; the original evidence fields remain alongside it for auditability.
+ */
+export function buildAppFeed(stories, generatedAt = new Date().toISOString(), consumerCopy = {}) {
+  if (!Number.isFinite(Date.parse(generatedAt))) throw new Error('invalid app-feed generation clock')
+  if (!consumerCopy || typeof consumerCopy !== 'object' || Array.isArray(consumerCopy)) {
+    throw new Error('invalid app-feed consumer copy')
+  }
+
+  const published = array(stories)
+    .filter((story) => story?.publicationStatus === 'PUBLISHED' && reviewedConsumerCopy(consumerCopy[story.id]))
+    .sort((a, b) => Date.parse(b.published) - Date.parse(a.published) || String(a.id).localeCompare(String(b.id)))
+  const slugs = new Set()
+  const appStories = published.map((story) => {
+    const slug = appSlug(story)
+    if (!slug || slugs.has(slug)) throw new Error(`invalid or duplicate app-feed slug: ${slug || '(empty)'}`)
+    slugs.add(slug)
+
+    const source = { id: story.product, label: productLabel(story.product) }
+    const citations = array(story.article?.sources).length
+      ? story.article.sources.map(({ label, url }) => ({ label, url }))
+      : [{ label: source.label, url: story.url }]
+    const reviewed = consumerCopy[story.id]
+    const reviewedNumber = reviewed.keyNumber && typeof reviewed.keyNumber === 'object'
+      && string(reviewed.keyNumber.value) && string(reviewed.keyNumber.label)
+      ? { value: reviewed.keyNumber.value.trim(), label: reviewed.keyNumber.label.trim() }
+      : null
+    const number = reviewedNumber || keyNumber(story.dek)
+    const item = {
+      id: story.id,
+      slug,
+      source,
+      topic: APP_TOPICS[story.product],
+      beat: presentationLabel(story.beat),
+      quantSays: story.title,
+      inEnglish: reviewed.inEnglish.trim(),
+      whyItMatters: reviewed.whyItMatters.trim(),
+      ...(number ? { keyNumber: number } : {}),
+      uncertainty: story.limitation,
+      publishedAt: new Date(story.published).toISOString(),
+      readingMinutes: readingMinutes(story),
+      sourceUrl: story.url,
+      sources: citations,
+      evidence: {
+        status: story.evidenceStatus,
+        contribution: story.contribution,
+        limitation: story.limitation,
+        eventTime: story.eventTime,
+        knowledgeTime: story.knowledgeTime,
+        publicationStatus: story.publicationStatus,
+      },
+    }
+    item.fingerprint = createHash('sha256').update(JSON.stringify(item)).digest('hex')
+    return item
+  })
+
+  return {
+    schema: APP_FEED_SCHEMA,
+    editionId: createHash('sha256').update(appStories.map(({ fingerprint }) => fingerprint).join('\n')).digest('hex'),
+    generatedAt: new Date(generatedAt).toISOString(),
+    stories: appStories,
+  }
 }

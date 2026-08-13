@@ -2,8 +2,8 @@
   <rect width="1200" height="630" fill="#c9d1ff"/>
   <rect x="730" width="470" height="630" fill="#f4e75b"/>
   <path d="M730 0v630" stroke="#111318" stroke-width="8"/>
-  <text x="70" y="110" font-family="Arial Black,sans-serif" font-size="58" font-weight="900" fill="#1746d1">MY QUANT DOESN'T</text>
-  <text x="70" y="175" font-family="Arial Black,sans-serif" font-size="58" font-weight="900" fill="#1746d1">SPEAK ENGLISH.COM</text>
+  <text x="70" y="110" font-family="Arial Black,sans-serif" font-size="58" font-weight="900" fill="#1746d1">my quant doesn’t</text>
+  <text x="70" y="175" font-family="Arial Black,sans-serif" font-size="58" font-weight="900" fill="#1746d1">speak english.com</text>
   <text x="70" y="320" font-family="Georgia,serif" font-size="92" fill="#111318">The numbers are fluent.</text>
   <text x="70" y="420" font-family="Georgia,serif" font-size="82" font-style="italic" fill="#1746d1">The headlines need subtitles.</text>
   <rect x="780" y="90" width="370" height="190" rx="8" fill="#ff8b5c" stroke="#111318" stroke-width="6"/>

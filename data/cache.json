@@ -1,6 +1,6 @@
 {
   "schema": "mqdnse.feed-cache.v1",
-  "syncedAt": "2026-08-12T15:50:38.448Z",
+  "syncedAt": "2026-08-13T08:35:38.506Z",
   "feeds": {
     "liquilens": [
       {
@@ -22,22 +22,22 @@
         "fingerprint": "882b6b12f7027e7fbc5ce7a7886e8a16235757852ab6d6bc24d5d2b7d94d75e9"
       },
       {
-        "id": "liquilens-india-breadth-2026-08-11",
+        "id": "liquilens-india-breadth-2026-08-12",
         "product": "liquilens",
         "title": "4 of 19 covered Indian institutions sit above green",
         "dek": "This is the breadth of the vetted live board, not the breadth of the entire Indian financial system; stale and uncovered names remain outside the denominator.",
-        "url": "https://liquilens.in/desk/#liquilens-india-breadth-2026-08-11",
+        "url": "https://liquilens.in/desk/#liquilens-india-breadth-2026-08-12",
         "beat": "institution-risk",
         "editorialClass": "desk_brief",
         "publicationStatus": "PUBLISHED",
-        "published": "2026-08-12T15:50:37Z",
-        "eventTime": "2026-08-11T00:00:00Z",
-        "knowledgeTime": "2026-08-12T15:50:37Z",
+        "published": "2026-08-13T08:35:37Z",
+        "eventTime": "2026-08-12T00:00:00Z",
+        "knowledgeTime": "2026-08-13T08:35:37Z",
         "evidenceStatus": "DERIVED",
         "contribution": "cross_sectional_review_breadth",
         "limitation": "The denominator is the fresh-vetted board, not all regulated institutions.",
         "newsworthiness": null,
-        "fingerprint": "49551830867892b525b2ecf7f2870d4f928322a348388c85081bce055296c904"
+        "fingerprint": "20427fd54071598514830f7850105d70ceba2d8ad6a6c65c88ee0c4b40f676e1"
       },
       {
         "id": "liquilens-us-ndfi-34953-2026-03-31",
@@ -710,6 +710,24 @@
     ],
     "liquilens-undertow": [
       {
+        "id": "liquilens-undertow:2026-08-13",
+        "product": "liquilens-undertow",
+        "title": "No segment changed tier; funding EROSION persists across a quiet board.",
+        "dek": "1 of 9 segments score today; UST, HY, EQUITY, ETF, FX, CN, CRYPTO, BSTOCK still accrue history. The funding overlay reads EROSION. Qualifying measures disagree inside at least one scored cell; every such cell's span is Agent/Desk tier today, because the span would hand back the percentile of a row the free board withholds.",
+        "url": "https://liquilens-undertow.com/dispatch/2026-08-13.json",
+        "beat": "cross-market-liquidity",
+        "editorialClass": "watch_note",
+        "publicationStatus": "PUBLISHED",
+        "published": "2026-08-13T03:45:22+00:00",
+        "eventTime": "2026-08-13T00:00:00Z",
+        "knowledgeTime": "2026-08-13T03:45:22+00:00",
+        "evidenceStatus": "DERIVED",
+        "contribution": "bounded_no_change_record",
+        "limitation": "PARTIAL means still accruing: a scored tier needs at least 2 measures with a stress percentile at 60+ observations each; an accruing or absent measure is disclosed, never rendered as calm. Research and market data, not investment advice.",
+        "newsworthiness": 25,
+        "fingerprint": "f15b25fe4bae737203ab4d8096edf27f216ca1cb419130076b63a994b469b029"
+      },
+      {
         "id": "liquilens-undertow:2026-08-12",
         "product": "liquilens-undertow",
         "title": "No segment changed tier; funding EROSION persists across a quiet board.",
@@ -750,7 +768,7 @@
         "product": "liquilens-undertow",
         "title": "Calm rows; the funding overlay reads EROSION.",
         "dek": "1 of 9 segments score today; UST, HY, EQUITY, ETF, FX, CN, CRYPTO, BSTOCK still accrue history. The funding overlay reads EROSION. Qualifying measures disagree inside at least one scored cell; every such cell's span is Agent/Desk tier today, because the span would hand back the percentile of a row the free board withholds.",
-        "url": "https://liquilens-undertow.com/dispatch/",
+        "url": "https://liquilens-undertow.com/dispatch/2026-08-10.json",
         "beat": "evidence-wire",
         "editorialClass": "evidence_record",
         "publicationStatus": "PUBLISHED",
@@ -761,14 +779,14 @@
         "contribution": "evidence-backed desk finding",
         "limitation": "PARTIAL means still accruing: a scored tier needs at least 2 measures with a stress percentile at 60+ observations each; an accruing or absent measure is disclosed, never rendered as calm. Research and market data, not investment advice.",
         "newsworthiness": null,
-        "fingerprint": "e3836c7d92b19eb3713cf6a105e92f9c03b87ffe6e07da311c55cc162d842d5d"
+        "fingerprint": "521435d55d76533993cffd090f7245a06b77cd5d14e8c406875b0924f72c1e54"
       },
       {
         "id": "liquilens-undertow:2026-08-09T21:45:23+00:00",
         "product": "liquilens-undertow",
         "title": "Calm rows; the funding overlay reads EROSION.",
         "dek": "1 of 9 segments score today; UST, HY, EQUITY, ETF, FX, CN, CRYPTO, BSTOCK still accrue history. The funding overlay reads EROSION. Qualifying measures disagree inside at least one scored cell; every such cell's span is Agent/Desk tier today, because the span would hand back the percentile of a row the free board withholds.",
-        "url": "https://liquilens-undertow.com/dispatch/",
+        "url": "https://liquilens-undertow.com/dispatch/2026-08-09.json",
         "beat": "evidence-wire",
         "editorialClass": "evidence_record",
         "publicationStatus": "PUBLISHED",
@@ -779,14 +797,14 @@
         "contribution": "evidence-backed desk finding",
         "limitation": "PARTIAL means still accruing: a scored tier needs at least 2 measures with a stress percentile at 60+ observations each; an accruing or absent measure is disclosed, never rendered as calm. Research and market data, not investment advice.",
         "newsworthiness": null,
-        "fingerprint": "fb6205d01b398cb19036b3cc4cd392f0d868e238dcf74d879f5bf1ec04f448dc"
+        "fingerprint": "e942db8523b2b70d63ce9e61b735fc6eb97374dfb3f6ff8065f3c27a6ffa9029"
       },
       {
         "id": "liquilens-undertow:2026-08-08T21:45:14+00:00",
         "product": "liquilens-undertow",
         "title": "Calm rows; the funding overlay reads EROSION.",
         "dek": "1 of 9 segments score today; UST, HY, EQUITY, ETF, FX, CN, CRYPTO, BSTOCK still accrue history. The funding overlay reads EROSION. Qualifying measures disagree inside at least one scored cell; every such cell's span is Agent/Desk tier today, because the span would hand back the percentile of a row the free board withholds.",
-        "url": "https://liquilens-undertow.com/dispatch/",
+        "url": "https://liquilens-undertow.com/dispatch/2026-08-08.json",
         "beat": "evidence-wire",
         "editorialClass": "evidence_record",
         "publicationStatus": "PUBLISHED",
@@ -797,14 +815,14 @@
         "contribution": "evidence-backed desk finding",
         "limitation": "PARTIAL means still accruing: a scored tier needs at least 2 measures with a stress percentile at 60+ observations each; an accruing or absent measure is disclosed, never rendered as calm. Research and market data, not investment advice.",
         "newsworthiness": null,
-        "fingerprint": "dc6966192878d26704fa5672624d17f9023e41b7ec44f476b63635670129a293"
+        "fingerprint": "14cbbd0caea159660ba9bf859fc6be768975561029cad916fb84428a263a47cc"
       },
       {
         "id": "liquilens-undertow:2026-08-07T21:43:48+00:00",
         "product": "liquilens-undertow",
         "title": "Calm rows; the funding overlay reads STRAIN.",
         "dek": "6 of 9 segments score today; HY, ETF, BSTOCK still accrue history. The funding overlay reads STRAIN. The hottest qualifying measure is VIX close (VIXCLS), at percentile 33 of its own history; the coolest is amihud (large), at 7.8. Qualifying measures disagree inside at least one scored cell; every such cell's span is Agent/Desk tier today, because the span would hand back the percentile of a row the free board withholds.",
-        "url": "https://liquilens-undertow.com/dispatch/",
+        "url": "https://liquilens-undertow.com/dispatch/2026-08-07.json",
         "beat": "evidence-wire",
         "editorialClass": "evidence_record",
         "publicationStatus": "PUBLISHED",
@@ -815,14 +833,14 @@
         "contribution": "evidence-backed desk finding",
         "limitation": "PARTIAL means still accruing: a scored tier needs at least 2 measures with a stress percentile at 60+ observations each; an accruing or absent measure is disclosed, never rendered as calm. Research and market data, not investment advice.",
         "newsworthiness": null,
-        "fingerprint": "2fc40a0371a8a0056cf39943034bf92f8957a2f6229778760e06076c1da8c2a8"
+        "fingerprint": "d7d68005aa0b317797dbaf2a8b6a579d123eaa63fb7ea5c5fa26f57cb0aa9fa1"
       },
       {
         "id": "liquilens-undertow:2026-08-06T21:44:50+00:00",
         "product": "liquilens-undertow",
         "title": "Calm rows; the funding overlay reads STRAIN.",
         "dek": "5 of 9 segments score today; HY, ETF, CRYPTO, BSTOCK still accrue history. The funding overlay reads STRAIN. The hottest qualifying measure is VIX close (VIXCLS), at percentile 37.4 of its own history; the coolest is amihud (large), at 7.8. Qualifying measures disagree inside at least one scored cell; every such cell's span is Agent/Desk tier today, because the span would hand back the percentile of a row the free board withholds.",
-        "url": "https://liquilens-undertow.com/dispatch/",
+        "url": "https://liquilens-undertow.com/dispatch/2026-08-06.json",
         "beat": "evidence-wire",
         "editorialClass": "evidence_record",
         "publicationStatus": "PUBLISHED",
@@ -833,14 +851,14 @@
         "contribution": "evidence-backed desk finding",
         "limitation": "PARTIAL means still accruing: a scored tier needs at least 2 measures with a stress percentile at 60+ observations each; an accruing or absent measure is disclosed, never rendered as calm. Research and market data, not investment advice.",
         "newsworthiness": null,
-        "fingerprint": "c78cd10df5eff4c0551d30c975e3842db6992ce8791bc461d70ac662ba7fff73"
+        "fingerprint": "f008120b32e724c7bea4ef8228203866097e21214829fe099a8a178293ea7636"
       },
       {
         "id": "liquilens-undertow:2026-08-05T21:44:45+00:00",
         "product": "liquilens-undertow",
         "title": "Calm rows; the funding overlay reads STRAIN.",
         "dek": "5 of 9 segments score today; HY, ETF, CRYPTO, BSTOCK still accrue history. The funding overlay reads STRAIN. The hottest qualifying measure is VIX close (VIXCLS), at percentile 42.8 of its own history; the coolest is amihud (large), at 7.8. Qualifying measures disagree inside at least one scored cell; every such cell's span is Agent/Desk tier today, because the span would hand back the percentile of a row the free board withholds.",
-        "url": "https://liquilens-undertow.com/dispatch/",
+        "url": "https://liquilens-undertow.com/dispatch/2026-08-05.json",
         "beat": "evidence-wire",
         "editorialClass": "evidence_record",
         "publicationStatus": "PUBLISHED",
@@ -851,14 +869,14 @@
         "contribution": "evidence-backed desk finding",
         "limitation": "PARTIAL means still accruing: a scored tier needs at least 2 measures with a stress percentile at 60+ observations each; an accruing or absent measure is disclosed, never rendered as calm. Research and market data, not investment advice.",
         "newsworthiness": null,
-        "fingerprint": "9a96df41ea023f45b9f71eb6426a4d351bc362ca2bb3b2cf4c58d0d111493465"
+        "fingerprint": "9bce0003924ea2efda601d6a9f36d2767a1ebc1f877b86a12cdbd7ad3ce02d5a"
       },
       {
         "id": "liquilens-undertow:2026-08-04T21:44:27+00:00",
         "product": "liquilens-undertow",
         "title": "Calm rows; the funding overlay reads STRAIN.",
         "dek": "5 of 9 segments score today; HY, ETF, CRYPTO, BSTOCK still accrue history. The funding overlay reads STRAIN. The hottest qualifying measure is VIX close (VIXCLS), at percentile 37.7 of its own history; the coolest is amihud (large), at 7.8. Qualifying measures disagree inside at least one scored cell; every such cell's span is Agent/Desk tier today, because the span would hand back the percentile of a row the free board withholds.",
-        "url": "https://liquilens-undertow.com/dispatch/",
+        "url": "https://liquilens-undertow.com/dispatch/2026-08-04.json",
         "beat": "evidence-wire",
         "editorialClass": "evidence_record",
         "publicationStatus": "PUBLISHED",
@@ -869,14 +887,14 @@
         "contribution": "evidence-backed desk finding",
         "limitation": "PARTIAL means still accruing: a scored tier needs at least 2 measures with a stress percentile at 60+ observations each; an accruing or absent measure is disclosed, never rendered as calm. Research and market data, not investment advice.",
         "newsworthiness": null,
-        "fingerprint": "4bce6865d01d739ee6c59a1ccdcf87659e1db3a149e317bccef2beff2c38e8c2"
+        "fingerprint": "173ec4a4e4df5094bb0855d119b90f2558e108c2633f11484964c600f713030c"
       },
       {
         "id": "liquilens-undertow:2026-08-03T21:43:29+00:00",
         "product": "liquilens-undertow",
         "title": "Calm rows; the funding overlay reads STRAIN.",
         "dek": "5 of 9 segments score today; HY, ETF, CRYPTO, BSTOCK still accrue history. The funding overlay reads STRAIN. The hottest qualifying measure is VIX close (VIXCLS), at percentile 38.8 of its own history; the coolest is amihud (large), at 7.8. Qualifying measures disagree inside at least one scored cell; every such cell's span is Agent/Desk tier today, because the span would hand back the percentile of a row the free board withholds.",
-        "url": "https://liquilens-undertow.com/dispatch/",
+        "url": "https://liquilens-undertow.com/dispatch/2026-08-03.json",
         "beat": "evidence-wire",
         "editorialClass": "evidence_record",
         "publicationStatus": "PUBLISHED",
@@ -887,14 +905,14 @@
         "contribution": "evidence-backed desk finding",
         "limitation": "PARTIAL means still accruing: a scored tier needs at least 2 measures with a stress percentile at 60+ observations each; an accruing or absent measure is disclosed, never rendered as calm. Research and market data, not investment advice.",
         "newsworthiness": null,
-        "fingerprint": "ace090608c05cefee62ee92845a5c28eda8392ae1718ac8c76c677a40618ad18"
+        "fingerprint": "673bac1edaf1cda4498f12fdf6882b7880b4a212e7e3b078d91b2a74217b50ee"
       },
       {
         "id": "liquilens-undertow:2026-08-03T09:00:12+00:00",
         "product": "liquilens-undertow",
         "title": "Calm rows; the funding overlay reads STRAIN.",
         "dek": "5 of 9 segments score today; HY, ETF, CRYPTO, BSTOCK still accrue history. The funding overlay reads STRAIN. The hottest qualifying measure is VIX close (VIXCLS), at percentile 47 of its own history; the coolest is amihud (large), at 7.8. Qualifying measures disagree inside at least one scored cell; every such cell's span is Agent/Desk tier today, because the span would hand back the percentile of a row the free board withholds.",
-        "url": "https://liquilens-undertow.com/dispatch/",
+        "url": "https://liquilens-undertow.com/dispatch/2026-08-01.json",
         "beat": "evidence-wire",
         "editorialClass": "evidence_record",
         "publicationStatus": "PUBLISHED",
@@ -905,14 +923,14 @@
         "contribution": "evidence-backed desk finding",
         "limitation": "PARTIAL means still accruing: a scored tier needs at least 2 measures with a stress percentile at 60+ observations each; an accruing or absent measure is disclosed, never rendered as calm. Research and market data, not investment advice.",
         "newsworthiness": null,
-        "fingerprint": "479cda1ebeca879be4ddf5e012817086082380642235029cccb8b13e2e329b48"
+        "fingerprint": "db1487b6dce7174e1ce62a47cb7adea824181fa61d2e9b6222a1ac8e9517f6f8"
       },
       {
         "id": "liquilens-undertow:2026-07-31T21:47:02+00:00",
         "product": "liquilens-undertow",
         "title": "Calm rows; the funding overlay reads STRAIN.",
         "dek": "5 of 9 segments score today; HY, ETF, CRYPTO, BSTOCK still accrue history. The funding overlay reads STRAIN. The hottest qualifying measure is port export throughput Δ12m — Tianjin Xin Gang, at a withheld percentile of its own history; the coolest is lambda_hat (large), at a withheld percentile. Inside CN the qualifying measures span 0.10–0.98; the tier is their mean — read the measures, not just the tier.",
-        "url": "https://liquilens-undertow.com/dispatch/",
+        "url": "https://liquilens-undertow.com/dispatch/2026-07-31.json",
         "beat": "evidence-wire",
         "editorialClass": "evidence_record",
         "publicationStatus": "PUBLISHED",
@@ -923,14 +941,14 @@
         "contribution": "evidence-backed desk finding",
         "limitation": "PARTIAL means still accruing: a scored tier needs at least 2 measures with a stress percentile at 60+ observations each; an accruing or absent measure is disclosed, never rendered as calm. Research and market data, not investment advice.",
         "newsworthiness": null,
-        "fingerprint": "8b4d97d5cdc3d80cc25eb11710a72ed43805ccd23883658a32101bcbf8499d77"
+        "fingerprint": "16e4684608418091db9c1d290e9b8b3513dbd4f16bedb49f0606e021356e28b4"
       },
       {
         "id": "liquilens-undertow:2026-07-30T21:46:37+00:00",
         "product": "liquilens-undertow",
         "title": "Calm rows; the funding overlay reads STRAIN.",
         "dek": "5 of 9 segments score today; HY, ETF, CRYPTO, BSTOCK still accrue history. The funding overlay reads STRAIN. The hottest qualifying measure is port export throughput Δ12m — Tianjin Xin Gang, at a withheld percentile of its own history; the coolest is lambda_hat (large), at a withheld percentile. Inside CN the qualifying measures span 0.10–0.98; the tier is their mean — read the measures, not just the tier.",
-        "url": "https://liquilens-undertow.com/dispatch/",
+        "url": "https://liquilens-undertow.com/dispatch/2026-07-30.json",
         "beat": "evidence-wire",
         "editorialClass": "evidence_record",
         "publicationStatus": "PUBLISHED",
@@ -941,14 +959,14 @@
         "contribution": "evidence-backed desk finding",
         "limitation": "PARTIAL means still accruing: a scored tier needs at least 2 measures with a stress percentile at 60+ observations each; an accruing or absent measure is disclosed, never rendered as calm. Research and market data, not investment advice.",
         "newsworthiness": null,
-        "fingerprint": "5ed90da347e43c67a0e11dc807e50266887f729c3c8bfdf6eed37d1fff74a781"
+        "fingerprint": "45e0dcb13a7911b81fbb4b68ffa25e5dea8717466f2b6439f1e5f565b3ffef4b"
       },
       {
         "id": "liquilens-undertow:2026-07-29T21:48:20+00:00",
         "product": "liquilens-undertow",
         "title": "Calm rows; the funding overlay reads STRAIN.",
         "dek": "5 of 9 segments score today; HY, ETF, CRYPTO, BSTOCK still accrue history. The funding overlay reads STRAIN. The hottest qualifying measure is port export throughput Δ12m — Tianjin Xin Gang, at a withheld percentile of its own history; the coolest is lambda_hat (large), at a withheld percentile. Inside CN the qualifying measures span 0.10–0.98; the tier is their mean — read the measures, not just the tier.",
-        "url": "https://liquilens-undertow.com/dispatch/",
+        "url": "https://liquilens-undertow.com/dispatch/2026-07-29.json",
         "beat": "evidence-wire",
         "editorialClass": "evidence_record",
         "publicationStatus": "PUBLISHED",
@@ -959,14 +977,14 @@
         "contribution": "evidence-backed desk finding",
         "limitation": "PARTIAL means still accruing: a scored tier needs at least 2 measures with a stress percentile at 60+ observations each; an accruing or absent measure is disclosed, never rendered as calm. Research and market data, not investment advice.",
         "newsworthiness": null,
-        "fingerprint": "2dcc8f5519d76fdf9103e22cd9bc876c9d002b71f5450d86f254edcb808542a8"
+        "fingerprint": "51d39eb9e6c9e8f2d6528e8e6071bfb14ec1311d74d97eb7aed1459542a76164"
       },
       {
         "id": "liquilens-undertow:2026-07-28T21:46:12+00:00",
         "product": "liquilens-undertow",
         "title": "Calm rows; the funding overlay reads STRAIN.",
         "dek": "5 of 9 segments score today; HY, ETF, CRYPTO, BSTOCK still accrue history. The funding overlay reads STRAIN. The hottest qualifying measure is port export throughput Δ12m — Tianjin Xin Gang, at a withheld percentile of its own history; the coolest is lambda_hat (large), at a withheld percentile. Inside UST the qualifying measures span 0.07–0.97; the tier is their mean — read the measures, not just the tier.",
-        "url": "https://liquilens-undertow.com/dispatch/",
+        "url": "https://liquilens-undertow.com/dispatch/2026-07-28.json",
         "beat": "evidence-wire",
         "editorialClass": "evidence_record",
         "publicationStatus": "PUBLISHED",
@@ -977,14 +995,14 @@
         "contribution": "evidence-backed desk finding",
         "limitation": "PARTIAL means still accruing: a scored tier needs at least 2 measures with a stress percentile at 60+ observations each; an accruing or absent measure is disclosed, never rendered as calm. Research and market data, not investment advice.",
         "newsworthiness": null,
-        "fingerprint": "3d292cbde06ff4370be8dff5fee4559335f5395cda67c6da7830d1bafb7958ee"
+        "fingerprint": "a6b11e99cbdb85431baad745d6780e5e9eefdbb875dd490b4fa703e20e30f798"
       },
       {
         "id": "liquilens-undertow:2026-07-27T21:45:33+00:00",
         "product": "liquilens-undertow",
         "title": "Calm rows; the funding overlay reads STRAIN.",
         "dek": "5 of 9 segments score today; HY, ETF, CRYPTO, BSTOCK still accrue history. The funding overlay reads STRAIN. The hottest qualifying measure is port export throughput Δ12m — Tianjin Xin Gang, at a withheld percentile of its own history; the coolest is lambda_hat (large), at a withheld percentile. Inside CN the qualifying measures span 0.10–0.98; the tier is their mean — read the measures, not just the tier.",
-        "url": "https://liquilens-undertow.com/dispatch/",
+        "url": "https://liquilens-undertow.com/dispatch/2026-07-27.json",
         "beat": "evidence-wire",
         "editorialClass": "evidence_record",
         "publicationStatus": "PUBLISHED",
@@ -995,7 +1013,7 @@
         "contribution": "evidence-backed desk finding",
         "limitation": "PARTIAL means still accruing: a scored tier needs at least 2 measures with a stress percentile at 60+ observations each; an accruing or absent measure is disclosed, never rendered as calm. Research and market data, not investment advice.",
         "newsworthiness": null,
-        "fingerprint": "8e4fae93af2b9e2e7917e0f10150609c0bebd6bc7175c25dff535971c80277db"
+        "fingerprint": "32f411e1969e089bda72fecbac5c13ddbf38baf60894e367cdbce31ca66e0ca2"
       }
     ]
   },
@@ -1010,7 +1028,7 @@
     },
     "liquilens-undertow": {
       "state": "live",
-      "detail": "16 records"
+      "detail": "17 records"
     }
   }
 }

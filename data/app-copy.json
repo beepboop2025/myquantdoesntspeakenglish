@@ -1,0 +1,41 @@
+{
+  "schema": "mqdnse.app-copy.v1",
+  "stories": {
+    "liquilens-india-breadth-2026-08-12": {
+      "inEnglish": "Four names on this specific, freshly checked list need more attention than the green group. The list is not the whole Indian financial system.",
+      "whyItMatters": "The denominator changes the story. This is a review queue for covered institutions, not a nationwide health score.",
+      "keyNumber": {
+        "value": "4 / 19",
+        "label": "covered names above green"
+      }
+    },
+    "liquilens-undertow:2026-08-13": {
+      "inEnglish": "The parts with enough history did not change category. Most market sections still do not have enough observations to score, so quiet cannot be read as all clear.",
+      "whyItMatters": "A missing score is a coverage gap, not reassuring evidence. The app keeps that boundary attached to the headline.",
+      "keyNumber": {
+        "value": "1 / 9",
+        "label": "market segments currently score"
+      }
+    },
+    "liquilens-india-utkarsh-sfb-2025-2025-03-31": {
+      "inEnglish": "This bank is in the orange review queue, but none of the published signals are currently active. That means inspect the public record, not predict an outcome.",
+      "whyItMatters": "A review tier tells analysts where to look next. It is not a forecast that the institution will fail or face distress.",
+      "keyNumber": {
+        "value": "0",
+        "label": "published signals currently active"
+      }
+    },
+    "seiche:2026-08-12-daily": {
+      "inEnglish": "The percentage-style alarm is huge. The actual overnight amount is $100 million, and the tiny starting point is doing most of the shouting.",
+      "whyItMatters": "Big statistical labels can make small dollar moves look dramatic. Reading both keeps a routine signal from becoming a false siren.",
+      "keyNumber": {
+        "value": "$100m",
+        "label": "accepted overnight"
+      }
+    },
+    "myquant:why-the-quant-needs-subtitles": {
+      "inEnglish": "Numbers, explanations, and jokes belong in separate drawers. Here is how this desk decides what can cross from one drawer to another.",
+      "whyItMatters": "A translation is useful only if it preserves the original claim, its source, and the point where the evidence stops."
+    }
+  }
+}

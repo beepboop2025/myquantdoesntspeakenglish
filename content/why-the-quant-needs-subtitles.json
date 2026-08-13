@@ -18,7 +18,7 @@
   "sources": [
     { "label": "Seiche dispatch archive", "url": "https://seiche.info/dispatches/" },
     { "label": "LiquiLens intelligence desk", "url": "https://liquilens.in/desk/" },
-    { "label": "LiquiLens—Undertow dispatch", "url": "https://liquilens-undertow.com/dispatch/" }
+    { "label": "LiquiLens—Undertow desk", "url": "https://liquilens-undertow.com/" }
   ],
   "sections": [
     {
