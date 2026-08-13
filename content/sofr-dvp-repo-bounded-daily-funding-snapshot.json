@@ -1,0 +1,83 @@
+{
+  "schema": "mqdnse.house-article.v1",
+  "slug": "sofr-dvp-repo-bounded-daily-funding-snapshot",
+  "product": "myquant",
+  "title": "SOFR and DVP repo volume give a bounded daily funding snapshot",
+  "dek": "SOFR fell 2 basis points while preliminary DVP repo volume rose 0.05%. The paired move is context—not evidence of broad funding stress.",
+  "beat": "dollar-funding-plumbing",
+  "editorial_class": "house_investigation",
+  "publication_status": "PUBLISHED",
+  "published_at": "2026-08-13T23:28:30+05:30",
+  "event_time": "2026-08-12T00:00:00Z",
+  "knowledge_time": "2026-08-13T17:42:55Z",
+  "author": "My Quant research desk",
+  "evidence_status": "VALIDATED_ANALYSIS",
+  "original_contribution": "A two-series calculation that pairs the latest official SOFR observations with preliminary DVP repo-volume observations, while keeping the different source dates and limits explicit.",
+  "limitations": [
+    "This is a two-observation snapshot with asynchronous source dates: SOFR through August 12 and preliminary DVP repo volume through August 11.",
+    "SOFR is a reference rate and does not measure every funding condition.",
+    "The DVP repo observations are preliminary and may be revised; a missing value may reflect no trading or a confidentiality edit and must not be read as zero."
+  ],
+  "validation": {
+    "system": "myquant-intelligence",
+    "version": "0.5.0",
+    "passed": true,
+    "piece_hash": "sha256:c7b9e8c9da73f991fc1c24be892d02c44a5cc59ca247977b0349acfdbc8defcc",
+    "evidence_set_id": "sha256:c6917688d60a8ea0328a4c78764de5dace4ff1281848525d4047db042ae778c4",
+    "policy_sha256": "sha256:c5e3650b174c295de036d67f2a8c2c7210de884ec662447026b06890df7a9ab0"
+  },
+  "publication_approval": {
+    "type": "explicit_operator_instruction",
+    "approved_at": "2026-08-13T23:28:00+05:30",
+    "legal_clearance_claimed": false
+  },
+  "sources": [
+    {
+      "label": "New York Fed: Secured Overnight Financing Rate",
+      "url": "https://www.newyorkfed.org/markets/reference-rates/sofr"
+    },
+    {
+      "label": "New York Fed: machine-readable SOFR observations",
+      "url": "https://markets.newyorkfed.org/api/rates/secured/sofr/last/30.json"
+    },
+    {
+      "label": "Office of Financial Research: Short-term Funding Monitor",
+      "url": "https://www.financialresearch.gov/short-term-funding-monitor/"
+    },
+    {
+      "label": "Office of Financial Research: DVP outstanding repo-volume series",
+      "url": "https://data.financialresearch.gov/v1/series/full?mnemonic=REPO-DVP_OV_TOT-P"
+    }
+  ],
+  "sections": [
+    {
+      "heading": "What changed",
+      "paragraphs": [
+        "The latest official SOFR observation was 3.62% on August 12, down from 3.64% on August 11. That is a fall of 2 basis points.",
+        "Preliminary DVP outstanding repo volume was $3.397 trillion on August 11, up from $3.395 trillion on August 10. Using the unrounded official observations, the increase was 0.05% when rounded to two decimal places.",
+        "The dates are not synchronized: the latest SOFR observation is one day newer than the latest DVP repo-volume observation."
+      ]
+    },
+    {
+      "heading": "What the pair can tell us",
+      "paragraphs": [
+        "Read together, the two series provide a narrow daily view of secured funding: the reference rate moved down while this measure of outstanding repo volume changed only slightly.",
+        "That combination does not establish broad funding stress. Neither series can carry that conclusion alone, and the small volume change is not a system-wide stress measure."
+      ]
+    },
+    {
+      "heading": "Why the interpretation stays bounded",
+      "paragraphs": [
+        "SOFR is a transaction-volume-weighted median reference rate, not a complete map of funding conditions. The DVP series covers a specific repo-market segment and the latest observations are preliminary.",
+        "The defensible conclusion is therefore the snapshot itself: SOFR fell 2 basis points and preliminary DVP outstanding volume edged up 0.05% across their respective latest two observations. Anything broader needs additional, independent evidence."
+      ]
+    },
+    {
+      "heading": "What would invalidate this snapshot",
+      "paragraphs": [
+        "A revision by either official source that changes one of the four input observations—and therefore either calculated move—would invalidate this reading.",
+        "A missing DVP value would not be evidence of zero activity. OFR notes that missingness may reflect no trading or a confidentiality disclosure edit."
+      ]
+    }
+  ]
+}

@@ -1,0 +1,97 @@
+{
+  "schema": "mqdnse.house-article.v1",
+  "slug": "erosion-limited-cross-market-confirmation",
+  "product": "myquant",
+  "title": "EROSION has limited cross-market confirmation",
+  "dek": "Seiche's 44.6 EROSION composite and Undertow's funding overlay agree, but the only scored IG cell is NORMAL. Official SOFR and DVP observations add context—not broad confirmation.",
+  "beat": "cross-market-funding",
+  "editorial_class": "house_investigation",
+  "publication_status": "PUBLISHED",
+  "published_at": "2026-08-13T23:28:31+05:30",
+  "event_time": "2026-08-13T00:00:00Z",
+  "knowledge_time": "2026-08-13T17:42:55Z",
+  "author": "My Quant research desk",
+  "evidence_status": "VALIDATED_DERIVED_ANALYSIS",
+  "original_contribution": "A cross-system comparison of Seiche's funding composite, Undertow's board, and official SOFR and DVP observations that foregrounds disagreement and incomplete coverage.",
+  "limitations": [
+    "Seiche's funding composite and Undertow's IG tier are derived measures, not observed market prices.",
+    "Only 1 of 9 Undertow segments scored in this board, so the eight unscored segments cannot be interpreted as calm or normal.",
+    "SOFR does not cover every funding condition, and the latest DVP repo observation is preliminary."
+  ],
+  "validation": {
+    "system": "myquant-intelligence",
+    "version": "0.5.0",
+    "passed": true,
+    "piece_hash": "sha256:e716a75220c2b7b6f97235146aa10bbd8adee5d49007bbdc4d5034c21e21947d",
+    "evidence_set_id": "sha256:6bd7c7dc8265a2d1b40e39fa7b1ec5116e01471c5abae259137a58387bb20bfd",
+    "policy_sha256": "sha256:c5e3650b174c295de036d67f2a8c2c7210de884ec662447026b06890df7a9ab0"
+  },
+  "publication_approval": {
+    "type": "explicit_operator_instruction",
+    "approved_at": "2026-08-13T23:28:00+05:30",
+    "legal_clearance_claimed": false
+  },
+  "sources": [
+    {
+      "label": "Seiche: August 13 daily dispatch",
+      "url": "https://seiche.info/dispatches/2026-08-13-daily.html"
+    },
+    {
+      "label": "Undertow: August 13 machine-readable dispatch",
+      "url": "https://liquilens-undertow.com/dispatch/2026-08-13.json"
+    },
+    {
+      "label": "New York Fed: Secured Overnight Financing Rate",
+      "url": "https://www.newyorkfed.org/markets/reference-rates/sofr"
+    },
+    {
+      "label": "New York Fed: machine-readable SOFR observations",
+      "url": "https://markets.newyorkfed.org/api/rates/secured/sofr/last/30.json"
+    },
+    {
+      "label": "Office of Financial Research: Short-term Funding Monitor",
+      "url": "https://www.financialresearch.gov/short-term-funding-monitor/"
+    },
+    {
+      "label": "Office of Financial Research: DVP outstanding repo-volume series",
+      "url": "https://data.financialresearch.gov/v1/series/full?mnemonic=REPO-DVP_OV_TOT-P"
+    }
+  ],
+  "sections": [
+    {
+      "heading": "The house signals",
+      "paragraphs": [
+        "Seiche's latest funding composite was 44.6, in EROSION. Undertow's funding overlay also read EROSION.",
+        "The same Undertow board supplied an important countercase: its only scored investment-grade cell was NORMAL. Only 1 of 9 segments scored, so this is evidence of divergence—not evidence that the other eight segments were calm."
+      ]
+    },
+    {
+      "heading": "The official context",
+      "paragraphs": [
+        "The latest official SOFR observation was 3.62% on August 12. The latest preliminary DVP outstanding repo-volume observation was $3.397 trillion on August 11.",
+        "These official observations anchor the comparison in measured funding data, but they do not turn agreement between two derived funding labels into broad cross-market confirmation."
+      ]
+    },
+    {
+      "heading": "Why confirmation is limited",
+      "paragraphs": [
+        "Agreement exists at the funding layer: Seiche's composite and Undertow's funding overlay both say EROSION. Confirmation weakens outside that layer because the only scored IG cell says NORMAL and the rest of the board is unscored.",
+        "The clean read is limited confirmation. It is stronger than a single-model signal, because two house systems agree on funding, but weaker than a broad stress call, because coverage is sparse and the available IG countercase points the other way."
+      ]
+    },
+    {
+      "heading": "What would change the read",
+      "paragraphs": [
+        "A later Undertow board with broader scored coverage and stress outside funding would falsify the current limited-confirmation thesis. A reversal in either funding label would also remove the present agreement.",
+        "Until then, unscored cells remain unknown. They are not zeros, NORMAL readings, or evidence against stress."
+      ]
+    },
+    {
+      "heading": "Boundaries",
+      "paragraphs": [
+        "The funding composite and IG tier are derived classifications, not traded prices. Their labels should be evaluated alongside their methods, coverage, and countercases.",
+        "The official observations are also bounded: SOFR is not a measure of every funding condition, and the DVP repo observation is preliminary and may be revised. The source dates differ, so this is a layered snapshot rather than a synchronized market close."
+      ]
+    }
+  ]
+}
