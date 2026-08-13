@@ -11,21 +11,21 @@
   "event_time": "2026-08-12T00:00:00Z",
   "author": "The Quant's interpreter",
   "evidence_status": "EDITORIAL",
-  "original_contribution": "A public operating note explaining how the three product feeds and original reporting share one desk without sharing claims.",
+  "original_contribution": "A public operating note explaining how sourced market records become a finite plain-English edition without dropping their boundaries.",
   "limitations": [
     "This is an editorial operating note, not a market finding or investment advice."
   ],
   "sources": [
-    { "label": "Seiche dispatch archive", "url": "https://seiche.info/dispatches/" },
-    { "label": "LiquiLens intelligence desk", "url": "https://liquilens.in/desk/" },
-    { "label": "LiquiLens—Undertow desk", "url": "https://liquilens-undertow.com/" }
+    { "label": "Current public JSON feed", "url": "https://myquantdoesntspeakenglish.com/feed.json" },
+    { "label": "App privacy note", "url": "https://myquantdoesntspeakenglish.com/privacy/" },
+    { "label": "App support and service boundary", "url": "https://myquantdoesntspeakenglish.com/support/" }
   ],
   "sections": [
     {
-      "heading": "One desk, three instruments",
+      "heading": "One finite edition, two jobs",
       "paragraphs": [
-        "Seiche reads dollar-funding plumbing. LiquiLens reads institutions. Undertow reads the cost and availability of an exit. They overlap in subject, not in what they are allowed to claim.",
-        "This site brings their published records into one chronological wire. The original page stays canonical, because attribution is not a decorative footnote and search engines should not have to guess which copy is real."
+        "A source record says what changed. The translation explains why a general reader might care without turning that record into personal advice or a transaction recommendation.",
+        "The original page stays canonical, because attribution is not a decorative footnote and search engines should not have to guess which copy is real."
       ]
     },
     {

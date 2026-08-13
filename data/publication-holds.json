@@ -1,0 +1,54 @@
+{
+  "schema": "mqdnse.publication-holds.v1",
+  "updatedAt": "2026-08-13T09:45:00Z",
+  "policy": "Fail closed on public distribution pending written legal and editorial clearance; preserve source records in the controlled cache.",
+  "products": {
+    "liquilens": {
+      "reasonCode": "PRODUCT_CLASSIFICATION_AND_NAMED_ISSUER_REVIEW",
+      "reviewStatus": "COUNSEL_REQUIRED",
+      "channels": ["site", "app-feed"]
+    },
+    "liquilens-undertow": {
+      "reasonCode": "PRODUCT_TIER_LANGUAGE_AND_METHODOLOGY_REVIEW",
+      "reviewStatus": "COUNSEL_REQUIRED",
+      "channels": ["site", "app-feed"]
+    }
+  },
+  "stories": {
+    "liquilens-india-utkarsh-sfb-2025-2025-03-31": {
+      "reasonCode": "NAMED_ISSUER_RISK_TIER",
+      "reviewStatus": "COUNSEL_REQUIRED",
+      "channels": ["site", "app-feed"]
+    },
+    "liquilens-india-breadth-2026-08-12": {
+      "reasonCode": "PROPRIETARY_INSTITUTION_CLASSIFICATION",
+      "reviewStatus": "COUNSEL_REQUIRED",
+      "channels": ["site", "app-feed"]
+    },
+    "liquilens-us-ndfi-34953-2026-03-31": {
+      "reasonCode": "NAMED_ISSUER_RATIO_WITH_RISK_IMPLICATION",
+      "reviewStatus": "COUNSEL_REQUIRED",
+      "channels": ["site", "app-feed"]
+    },
+    "liquilens-us-screen-58665-2026-03-31": {
+      "reasonCode": "NAMED_ISSUER_RUN_RISK_RANKING",
+      "reviewStatus": "COUNSEL_REQUIRED",
+      "channels": ["site", "app-feed"]
+    },
+    "seiche:2026-08-10-week-ahead": {
+      "reasonCode": "PRE_REGISTERED_MARKET_CALLS",
+      "reviewStatus": "COUNSEL_REQUIRED",
+      "channels": ["site", "app-feed"]
+    },
+    "seiche:2026-08-03-week-ahead": {
+      "reasonCode": "PRE_REGISTERED_MARKET_CALLS",
+      "reviewStatus": "COUNSEL_REQUIRED",
+      "channels": ["site", "app-feed"]
+    },
+    "liquilens-undertow:2026-08-13": {
+      "reasonCode": "TIER_LANGUAGE_AND_CLASSIFICATION_PENDING",
+      "reviewStatus": "COUNSEL_REQUIRED",
+      "channels": ["site", "app-feed"]
+    }
+  }
+}

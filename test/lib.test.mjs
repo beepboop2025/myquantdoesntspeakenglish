@@ -2,6 +2,8 @@ import test from 'node:test'
 import assert from 'node:assert/strict'
 import {
   APP_FEED_SCHEMA,
+  PUBLICATION_HOLDS_SCHEMA,
+  applyPublicationHolds,
   buildAppFeed,
   buildSignalPulse,
   chooseLead,
@@ -9,6 +11,32 @@ import {
   normalizeHouseArticle,
   preserveStableClocks,
 } from '../scripts/lib.mjs'
+
+test('publication holds fail closed per public channel while preserving source input', () => {
+  const stories = [
+    { id: 'issuer-tier', product: 'liquilens' },
+    { id: 'other-issuer', product: 'liquilens' },
+    { id: 'broad-market', product: 'seiche' },
+  ]
+  const holds = {
+    schema: PUBLICATION_HOLDS_SCHEMA,
+    products: {
+      liquilens: { channels: ['app-feed'] },
+    },
+    stories: {
+      'issuer-tier': { channels: ['site', 'app-feed'] },
+    },
+  }
+  assert.deepEqual(applyPublicationHolds(stories, holds, 'app-feed'), [
+    { id: 'broad-market', product: 'seiche' },
+  ])
+  assert.deepEqual(applyPublicationHolds(stories, holds, 'site'), [
+    { id: 'other-issuer', product: 'liquilens' },
+    { id: 'broad-market', product: 'seiche' },
+  ])
+  assert.equal(stories.length, 3)
+  assert.throws(() => applyPublicationHolds(stories, { stories: {} }, 'site'), /invalid publication-holds contract/)
+})
 
 test('normalizes all three product feed shapes', () => {
   const sources = {

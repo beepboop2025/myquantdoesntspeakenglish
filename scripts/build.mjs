@@ -4,6 +4,7 @@ import { fileURLToPath } from 'node:url'
 import {
   SITE_ORIGIN,
   SOURCES,
+  applyPublicationHolds,
   buildAppFeed,
   buildSignalPulse,
   chooseLead,
@@ -17,6 +18,7 @@ const root = join(dirname(fileURLToPath(import.meta.url)), '..')
 const dist = join(root, 'dist')
 const cachePath = join(root, 'data', 'cache.json')
 const appCopyPath = join(root, 'data', 'app-copy.json')
+const publicationHoldsPath = join(root, 'data', 'publication-holds.json')
 const BRAND_NAME = 'my quant doesn’t speak english'
 const escapeHtml = (value = '') => String(value)
   .replaceAll('&', '&amp;')
@@ -121,7 +123,7 @@ function masthead() {
     <nav aria-label="Primary">
       <a href="/#signals">Signal map</a>
       <a href="/#wire">Every dispatch</a>
-      <a href="/#telegram">Telegram desks</a>
+      <a href="https://myquant-app.vercel.app/">Open app beta</a>
       <a href="/articles/why-the-quant-needs-subtitles/">House rules</a>
       <a class="nav-ad" href="/advertise/">Advertise, tastefully</a>
     </nav>
@@ -142,15 +144,16 @@ function storyCard(story, index) {
   </li>`
 }
 
-function sourceStatus(cache, product) {
+function sourceStatus(cache, product, publicCount) {
   const status = cache.statuses[product] || { state: 'gap', detail: 'status unavailable' }
-  return `<li data-state="${escapeHtml(status.state)}"><span>${escapeHtml(productLabel(product))}</span><b>${escapeHtml(status.state)}</b><small>${escapeHtml(status.detail)}</small></li>`
+  const detail = status.state === 'cached'
+    ? `${publicCount} public records · refresh failed`
+    : `${publicCount} public records`
+  return `<li data-state="${escapeHtml(status.state)}"><span>${escapeHtml(productLabel(product))}</span><b>${escapeHtml(status.state)}</b><small>${escapeHtml(detail)}</small></li>`
 }
 
 const GRAPH_PRODUCTS = [
   { id: 'seiche', label: 'Seiche', layer: 'System' },
-  { id: 'liquilens', label: 'LiquiLens', layer: 'Institution' },
-  { id: 'liquilens-undertow', label: 'Undertow', layer: 'Market' },
   { id: 'myquant', label: 'House', layer: 'Editorial' },
 ]
 
@@ -210,38 +213,26 @@ function mixGraphic(pulse) {
 
 function signalMap() {
   return `<svg class="signal-map" viewBox="0 0 920 278" role="group" aria-labelledby="signal-map-title signal-map-desc">
-    <title id="signal-map-title">The Liquidity Lab stress chain</title>
-    <desc id="signal-map-desc">Select a layer to filter the editorial wire: Seiche for system funding, LiquiLens for institutions, Undertow for market exits, and the house desk for synthesis.</desc>
-    <path class="route-line" d="M126 132 C220 30 248 30 342 132 S464 234 558 132 S680 30 774 132"/>
-    <path class="route-current" d="M126 132 C220 30 248 30 342 132 S464 234 558 132 S680 30 774 132"/>
-    <g class="route-node route-seiche" data-route-filter="seiche" role="button" tabindex="0" aria-label="Filter to Seiche system funding dispatches" transform="translate(52 82)"><rect width="148" height="100" rx="50"/><text x="74" y="43" text-anchor="middle">01 / SYSTEM</text><text class="node-name" x="74" y="66" text-anchor="middle">SEICHE</text></g>
-    <g class="route-node route-liquilens" data-route-filter="liquilens" role="button" tabindex="0" aria-label="Filter to LiquiLens institution dispatches" transform="translate(268 82)"><rect width="148" height="100" rx="50"/><text x="74" y="43" text-anchor="middle">02 / INSTITUTION</text><text class="node-name" x="74" y="66" text-anchor="middle">LIQUILENS</text></g>
-    <g class="route-node route-undertow" data-route-filter="liquilens-undertow" role="button" tabindex="0" aria-label="Filter to Undertow market exit dispatches" transform="translate(484 82)"><rect width="148" height="100" rx="50"/><text x="74" y="43" text-anchor="middle">03 / MARKET</text><text class="node-name" x="74" y="66" text-anchor="middle">UNDERTOW</text></g>
-    <g class="route-node route-myquant" data-route-filter="myquant" role="button" tabindex="0" aria-label="Filter to original house reporting" transform="translate(700 82)"><rect width="168" height="100" rx="50"/><text x="84" y="43" text-anchor="middle">04 / EDITORIAL</text><text class="node-name" x="84" y="66" text-anchor="middle">SUBTITLES</text></g>
+    <title id="signal-map-title">The public evidence route</title>
+    <desc id="signal-map-desc">Select Seiche for broad system-funding records or the house desk for plain-English editorial notes.</desc>
+    <path class="route-line" d="M274 132 C380 30 540 30 646 132"/>
+    <path class="route-current" d="M274 132 C380 30 540 30 646 132"/>
+    <g class="route-node route-seiche" data-route-filter="seiche" role="button" tabindex="0" aria-label="Filter to Seiche system-funding dispatches" transform="translate(200 82)"><rect width="148" height="100" rx="50"/><text x="74" y="43" text-anchor="middle">01 / SYSTEM</text><text class="node-name" x="74" y="66" text-anchor="middle">SEICHE</text></g>
+    <g class="route-node route-myquant" data-route-filter="myquant" role="button" tabindex="0" aria-label="Filter to original house reporting" transform="translate(562 82)"><rect width="168" height="100" rx="50"/><text x="84" y="43" text-anchor="middle">02 / EDITORIAL</text><text class="node-name" x="84" y="66" text-anchor="middle">SUBTITLES</text></g>
     <text class="map-hint" x="460" y="254" text-anchor="middle">CLICK A LAYER TO TUNE THE WIRE</text>
   </svg>`
 }
 
 function signalCockpit(pulse) {
   return `<section class="signal-cockpit" id="signals" aria-labelledby="signals-title">
-    <header class="cockpit-head"><div><p class="eyebrow">THE LAB, AS A LIVING SYSTEM</p><h2 id="signals-title">One chain. Three instruments.<br><em>A translator at the end.</em></h2></div><p>Every mark below comes from the published records already in this wire. No analytics theatre; zero is allowed to look like zero.</p></header>
+    <header class="cockpit-head"><div><p class="eyebrow">THE PUBLIC EDITION, MAPPED</p><h2 id="signals-title">One evidence wire.<br><em>A translator at the end.</em></h2></div><p>Every mark below comes from records in the current public edition. Material held for review does not enter these counts.</p></header>
     <div class="cockpit-grid">
-      <article class="flow-panel"><header><span>A / SIGNAL ROUTE</span><p>Pressure becomes institution risk, then exit cost, then an argument you can read.</p></header>${signalMap()}</article>
+      <article class="flow-panel"><header><span>A / SIGNAL ROUTE</span><p>Broad system data becomes an explanation you can inspect.</p></header>${signalMap()}</article>
       <article class="cadence-panel"><header><div><span>B / DISPATCH CADENCE</span><p>Daily output, stacked by the desk that published it.</p></div><div class="range-buttons" role="group" aria-label="Dispatch cadence range"><button type="button" data-window="7">7D</button><button type="button" data-window="14" class="active">14D</button><button type="button" data-window="28">28D</button></div></header>${cadenceSvg(pulse)}</article>
       <article class="mix-panel"><header><span>C / SOURCE MIX</span><p>What this edition of the wire is actually made of.</p></header>${mixGraphic(pulse)}</article>
     </div>
     <script id="signalPulseData" type="application/json">${JSON.stringify(pulse).replaceAll('<', '\\u003c')}</script>
   </section>`
-}
-
-function telegramDesk() {
-  const cards = [
-    ['PLUMBING BOT', 'Seiche in Telegram', 'Ask for the current funding regime, the week ahead, or a source trail.', 'https://t.me/seiche_desk_bot?start=mqdnse_signals', 'Open @seiche_desk_bot'],
-    ['INSTITUTION BOT', 'LiquiLens in Telegram', 'Carry the bank and lender screen into the place you already check.', 'https://t.me/LiquiLens_bot?start=mqdnse_signals', 'Open @LiquiLens_bot'],
-    ['MARKET BOT', 'Undertow in Telegram', 'Check exit cost and liquidity conditions without opening the full desk.', 'https://t.me/undertow_LiquiLens_bot?start=ref_mqdnse_signals', 'Open @undertow_LiquiLens_bot'],
-    ['DAILY CHANNEL', 'The lab’s free read', 'One opt-in channel for reviewed dispatches across the financial stack.', 'https://t.me/LiquidityLabDesk', 'Join @LiquidityLabDesk'],
-  ]
-  return `<section class="telegram-desk" id="telegram" aria-labelledby="telegram-title"><header><p class="eyebrow">TAKE THE DESK WITH YOU</p><h2 id="telegram-title">The website explains.<br><em>Telegram taps your shoulder.</em></h2><p>Choose one instrument or the daily channel. Every destination is opt-in; none of them needs your phone number on this website.</p></header><div class="telegram-grid">${cards.map(([kicker, title, copy, href, label]) => `<a data-telegram href="${href}" target="_blank" rel="noopener"><span>${kicker}</span><h3>${title}</h3><p>${copy}</p><b>${label} ↗</b></a>`).join('')}</div></section>`
 }
 
 function renderHome(stories, cache) {
@@ -254,7 +245,7 @@ function renderHome(stories, cache) {
     '@type': 'CollectionPage',
     name: BRAND_NAME,
     url: SITE_ORIGIN,
-    description: 'Evidence-led dispatches and investigations from Seiche, LiquiLens, and LiquiLens—Undertow.',
+    description: 'A finite public edition of sourced market dispatches and plain-English editorial notes.',
     relatedLink: 'https://narcoscope.com/',
     hasPart: ordered.slice(0, 20).map((story) => ({ '@type': 'Article', headline: story.title, url: story.url, datePublished: isoDate(story.published) })),
   }
@@ -262,7 +253,7 @@ function renderHome(stories, cache) {
   return `<!doctype html>
 <html lang="en"><head>${head({
     title: `${BRAND_NAME} — finance, with subtitles`,
-    description: 'Every Seiche, LiquiLens, and Undertow dispatch in one evidence-led, occasionally funny wire.',
+    description: 'A finite public edition of sourced market dispatches, caveats, and plain-English explanations.',
     canonical: `${SITE_ORIGIN}/`,
   })}</head><body>
   <a class="skip" href="#wire">Skip to every dispatch</a>
@@ -272,7 +263,7 @@ function renderHome(stories, cache) {
       <div class="hero-copy">
         <p class="eyebrow">WALL STREET / TRANSLATED LIVE</p>
         <h1 id="hero-title">The numbers are fluent.<br><em>The headlines need subtitles.</em></h1>
-        <p class="hero-dek">One wire for the plumbing, the institutions, and the exits. Serious evidence. Less-serious furniture.</p>
+        <p class="hero-dek">One finite wire for market plumbing and the explanation it deserves. Serious evidence. Less-serious furniture.</p>
         <a class="hero-jump" href="#wire">Read the evidence ↓</a>
       </div>
       <div class="hero-proof" aria-labelledby="hero-proof-title">
@@ -303,19 +294,17 @@ function renderHome(stories, cache) {
       <div>
         <p class="eyebrow">FREE PUBLIC BETA</p>
         <h2 id="app-launch-title">my quant doesn’t speak english<br><em>now fits in your pocket.</em></h2>
-        <p>Five human-reviewed market translations. The original claim, source, and evidence boundary stay attached. No account. No infinite scroll.</p>
+        <p>Up to five market translations, each with its original claim, source, and evidence boundary attached. No account. No infinite scroll.</p>
       </div>
       <a href="https://myquant-app.vercel.app/">Open the free app beta <span aria-hidden="true">↗</span></a>
     </section>
 
     <section class="status-band" aria-labelledby="status-title">
       <div><p class="eyebrow" id="status-title">WIRE CHECK</p><p>Missing data prints as missing. A surprisingly radical feature.</p></div>
-      <ul>${['liquilens', 'seiche', 'liquilens-undertow'].map((product) => sourceStatus(cache, product)).join('')}</ul>
+      <ul>${sourceStatus(cache, 'seiche', counts.seiche)}</ul>
     </section>
 
     ${signalCockpit(pulse)}
-    ${telegramDesk()}
-
     <aside class="ad-slot ad-slot-top" aria-label="Advertisement opportunity">
       <span>AD BREAK / CURRENTLY JUST OXYGEN</span>
       <p>Put something useful here. We reject “guaranteed alpha,” yacht photos, and charts with the y-axis on parole.</p>
@@ -330,21 +319,17 @@ function renderHome(stories, cache) {
       <div class="filters" role="group" aria-label="Filter the evidence wire">
         <button type="button" class="active" data-filter="all">All <span>${ordered.length}</span></button>
         <button type="button" data-filter="seiche">Seiche <span>${counts.seiche}</span></button>
-        <button type="button" data-filter="liquilens">LiquiLens <span>${counts.liquilens}</span></button>
-        <button type="button" data-filter="liquilens-undertow">Undertow <span>${counts['liquilens-undertow']}</span></button>
         <button type="button" data-filter="myquant">House <span>${counts.myquant}</span></button>
-        <label><span>Find a nervous noun</span><input id="storySearch" type="search" placeholder="repo, bank, liquidity…" autocomplete="off"></label>
+        <label><span>Find a nervous noun</span><input id="storySearch" type="search" placeholder="funding, caveat, liquidity…" autocomplete="off"></label>
       </div>
       <ol class="story-list" id="storyList">${ordered.map(storyCard).join('')}</ol>
       <p class="no-results" id="noResults" hidden>The quant found nothing. This time, the English is innocent.</p>
     </section>
 
     <section class="products" aria-labelledby="products-title">
-      <p class="eyebrow">THE THREE DIALECTS</p><h2 id="products-title">Same desk. Different ways to ruin lunch.</h2>
+      <p class="eyebrow">CURRENT PUBLIC INPUT</p><h2 id="products-title">The source that cleared today’s gate.</h2>
       <div>
-        <a href="https://seiche.info"><span>01 / SYSTEM</span><h3>Seiche</h3><p>Is dollar-funding stress building?</p></a>
-        <a href="https://liquilens.in"><span>02 / INSTITUTION</span><h3>LiquiLens</h3><p>Which lender is drifting toward review?</p></a>
-        <a href="https://liquilens-undertow.com"><span>03 / MARKET</span><h3>Undertow</h3><p>What will a position-sized exit cost?</p></a>
+        <a href="https://seiche.info"><span>01 / SYSTEM</span><h3>Seiche</h3><p>What changed in broad dollar-funding data?</p></a>
       </div>
     </section>
 
@@ -361,7 +346,7 @@ function renderHome(stories, cache) {
       </div>
     </aside>
   </main>
-  <footer><p>Research and market data, not investment advice. Jokes are not evidence. Evidence is linked.</p><p><a href="/feed.xml">Atom</a> · <a href="/feed.json">JSON Feed</a> · <a href="#telegram">Telegram desks</a> · <a href="/advertise/">Advertise</a> · <a href="/privacy/">Privacy</a> · <a href="/support/">Support</a> · <a href="https://narcoscope.com/">NarcoScope</a></p></footer>
+  <footer><p>General market reporting and plain-English explanations—not personalised investment advice or a transaction recommendation. Jokes are not evidence. Evidence is linked.</p><p><a href="/feed.xml">Atom</a> · <a href="/feed.json">JSON Feed</a> · <a href="/advertise/">Advertise</a> · <a href="/privacy/">Privacy</a> · <a href="/support/">Support</a> · <a href="https://narcoscope.com/">NarcoScope</a></p></footer>
   <script type="application/ld+json">${JSON.stringify(schema).replaceAll('<', '\\u003c')}</script>
   <script src="/assets/app.js" defer></script>
 </body></html>`
@@ -383,7 +368,7 @@ function renderArticle(story) {
       <div class="article-body">${article.sections.map((section) => `<section><h2>${escapeHtml(section.heading)}</h2>${section.paragraphs.map((paragraph) => `<p>${escapeHtml(paragraph)}</p>`).join('')}</section>`).join('')}</div>
       <aside class="source-box"><p class="eyebrow">OPEN TABS, NOT MYSTERY MEAT</p><h2>Sources</h2><ol>${article.sources.map((source) => `<li><a href="${escapeHtml(source.url)}">${escapeHtml(source.label)} ↗</a></li>`).join('')}</ol></aside>
     </main>
-    <footer><p>Research and market data, not investment advice. Jokes are not evidence. Evidence is linked.</p><p><a href="/">Back to the wire</a> · <a href="/privacy/">Privacy</a> · <a href="/support/">Support</a></p></footer>
+    <footer><p>General market reporting and plain-English explanations—not personalised investment advice or a transaction recommendation. Jokes are not evidence. Evidence is linked.</p><p><a href="/">Back to the wire</a> · <a href="/privacy/">Privacy</a> · <a href="/support/">Support</a></p></footer>
     <script type="application/ld+json">${JSON.stringify(articleSchema).replaceAll('<', '\\u003c')}</script>
   </body></html>`
 }
@@ -392,8 +377,8 @@ function renderAdvertise() {
   return `<!doctype html><html lang="en"><head>${head({ title: `Advertise — ${BRAND_NAME}`, description: 'Clearly labelled sponsorship around evidence-led finance reporting.', canonical: `${SITE_ORIGIN}/advertise/` })}</head><body>
     <a class="skip" href="#advertise">Skip to media card</a>${masthead()}
     <main class="advertise-page" id="advertise">
-      <section class="advertise-hero"><p class="eyebrow">BUY ATTENTION. RENT ZERO CONCLUSIONS.</p><h1>Advertise beside the argument.<br><em>Never inside it.</em></h1><p>Reach readers who care about market plumbing, institution risk, liquidity, and where the caveat went.</p><a class="big-cta" href="mailto:mrinal@liquilens.in?subject=Advertising%20on%20myquantdoesntspeakenglish.com">Ask for the launch media card →</a></section>
-      <section class="ad-principles"><article><span>01</span><h2>Clearly labelled</h2><p>Every paid placement says advertisement. Native camouflage is not a product.</p></article><article><span>02</span><h2>Evidence firewall</h2><p>Sponsors cannot buy a finding, ranking, omission, or friendlier adjective.</p></article><article><span>03</span><h2>Useful audience</h2><p>Finance, treasury, risk, data, and research readers arriving through three specialist products.</p></article></section>
+      <section class="advertise-hero"><p class="eyebrow">BUY ATTENTION. RENT ZERO CONCLUSIONS.</p><h1>Advertise beside the argument.<br><em>Never inside it.</em></h1><p>Reach readers who care about market plumbing, liquidity, and where the caveat went.</p><a class="big-cta" href="mailto:mrinal@liquilens.in?subject=Advertising%20on%20myquantdoesntspeakenglish.com">Ask for the launch media card →</a></section>
+      <section class="ad-principles"><article><span>01</span><h2>Clearly labelled</h2><p>Every paid placement says advertisement. Native camouflage is not a product.</p></article><article><span>02</span><h2>Evidence firewall</h2><p>Sponsors cannot buy a finding, ranking, omission, or friendlier adjective.</p></article><article><span>03</span><h2>Useful audience</h2><p>Finance, treasury, risk, and data readers who value source links, boundaries, and finite briefings.</p></article></section>
       <section class="placements"><p class="eyebrow">LAUNCH INVENTORY</p><h2>Two placements. Both visible. Neither sticky.</h2><div><article><b>A / THE INTERMISSION</b><p>Wide placement between the lead package and evidence wire.</p><span>Desktop 1200×180 · mobile 680×240</span></article><article><b>B / THE LAST WORD</b><p>End-of-wire placement before the product family routes.</p><span>Desktop 600×300 · mobile 680×300</span></article></div></section>
     </main><footer><p>No investment solicitation, illegal products, deceptive returns, or unlabeled advertorial.</p><p><a href="/">Back to the wire</a> · <a href="/privacy/">Privacy</a> · <a href="/support/">Support</a></p></footer>
   </body></html>`
@@ -407,7 +392,7 @@ function renderInfoPage({ slug, eyebrow, title, dek, sections }) {
       <header><p class="eyebrow">${escapeHtml(eyebrow)}</p><h1>${escapeHtml(title)}</h1><p>${escapeHtml(dek)}</p></header>
       <div class="info-sections">${sections.map((section) => `<section><h2>${escapeHtml(section.heading)}</h2>${section.paragraphs.map((paragraph) => `<p>${paragraph}</p>`).join('')}</section>`).join('')}</div>
     </main>
-    <footer><p>Research and market data, not investment advice.</p><p><a href="/">Home</a> · <a href="/privacy/">Privacy</a> · <a href="/support/">Support</a></p></footer>
+    <footer><p>General market reporting and plain-English explanations—not personalised investment advice or a transaction recommendation.</p><p><a href="/">Home</a> · <a href="/privacy/">Privacy</a> · <a href="/support/">Support</a></p></footer>
   </body></html>`
 }
 
@@ -426,7 +411,7 @@ function renderPrivacy() {
         'The current app contains no advertising SDK, third-party analytics SDK, account system, location request, contacts access, portfolio import, or cross-app tracking.',
       ] },
       { heading: 'Links and sources', paragraphs: [
-        'Source links open websites operated by LiquiLens, Seiche, Undertow, or another cited publisher. Their privacy practices apply after you leave this app.',
+        'Source links open websites operated by cited publishers. Their privacy practices apply after you leave this app.',
       ] },
       { heading: 'Questions or deletion requests', paragraphs: [
         'There is no server-side app account to delete. For privacy questions, email <a href="mailto:mrinal@liquilens.in?subject=my%20quant%20privacy">mrinal@liquilens.in</a>. If the data practices change, this page and the store disclosures will be updated before the new collection begins.',
@@ -451,8 +436,8 @@ function renderSupport() {
       { heading: 'Report a problem', paragraphs: [
         'Email <a href="mailto:mrinal@liquilens.in?subject=my%20quant%20app%20support">mrinal@liquilens.in</a> with your device model, operating-system version, and what you expected to happen. Do not send brokerage credentials, account numbers, or other financial information.',
       ] },
-      { heading: 'Research boundary', paragraphs: [
-        'The app provides research, market data, and plain-language explanations. It does not provide investment advice, executable quotes, credit ratings, or predictions that an institution will fail.',
+      { heading: 'Service boundary', paragraphs: [
+        'The app publishes general market reporting and plain-language explanations. It does not provide personalised investment advice, executable quotes, credit ratings, transaction recommendations, or predictions that an institution will fail.',
       ] },
     ],
   })
@@ -462,7 +447,7 @@ function renderFeedJson(stories) {
   return `${JSON.stringify({
     version: 'https://jsonfeed.org/version/1.1', title: BRAND_NAME,
     home_page_url: `${SITE_ORIGIN}/`, feed_url: `${SITE_ORIGIN}/feed.json`,
-    description: 'Evidence-led dispatches from Seiche, LiquiLens, Undertow, and the house desk.',
+    description: 'A finite public edition of sourced market dispatches and plain-English editorial notes.',
     items: stories.map((story) => ({ id: story.id, url: story.url, title: story.title, summary: story.dek, date_published: isoDate(story.published), tags: [story.product, story.beat, story.evidenceStatus] })),
   }, null, 2)}\n`
 }
@@ -485,13 +470,16 @@ async function write(path, value) {
 async function build() {
   const cache = await syncFeeds()
   const appCopy = await readJson(appCopyPath)
+  const publicationHolds = await readJson(publicationHoldsPath)
   if (appCopy.schema !== 'mqdnse.app-copy.v1' || !appCopy.stories || typeof appCopy.stories !== 'object') {
     throw new Error('data/app-copy.json: invalid app-copy contract')
   }
   const house = await loadHouseArticles()
-  const stories = [...Object.values(cache.feeds).flat(), ...house]
+  const allStories = [...Object.values(cache.feeds).flat(), ...house]
     .filter((story) => story.publicationStatus === 'PUBLISHED')
     .sort((a, b) => Date.parse(b.published) - Date.parse(a.published))
+  const stories = applyPublicationHolds(allStories, publicationHolds, 'site')
+  const appStories = applyPublicationHolds(allStories, publicationHolds, 'app-feed')
 
   await rm(dist, { recursive: true, force: true })
   await mkdir(dist, { recursive: true })
@@ -502,13 +490,15 @@ async function build() {
   await write(join(dist, 'support', 'index.html'), renderSupport())
   for (const article of house) await write(join(dist, 'articles', article.article.slug, 'index.html'), renderArticle(article))
   await write(join(dist, 'feed.json'), renderFeedJson(stories))
-  await write(join(dist, 'app-feed', 'v1.json'), renderAppFeed(stories, cache.syncedAt, appCopy.stories))
+  const appFeed = renderAppFeed(appStories, cache.syncedAt, appCopy.stories)
+  const appPublishedCount = JSON.parse(appFeed).stories.length
+  await write(join(dist, 'app-feed', 'v1.json'), appFeed)
   await write(join(dist, 'feed.xml'), renderFeedXml(stories))
   await write(join(dist, 'robots.txt'), `User-agent: *\nAllow: /\nSitemap: ${SITE_ORIGIN}/sitemap.xml\n`)
   const urls = [`${SITE_ORIGIN}/`, `${SITE_ORIGIN}/advertise/`, `${SITE_ORIGIN}/privacy/`, `${SITE_ORIGIN}/support/`, ...house.map((story) => story.url)]
   await write(join(dist, 'sitemap.xml'), `<?xml version="1.0" encoding="UTF-8"?><urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">${urls.map((url) => `<url><loc>${escapeXml(url)}</loc></url>`).join('')}</urlset>\n`)
-  await write(join(dist, 'llms.txt'), `# ${BRAND_NAME}\n\nEditorial and advertising hub for Seiche, LiquiLens, and LiquiLens—Undertow.\n\n- Home: ${SITE_ORIGIN}/\n- JSON Feed: ${SITE_ORIGIN}/feed.json\n- Atom: ${SITE_ORIGIN}/feed.xml\n- Source articles remain canonical at their product domains.\n- Research and market data, not investment advice.\n\n## Telegram desks\n\n- Seiche bot: https://t.me/seiche_desk_bot\n- LiquiLens bot: https://t.me/LiquiLens_bot\n- Undertow bot: https://t.me/undertow_LiquiLens_bot\n- Free reviewed dispatch channel: https://t.me/LiquidityLabDesk\n\n## Related evidence desk\n\n- NarcoScope, https://narcoscope.com/: an independent public-interest explorer for official drug-market records. It shares this network's evidence standards, not its financial subject.\n`)
-  process.stdout.write(`Built ${stories.length} records (${house.length} house) into ${dist}\n`)
+  await write(join(dist, 'llms.txt'), `# ${BRAND_NAME}\n\nA finite public edition of sourced market dispatches and plain-English editorial notes.\n\n- Home: ${SITE_ORIGIN}/\n- JSON Feed: ${SITE_ORIGIN}/feed.json\n- Atom: ${SITE_ORIGIN}/feed.xml\n- App feed: ${SITE_ORIGIN}/app-feed/v1.json\n- Source articles remain canonical at the cited publisher.\n- General market reporting and plain-English explanations, not personalised investment advice or a transaction recommendation.\n\n## Related evidence desk\n\n- NarcoScope, https://narcoscope.com/: an independent public-interest explorer for official drug-market records. It shares this network's evidence standards, not its financial subject.\n`)
+  process.stdout.write(`Built ${stories.length}/${allStories.length} public records and ${appPublishedCount} app stories (${house.length} house) into ${dist}\n`)
 }
 
 await build()

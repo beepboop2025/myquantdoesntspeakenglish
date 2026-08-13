@@ -4,6 +4,7 @@ const ALLOWED_PRODUCTS = new Set(['liquilens', 'seiche', 'liquilens-undertow', '
 
 export const SITE_ORIGIN = 'https://myquantdoesntspeakenglish.com'
 export const APP_FEED_SCHEMA = 'mqdnse.app-feed.v1'
+export const PUBLICATION_HOLDS_SCHEMA = 'mqdnse.publication-holds.v1'
 
 export const SOURCES = [
   {
@@ -246,6 +247,29 @@ export function productLabel(product) {
     'liquilens-undertow': 'Undertow',
     myquant: 'House desk',
   })[product] || product
+}
+
+/**
+ * Remove records that have an explicit legal/editorial hold for a public
+ * channel. Source records remain in the private cache for audit and review.
+ */
+export function applyPublicationHolds(stories, holds, channel) {
+  if (holds?.schema !== PUBLICATION_HOLDS_SCHEMA
+    || !holds.stories || typeof holds.stories !== 'object' || Array.isArray(holds.stories)
+    || !holds.products || typeof holds.products !== 'object' || Array.isArray(holds.products)) {
+    throw new Error('invalid publication-holds contract')
+  }
+  const appliesTo = (hold) => Array.isArray(hold?.channels)
+    && (hold.channels.includes('*') || hold.channels.includes(channel))
+  const heldIds = new Set(Object.entries(holds.stories)
+    .filter(([, hold]) => appliesTo(hold))
+    .map(([id]) => id))
+  const heldProducts = new Set(Object.entries(holds.products)
+    .filter(([, hold]) => appliesTo(hold))
+    .map(([product]) => product))
+  return array(stories).filter((story) => story?.id
+    && !heldIds.has(story.id)
+    && !heldProducts.has(story.product))
 }
 
 function presentationLabel(value) {
