@@ -275,26 +275,21 @@ function renderHome(stories, cache) {
         <p class="hero-dek">One wire for the plumbing, the institutions, and the exits. Serious evidence. Less-serious furniture.</p>
         <a class="hero-jump" href="#wire">Read the evidence ↓</a>
       </div>
-      <div class="hero-reel" data-hero-reel data-state="paused">
-        <div class="reel-chrome">
-          <span><i aria-hidden="true"></i> DESK TAPE / MUTED + SUBTITLED</span>
-          <span data-reel-status>READY 01 / 02</span>
-        </div>
-        <div class="reel-frame">
-          <video id="heroReel" controls muted playsinline preload="metadata" poster="/assets/media/quant-tape-01-poster.jpg" aria-describedby="heroReelTranscript">
-            <source src="/assets/media/quant-tape-01.mp4" type="video/mp4">
-            Your browser cannot play this subtitled desk tape.
-          </video>
-          <span class="reel-bug" data-reel-bug aria-hidden="true">MQDSE / COPY 01</span>
-        </div>
-        <div class="reel-controls">
-          <div class="tape-selector" role="group" aria-label="Choose a desk tape">
-            <button type="button" data-reel-tape data-index="0" data-src="/assets/media/quant-tape-01.mp4" data-poster="/assets/media/quant-tape-01-poster.jpg" aria-pressed="true"><span>01</span> Meet the quant</button>
-            <button type="button" data-reel-tape data-index="1" data-src="/assets/media/quant-tape-02.mp4" data-poster="/assets/media/quant-tape-02-poster.jpg" aria-pressed="false"><span>02</span> Self-interest</button>
+      <div class="hero-proof" aria-labelledby="hero-proof-title">
+        <div class="proof-card">
+          <div class="proof-head"><span>THE DAILY CONTRACT</span><span>FINITE EDITION</span></div>
+          <div class="proof-body">
+            <span class="proof-number" aria-hidden="true">05</span>
+            <p class="proof-kicker">UP TO FIVE STORIES</p>
+            <h2 id="hero-proof-title">Read the market.<br><em>Reach the end.</em></h2>
+            <ul class="proof-list">
+              <li><span>01</span> Plain-English translation</li>
+              <li><span>02</span> The number that matters</li>
+              <li><span>03</span> Sources and caveats attached</li>
+            </ul>
           </div>
-          <button class="reel-toggle" type="button" data-reel-toggle aria-controls="heroReel" aria-label="Play desk tape"><span aria-hidden="true" data-reel-icon>▶</span><span data-reel-toggle-label>Play</span></button>
+          <p class="proof-foot">NO INFINITE SCROLL / NO MYSTERY RECEIPTS</p>
         </div>
-        <p class="sr-only" id="heroReelTranscript">Two muted, subtitled desk tapes: a boastful trader introduces his quantitative analyst and corrects the analyst’s name; then a colleague dryly explains why he respects the trader’s ruthless self-interest.</p>
       </div>
     </section>
 
