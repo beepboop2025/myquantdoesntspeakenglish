@@ -233,10 +233,10 @@ test('channel merge deduplicates identical records and refuses conflicting copie
 
 test('specialist records receive stable MyQuant reading URLs while house articles stay canonical', () => {
   const specialist = { id: 'seiche:daily/2026-08-13', product: 'seiche' }
-  const house = { id: 'myquant:house-note', product: 'myquant', url: 'https://myquantdoesntspeakenglish.com/articles/house-note/' }
+  const house = { id: 'myquant:house-note', product: 'myquant', url: 'https://myquantdoesntspeakenglish.com/articles/house-note' }
 
   assert.equal(storySlug(specialist), 'seiche-daily-2026-08-13')
-  assert.equal(publicStoryUrl(specialist), 'https://myquantdoesntspeakenglish.com/interpreted/seiche-daily-2026-08-13/')
+  assert.equal(publicStoryUrl(specialist), 'https://myquantdoesntspeakenglish.com/interpreted/seiche-daily-2026-08-13')
   assert.equal(publicStoryUrl(house), house.url)
 })
 
@@ -482,11 +482,11 @@ test('app feed keeps house citations, omits absent key numbers, and sorts newest
   }
   const older = {
     ...shared, id: 'myquant:older', title: 'Older', dek: 'No numeral here.', published: '2026-08-11T10:30:00Z',
-    url: 'https://myquantdoesntspeakenglish.com/articles/older/', article: { slug: 'older', sections: [], sources: [] },
+    url: 'https://myquantdoesntspeakenglish.com/articles/older', article: { slug: 'older', sections: [], sources: [] },
   }
   const newer = {
     ...shared, id: 'myquant:newer', title: 'Newer', dek: 'Still written without digits.', published: '2026-08-12T10:30:00Z',
-    url: 'https://myquantdoesntspeakenglish.com/articles/newer/',
+    url: 'https://myquantdoesntspeakenglish.com/articles/newer',
     article: { slug: 'newer', sections: [], sources: [{ label: 'Primary record', url: 'https://example.com/record' }] },
   }
   const feed = buildAppFeed(

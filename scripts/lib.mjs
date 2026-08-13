@@ -331,7 +331,7 @@ export function normalizeHouseArticle(raw) {
     product: 'myquant',
     title: string(raw.title),
     dek: string(raw.dek),
-    url: `${SITE_ORIGIN}/articles/${slug}/`,
+    url: `${SITE_ORIGIN}/articles/${slug}`,
     beat: string(raw.beat, 'house-desk'),
     editorialClass: string(raw.editorial_class, 'house_investigation'),
     publicationStatus: 'PUBLISHED',
@@ -620,7 +620,7 @@ export function storySlug(story) {
 export function publicStoryUrl(story) {
   if (story?.product === 'myquant') return story.url
   const slug = storySlug(story)
-  return slug ? `${SITE_ORIGIN}/interpreted/${slug}/` : ''
+  return slug ? `${SITE_ORIGIN}/interpreted/${slug}` : ''
 }
 
 function contributionExplanation(value) {

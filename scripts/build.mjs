@@ -28,6 +28,8 @@ const publicationApprovalsPath = join(root, 'data', 'publication-approvals.json'
 const contentStatusPath = join(root, 'data', 'content-status.json')
 const releasePolicyPath = join(root, 'data', 'release-policy.json')
 const BRAND_NAME = 'my quant doesn’t speak english'
+const ORGANIZATION_ID = `${SITE_ORIGIN}/#organization`
+const WEBSITE_ID = `${SITE_ORIGIN}/#website`
 const escapeHtml = (value = '') => String(value)
   .replaceAll('&', '&amp;')
   .replaceAll('<', '&lt;')
@@ -159,8 +161,8 @@ function masthead() {
       <a href="/#signals">How it works</a>
       <a href="/#wire">All articles</a>
       <a href="/#desk-tape">Desk tape</a>
-      <a href="/articles/why-the-quant-needs-subtitles/">House rules</a>
-      <a class="nav-ad" href="/advertise/">Advertise, tastefully</a>
+      <a href="/articles/why-the-quant-needs-subtitles">House rules</a>
+      <a class="nav-ad" href="/advertise">Advertise, tastefully</a>
     </nav>
   </header>`
 }
@@ -294,12 +296,47 @@ function renderHome(stories, cache, consumerCopy) {
   const pulse = buildSignalPulse(ordered, 28)
   const schema = {
     '@context': 'https://schema.org',
-    '@type': 'CollectionPage',
-    name: BRAND_NAME,
-    url: SITE_ORIGIN,
-    description: 'Plain-English interpretations of Seiche, LiquiLens, and Undertow articles, plus independent MyQuant analysis of important market news.',
-    relatedLink: 'https://narcoscope.com/',
-    hasPart: ordered.map((story) => ({ '@type': 'Article', headline: story.title, url: publicStoryUrl(story), datePublished: isoDate(story.published) })),
+    '@graph': [
+      {
+        '@type': 'Organization',
+        '@id': ORGANIZATION_ID,
+        name: BRAND_NAME,
+        alternateName: 'MyQuant',
+        url: `${SITE_ORIGIN}/`,
+        logo: { '@type': 'ImageObject', url: `${SITE_ORIGIN}/assets/favicon.svg` },
+        sameAs: ['https://github.com/beepboop2025/myquantdoesntspeakenglish'],
+      },
+      {
+        '@type': 'WebSite',
+        '@id': WEBSITE_ID,
+        name: BRAND_NAME,
+        alternateName: ['MyQuant', "My Quant Doesn't Speak English"],
+        url: `${SITE_ORIGIN}/`,
+        inLanguage: 'en',
+        publisher: { '@id': ORGANIZATION_ID },
+      },
+      {
+        '@type': 'CollectionPage',
+        '@id': `${SITE_ORIGIN}/#webpage`,
+        name: BRAND_NAME,
+        url: `${SITE_ORIGIN}/`,
+        inLanguage: 'en',
+        description: 'Plain-English interpretations of Seiche, LiquiLens, and Undertow articles, plus independent MyQuant analysis of important market news.',
+        isPartOf: { '@id': WEBSITE_ID },
+        publisher: { '@id': ORGANIZATION_ID },
+        about: [
+          { '@type': 'WebSite', name: 'Seiche', url: 'https://seiche.info/' },
+          { '@type': 'WebSite', name: 'LiquiLens', url: 'https://liquilens.in/' },
+          { '@type': 'WebSite', name: 'Undertow', url: 'https://liquilens-undertow.com/' },
+        ],
+        relatedLink: [
+          'https://seiche.info/',
+          'https://liquilens.in/',
+          'https://liquilens-undertow.com/',
+        ],
+        hasPart: ordered.map((story) => ({ '@type': 'Article', headline: story.title, url: publicStoryUrl(story), datePublished: isoDate(story.published) })),
+      },
+    ],
   }
 
   return `<!doctype html>
@@ -366,7 +403,7 @@ function renderHome(stories, cache, consumerCopy) {
     <aside class="ad-slot ad-slot-top" aria-label="Advertisement opportunity">
       <span>AD BREAK / CURRENTLY JUST OXYGEN</span>
       <p>Put something useful here. We reject “guaranteed alpha,” yacht photos, and charts with the y-axis on parole.</p>
-      <a href="/advertise/">See the honest media card →</a>
+      <a href="/advertise">See the honest media card →</a>
     </aside>
 
     <section class="wire" id="wire" aria-labelledby="wire-title">
@@ -408,7 +445,7 @@ function renderHome(stories, cache, consumerCopy) {
       </div>
     </aside>
   </main>
-  <footer><p>General market reporting and plain-English explanations—not personalised investment advice or a transaction recommendation. Jokes are not evidence. Evidence is linked.</p><p><a href="/feed.xml">Atom</a> · <a href="/feed.json">JSON Feed</a> · <a href="/editorial/">Editorial standards</a> · <a href="/corrections/">Corrections</a> · <a href="/privacy/">Privacy</a> · <a href="/support/">Support</a> · <a href="/accessibility/">Accessibility</a></p></footer>
+  <footer><p>General market reporting and plain-English explanations—not personalised investment advice or a transaction recommendation. Jokes are not evidence. Evidence is linked.</p><p><a href="/feed.xml">Atom</a> · <a href="/feed.json">JSON Feed</a> · <a href="/editorial">Editorial standards</a> · <a href="/corrections">Corrections</a> · <a href="/privacy">Privacy</a> · <a href="/support">Support</a> · <a href="/accessibility">Accessibility</a></p></footer>
   <script type="application/ld+json">${JSON.stringify(schema).replaceAll('<', '\\u003c')}</script>
   <script src="/assets/app.js" defer></script>
 </body></html>`
@@ -441,7 +478,9 @@ function renderArticle(story) {
   const articleSchema = {
     '@context': 'https://schema.org', '@type': 'Article', headline: article.title,
     description: article.dek, datePublished: isoDate(article.published_at), dateModified: isoDate(article.published_at),
-    author: { '@type': 'Organization', name: article.author }, publisher: { '@type': 'Organization', name: BRAND_NAME },
+    author: { '@type': 'Organization', name: article.author },
+    publisher: { '@type': 'Organization', '@id': ORGANIZATION_ID, name: BRAND_NAME, url: `${SITE_ORIGIN}/` },
+    isPartOf: { '@type': 'WebSite', '@id': WEBSITE_ID },
     mainEntityOfPage: story.url, isAccessibleForFree: true,
   }
   return `<!doctype html><html lang="en"><head>${head({ title: `${article.title} — ${BRAND_NAME}`, description: article.dek, canonical: story.url, type: 'article' })}</head><body>
@@ -454,7 +493,7 @@ function renderArticle(story) {
       <div class="article-body">${article.sections.map((section) => `<section><h2>${escapeHtml(section.heading)}</h2>${section.paragraphs.map((paragraph) => `<p>${escapeHtml(paragraph)}</p>`).join('')}</section>`).join('')}</div>
       <aside class="source-box"><p class="eyebrow">OPEN TABS, NOT MYSTERY MEAT</p><h2>Sources</h2><ol>${article.sources.map((source) => `<li><a href="${escapeHtml(source.url)}">${escapeHtml(source.label)} ↗</a>${source.release_id ? `<small>${escapeHtml(source.release_id)} · event record ${escapeHtml(preciseClock(source.event_time))}</small>` : ''}</li>`).join('')}</ol></aside>
     </main>
-    <footer><p>General market reporting and plain-English explanations—not personalised investment advice or a transaction recommendation. Jokes are not evidence. Evidence is linked.</p><p><a href="/">Back to the wire</a> · <a href="/editorial/">Editorial standards</a> · <a href="/corrections/">Corrections</a> · <a href="/privacy/">Privacy</a></p></footer>
+    <footer><p>General market reporting and plain-English explanations—not personalised investment advice or a transaction recommendation. Jokes are not evidence. Evidence is linked.</p><p><a href="/">Back to the wire</a> · <a href="/editorial">Editorial standards</a> · <a href="/corrections">Corrections</a> · <a href="/privacy">Privacy</a></p></footer>
     <script type="application/ld+json">${JSON.stringify(articleSchema).replaceAll('<', '\\u003c')}</script>
   </body></html>`
 }
@@ -470,8 +509,9 @@ function renderInterpretation(interpretation) {
     description: interpretation.inEnglish,
     datePublished: interpretation.publishedAt,
     dateModified: interpretation.publishedAt,
-    author: { '@type': 'Organization', name: 'MyQuant translation desk' },
-    publisher: { '@type': 'Organization', name: BRAND_NAME },
+    author: { '@type': 'Organization', name: 'MyQuant translation desk', url: `${SITE_ORIGIN}/` },
+    publisher: { '@type': 'Organization', '@id': ORGANIZATION_ID, name: BRAND_NAME, url: `${SITE_ORIGIN}/` },
+    isPartOf: { '@type': 'WebSite', '@id': WEBSITE_ID },
     mainEntityOfPage: interpretation.url,
     isBasedOn: source.url,
     citation: source.url,
@@ -512,31 +552,43 @@ function renderInterpretation(interpretation) {
       <aside class="article-boundary interpretation-clocks"><b>Evidence status</b><p>${escapeHtml(interpretation.evidence.status)}</p><b>Event clock</b><p>${escapeHtml(displayClock(interpretation.evidence.eventTime))}</p><b>Knowledge clock</b><p>${escapeHtml(displayClock(interpretation.evidence.knowledgeTime))}</p><b>What the source adds</b><p>${escapeHtml(interpretation.evidence.contribution)}</p></aside>
       <aside class="source-box"><p class="eyebrow">ORIGINAL REPORTING</p><h2>${escapeHtml(source.label)}</h2><p>This interpretation preserves source record <code>${escapeHtml(source.id)}</code> and its evidence boundary.</p><p><a href="${escapeHtml(source.url)}">Open the canonical specialist record ↗</a></p></aside>
     </main>
-    <footer><p>Interpreted specialist reporting—not personalised investment advice or a transaction recommendation. The original claim and caveat remain linked.</p><p><a href="/">All articles</a> · <a href="/editorial/">Editorial standards</a> · <a href="/corrections/">Corrections</a> · <a href="/privacy/">Privacy</a></p></footer>
+    <footer><p>Interpreted specialist reporting—not personalised investment advice or a transaction recommendation. The original claim and caveat remain linked.</p><p><a href="/">All articles</a> · <a href="/editorial">Editorial standards</a> · <a href="/corrections">Corrections</a> · <a href="/privacy">Privacy</a></p></footer>
     <script type="application/ld+json">${JSON.stringify(articleSchema).replaceAll('<', '\\u003c')}</script>
   </body></html>`
 }
 
 function renderAdvertise() {
-  return `<!doctype html><html lang="en"><head>${head({ title: `Advertise — ${BRAND_NAME}`, description: 'Clearly labelled sponsorship around evidence-led finance reporting.', canonical: `${SITE_ORIGIN}/advertise/` })}</head><body>
+  return `<!doctype html><html lang="en"><head>${head({ title: `Advertise — ${BRAND_NAME}`, description: 'Clearly labelled sponsorship around evidence-led finance reporting.', canonical: `${SITE_ORIGIN}/advertise` })}</head><body>
     <a class="skip" href="#advertise">Skip to media card</a>${masthead()}
     <main class="advertise-page" id="advertise">
       <section class="advertise-hero"><p class="eyebrow">BUY ATTENTION. RENT ZERO CONCLUSIONS.</p><h1>Advertise beside the argument.<br><em>Never inside it.</em></h1><p>Reach readers who care about market plumbing, liquidity, and where the caveat went.</p><a class="big-cta" href="mailto:mrinal@liquilens.in?subject=Advertising%20on%20myquantdoesntspeakenglish.com">Ask for the launch media card →</a></section>
       <section class="ad-principles"><article><span>01</span><h2>Clearly labelled</h2><p>Every paid placement says advertisement. Native camouflage is not a product.</p></article><article><span>02</span><h2>Evidence firewall</h2><p>Sponsors cannot buy a finding, ranking, omission, or friendlier adjective.</p></article><article><span>03</span><h2>Useful audience</h2><p>Finance, treasury, risk, and data readers who value source links, boundaries, and finite briefings.</p></article></section>
       <section class="placements"><p class="eyebrow">LAUNCH INVENTORY</p><h2>Two placements. Both visible. Neither sticky.</h2><div><article><b>A / THE INTERMISSION</b><p>Wide placement between the lead package and evidence wire.</p><span>Desktop 1200×180 · mobile 680×240</span></article><article><b>B / THE LAST WORD</b><p>End-of-wire placement before the product family routes.</p><span>Desktop 600×300 · mobile 680×300</span></article></div></section>
-    </main><footer><p>No investment solicitation, illegal products, deceptive returns, or unlabeled advertorial.</p><p><a href="/">Back to the wire</a> · <a href="/privacy/">Privacy</a> · <a href="/support/">Support</a></p></footer>
+    </main><footer><p>No investment solicitation, illegal products, deceptive returns, or unlabeled advertorial.</p><p><a href="/">Back to the wire</a> · <a href="/privacy">Privacy</a> · <a href="/support">Support</a></p></footer>
   </body></html>`
 }
 
 function renderInfoPage({ slug, eyebrow, title, dek, sections }) {
-  const canonical = `${SITE_ORIGIN}/${slug}/`
+  const canonical = `${SITE_ORIGIN}/${slug}`
+  const schema = {
+    '@context': 'https://schema.org',
+    '@type': 'WebPage',
+    '@id': `${canonical}#webpage`,
+    url: canonical,
+    name: title,
+    description: dek,
+    inLanguage: 'en',
+    isPartOf: { '@type': 'WebSite', '@id': WEBSITE_ID },
+    publisher: { '@type': 'Organization', '@id': ORGANIZATION_ID },
+  }
   return `<!doctype html><html lang="en"><head>${head({ title: `${title} — ${BRAND_NAME}`, description: dek, canonical })}</head><body>
     <a class="skip" href="#content">Skip to content</a>${masthead()}
     <main class="info-page" id="content">
       <header><p class="eyebrow">${escapeHtml(eyebrow)}</p><h1>${escapeHtml(title)}</h1><p>${escapeHtml(dek)}</p></header>
       <div class="info-sections">${sections.map((section) => `<section><h2>${escapeHtml(section.heading)}</h2>${section.paragraphs.map((paragraph) => `<p>${paragraph}</p>`).join('')}</section>`).join('')}</div>
     </main>
-    <footer><p>General market reporting and plain-English explanations—not personalised investment advice or a transaction recommendation.</p><p><a href="/">Home</a> · <a href="/editorial/">Editorial standards</a> · <a href="/corrections/">Corrections</a> · <a href="/privacy/">Privacy</a> · <a href="/support/">Support</a> · <a href="/accessibility/">Accessibility</a> · <a href="/security/">Security</a></p></footer>
+    <footer><p>General market reporting and plain-English explanations—not personalised investment advice or a transaction recommendation.</p><p><a href="/">Home</a> · <a href="/editorial">Editorial standards</a> · <a href="/corrections">Corrections</a> · <a href="/privacy">Privacy</a> · <a href="/support">Support</a> · <a href="/accessibility">Accessibility</a> · <a href="/security">Security</a></p></footer>
+    <script type="application/ld+json">${JSON.stringify(schema).replaceAll('<', '\\u003c')}</script>
   </body></html>`
 }
 
@@ -768,6 +820,52 @@ function renderFeedXml(stories, consumerCopy) {
 <feed xmlns="http://www.w3.org/2005/Atom"><title>${BRAND_NAME}</title><subtitle>Specialist finance reporting, interpreted with evidence links.</subtitle><id>${SITE_ORIGIN}/</id><link rel="alternate" href="${SITE_ORIGIN}/"/><link rel="self" href="${SITE_ORIGIN}/feed.xml"/><updated>${escapeXml(isoDate(updated))}</updated>${stories.map((story) => { const interpretation = buildInterpretation(story, consumerCopy?.[story.id]); return `<entry><id>${escapeXml(story.id)}</id><title>${escapeXml(story.title)}</title><link href="${escapeXml(publicStoryUrl(story))}"/>${interpretation ? `<link rel="related" href="${escapeXml(story.url)}" title="Original ${escapeXml(productLabel(story.product))} record"/>` : ''}<published>${escapeXml(isoDate(story.published))}</published><updated>${escapeXml(isoDate(story.published))}</updated><summary>${escapeXml(interpretation?.inEnglish || story.dek)}</summary><category term="${interpretation ? 'interpreted' : 'myquant-analysis'}"/><category term="${escapeXml(story.product)}"/></entry>` }).join('')}</feed>\n`
 }
 
+function renderRobots() {
+  const agents = [
+    'Googlebot',
+    'Google-Extended',
+    'Bingbot',
+    'OAI-SearchBot',
+    'ChatGPT-User',
+    'GPTBot',
+    'ClaudeBot',
+    'Claude-SearchBot',
+    'Claude-User',
+    'PerplexityBot',
+    'Perplexity-User',
+  ]
+  const groups = agents.map((agent) => `User-agent: ${agent}\nAllow: /`).join('\n\n')
+  return `${groups}\n\nUser-agent: *\nAllow: /\n\nSitemap: ${SITE_ORIGIN}/sitemap.xml\n`
+}
+
+function renderLlmsTxt() {
+  return `# ${BRAND_NAME}
+
+MyQuant publishes two explicit lanes: Interpreted pages for source-published Seiche, LiquiLens, and Undertow articles; and MyQuant Analysis for independently sourced house reporting on important market news. The mobile app feed is suspended.
+
+- Home: ${SITE_ORIGIN}/
+- JSON Feed: ${SITE_ORIGIN}/feed.json
+- Atom: ${SITE_ORIGIN}/feed.xml
+- Suspended app feed: ${SITE_ORIGIN}/app-feed/v1.json
+- Editorial standard: ${SITE_ORIGIN}/editorial
+- Corrections: ${SITE_ORIGIN}/corrections
+- Privacy: ${SITE_ORIGIN}/privacy
+- Every interpretation links to the canonical specialist record and preserves its evidence boundary.
+- MyQuant Analysis names its sources and original contribution separately.
+- General market reporting and plain-English explanations, not personalised investment advice or a transaction recommendation.
+
+## Specialist source desks
+
+- Seiche, https://seiche.info/: system-level US dollar funding stress from public data
+- LiquiLens, https://liquilens.in/: institution-level financial fragility and early-warning research
+- Undertow, https://liquilens-undertow.com/: market liquidity, provider fragility, and estimated exit cost
+
+## Independent evidence desk
+
+- NarcoScope, https://narcoscope.com/: a public-interest explorer for official drug-market records. It shares this network's evidence standards, not its financial subject.
+`
+}
+
 async function write(path, value) {
   await mkdir(dirname(path), { recursive: true })
   await writeFile(path, value)
@@ -846,20 +944,21 @@ async function build() {
   const appPublishedCount = JSON.parse(appFeed).stories.length
   await write(join(dist, 'app-feed', 'v1.json'), appFeed)
   await write(join(dist, 'feed.xml'), renderFeedXml(stories, appCopy.stories))
-  await write(join(dist, 'robots.txt'), `User-agent: *\nAllow: /\nSitemap: ${SITE_ORIGIN}/sitemap.xml\n`)
+  await write(join(dist, 'robots.txt'), renderRobots())
+  const newest = stories[0]?.published ? isoDate(stories[0].published).slice(0, 10) : null
   const urls = [
-    `${SITE_ORIGIN}/`,
-    `${SITE_ORIGIN}/advertise/`,
-    `${SITE_ORIGIN}/privacy/`,
-    `${SITE_ORIGIN}/support/`,
-    `${SITE_ORIGIN}/editorial/`,
-    `${SITE_ORIGIN}/corrections/`,
-    `${SITE_ORIGIN}/accessibility/`,
-    `${SITE_ORIGIN}/security/`,
-    ...stories.map(publicStoryUrl),
+    { loc: `${SITE_ORIGIN}/`, lastmod: newest },
+    { loc: `${SITE_ORIGIN}/advertise` },
+    { loc: `${SITE_ORIGIN}/privacy` },
+    { loc: `${SITE_ORIGIN}/support` },
+    { loc: `${SITE_ORIGIN}/editorial` },
+    { loc: `${SITE_ORIGIN}/corrections` },
+    { loc: `${SITE_ORIGIN}/accessibility` },
+    { loc: `${SITE_ORIGIN}/security` },
+    ...stories.map((story) => ({ loc: publicStoryUrl(story), lastmod: isoDate(story.published).slice(0, 10) })),
   ]
-  await write(join(dist, 'sitemap.xml'), `<?xml version="1.0" encoding="UTF-8"?><urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">${urls.map((url) => `<url><loc>${escapeXml(url)}</loc></url>`).join('')}</urlset>\n`)
-  await write(join(dist, 'llms.txt'), `# ${BRAND_NAME}\n\nMyQuant publishes two explicit lanes: Interpreted pages for source-published Seiche, LiquiLens, and Undertow articles; and MyQuant Analysis for independently sourced house reporting on important market news. The mobile app feed is suspended.\n\n- Home: ${SITE_ORIGIN}/\n- JSON Feed: ${SITE_ORIGIN}/feed.json\n- Atom: ${SITE_ORIGIN}/feed.xml\n- Suspended app feed: ${SITE_ORIGIN}/app-feed/v1.json\n- Editorial standard: ${SITE_ORIGIN}/editorial/\n- Corrections: ${SITE_ORIGIN}/corrections/\n- Privacy: ${SITE_ORIGIN}/privacy/\n- Every interpretation links to the canonical specialist record and preserves its evidence boundary.\n- MyQuant Analysis names its sources and original contribution separately.\n- General market reporting and plain-English explanations, not personalised investment advice or a transaction recommendation.\n\n## Related evidence desk\n\n- NarcoScope, https://narcoscope.com/: an independent public-interest explorer for official drug-market records. It shares this network's evidence standards, not its financial subject.\n`)
+  await write(join(dist, 'sitemap.xml'), `<?xml version="1.0" encoding="UTF-8"?><urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">${urls.map(({ loc, lastmod }) => `<url><loc>${escapeXml(loc)}</loc>${lastmod ? `<lastmod>${lastmod}</lastmod>` : ''}</url>`).join('')}</urlset>\n`)
+  await write(join(dist, 'llms.txt'), renderLlmsTxt())
   process.stdout.write(`Built ${publicInterpretations.length} interpretations and ${publicHouse.length}/${house.length} house articles from ${stories.length}/${allStories.length} eligible records; ${appPublishedCount} app stories (app ${appRelease.releaseStatus}) into ${dist}\n`)
 }
 

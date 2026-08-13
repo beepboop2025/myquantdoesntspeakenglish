@@ -4,6 +4,7 @@ import { publicStoryUrl, storySlug } from './lib.mjs'
 
 const root = process.cwd()
 const dist = join(root, 'dist')
+const SITE_ORIGIN = 'https://myquantdoesntspeakenglish.com'
 const read = (path) => readFile(join(dist, path), 'utf8')
 const readSourceJson = (path) => readFile(join(root, path), 'utf8').then(JSON.parse)
 const requiredPages = [
@@ -160,6 +161,34 @@ for (const article of houseRecords.filter((record) => record.publication_status 
 const sitemap = await read('sitemap.xml')
 if (expectedSourceRecords.some((story) => !sitemap.includes(publicStoryUrl(story)))) {
   throw new Error('sitemap omits a specialist interpretation page')
+}
+const htmlNames = (await readdir(dist, { recursive: true }))
+  .filter((name) => name === 'index.html' || name.endsWith('/index.html'))
+for (const name of htmlNames) {
+  const page = await read(name)
+  const canonical = page.match(/<link rel="canonical" href="([^"]+)">/)?.[1]
+  const route = name === 'index.html' ? '/' : `/${name.replace(/\/index\.html$/, '')}`
+  const expected = route === '/' ? `${SITE_ORIGIN}/` : `${SITE_ORIGIN}${route}`
+  if (canonical !== expected) throw new Error(`${name}: canonical ${canonical || 'missing'} does not match ${expected}`)
+  if (!sitemap.includes(`<loc>${expected}</loc>`)) throw new Error(`${name}: canonical URL is absent from sitemap`)
+}
+const sitemapUrls = [...sitemap.matchAll(/<loc>([^<]+)<\/loc>/g)].map((match) => match[1])
+if (sitemapUrls.some((url) => new URL(url).pathname !== '/' && new URL(url).pathname.endsWith('/'))) {
+  throw new Error('sitemap contains a redirecting trailing-slash URL')
+}
+const structuredData = [...homepage.matchAll(/<script type="application\/ld\+json">([^<]+)<\/script>/g)]
+  .map((match) => JSON.parse(match[1]))
+const graph = structuredData.find((value) => Array.isArray(value['@graph']))?.['@graph'] || []
+for (const type of ['Organization', 'WebSite', 'CollectionPage']) {
+  if (!graph.some((node) => node['@type'] === type)) throw new Error(`homepage schema is missing ${type}`)
+}
+const robots = await read('robots.txt')
+for (const agent of ['Googlebot', 'Google-Extended', 'OAI-SearchBot', 'ChatGPT-User', 'Claude-SearchBot', 'Claude-User', 'PerplexityBot', 'Perplexity-User']) {
+  if (!robots.includes(`User-agent: ${agent}\nAllow: /`)) throw new Error(`robots.txt does not explicitly allow ${agent}`)
+}
+const llms = await read('llms.txt')
+for (const source of ['https://seiche.info/', 'https://liquilens.in/', 'https://liquilens-undertow.com/']) {
+  if (!llms.includes(source)) throw new Error(`llms.txt omits specialist source ${source}`)
 }
 if (publicText.includes('fonts.googleapis.com') || publicText.includes('fonts.gstatic.com')) {
   throw new Error('public HTML contacts a third-party font host')
