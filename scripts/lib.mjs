@@ -12,30 +12,70 @@ export const RELEASE_POLICY_SCHEMA = 'mqdnse.release-policy.v1'
 
 export const SOURCES = [
   {
+    id: 'liquilens-desk',
     product: 'liquilens',
     label: 'LiquiLens',
+    channel: 'desk',
     url: 'https://api.liquilens.in/api/experimental/v1/desk/bits',
     home: 'https://liquilens.in/desk/',
   },
   {
+    id: 'liquilens-investigations',
+    product: 'liquilens',
+    label: 'LiquiLens investigations',
+    channel: 'article-index',
+    url: 'https://liquilens.in/investigations/index.json',
+    home: 'https://liquilens.in/investigations/',
+  },
+  {
+    id: 'liquilens-case-files',
+    product: 'liquilens',
+    label: 'LiquiLens case files',
+    channel: 'article-index',
+    url: 'https://liquilens.in/replay/index.json',
+    home: 'https://liquilens.in/replay/',
+  },
+  {
+    id: 'seiche-dispatches',
     product: 'seiche',
     label: 'Seiche',
+    channel: 'dispatch',
     url: 'https://seiche.info/dispatches/news.json',
     home: 'https://seiche.info/dispatches/',
   },
   {
+    id: 'seiche-investigations',
+    product: 'seiche',
+    label: 'Seiche investigations',
+    channel: 'article-index',
+    url: 'https://seiche.info/investigations/index.json',
+    home: 'https://seiche.info/investigations/',
+  },
+  {
+    id: 'undertow-dispatches',
     product: 'liquilens-undertow',
     label: 'Undertow',
+    channel: 'dispatch',
     url: 'https://api.seiche.info/undertow/dispatch.json',
     home: 'https://liquilens-undertow.com/',
+  },
+  {
+    id: 'undertow-investigations',
+    product: 'liquilens-undertow',
+    label: 'Undertow investigations',
+    channel: 'article-index',
+    url: 'https://liquilens-undertow.com/investigations/index.json',
+    home: 'https://liquilens-undertow.com/investigations/',
   },
 ]
 
 // This is the deliberately small subjective layer. Evidence gates happen
 // before ranking; these weights only choose the lead among publishable records.
 export const EDITORIAL_WEIGHTS = Object.freeze({
+  investigation: 56,
   full_story: 52,
   house_investigation: 48,
+  case_file: 35,
   desk_brief: 31,
   house_note: 20,
   watch_note: 14,
@@ -51,8 +91,11 @@ const CONTRIBUTION_TRANSLATIONS = Object.freeze({
   cross_engine_institution_synthesis: 'It brings signals from multiple institution screens together.',
   cross_sectional_review_breadth: 'It shows how broadly the review signal appears across the group.',
   cross_signal_divergence: "It shows where the source's signals disagree.",
+  coverage_gate_explanation: 'It explains why incomplete evidence prevents a public tier.',
   dated_forward_test: 'It names a dated check that can be revisited.',
   fresh_longitudinal_delta: 'It identifies what changed over time.',
+  historical_case_file: 'It reconstructs what each historical lens showed before the recorded event.',
+  misses_included: 'It keeps misses and unscoreable cases in the published record.',
   measurement_coverage_change: 'It records a change in measurement coverage.',
   peer_relative_change: 'It shows how the institution changed relative to its peers.',
   within_quarter_cross_bank_ranking: 'It compares banks within the same quarter.',
@@ -70,6 +113,8 @@ const MENTAL_MODELS = Object.freeze({
   liquilens: 'Think of a smoke detector, not a verdict. LiquiLens points to public records that deserve a closer look. A review tier does not prove that an institution will fail or that a loan is bad.',
   'liquilens-undertow': 'Picture a crowded room with a narrow exit. Undertow asks whether many holders could try to leave while the doorway is getting tighter. An unscored market stays unknown; it does not become calm.',
 })
+
+const CASE_FILE_MENTAL_MODEL = 'Imagine checking two smoke alarms after a fire. An alarm that rang before the event is a hit; silence is a miss; an alarm that could not be tested is void. Because this replay was reconstructed later, it is not the same as a warning delivered in real time.'
 
 const string = (...values) => values.find((value) => typeof value === 'string' && value.trim())?.trim() || ''
 const array = (value) => Array.isArray(value) ? value : []
@@ -120,6 +165,15 @@ export function normalizeRecord(raw, product, fallbackUrl) {
       : string(contribution.statement, raw.original_contribution, 'evidence-backed desk finding'),
     limitation: string(limitations[0], raw.honesty, 'Read the source record for its evidence boundary.'),
     newsworthiness: Number.isFinite(raw.newsworthiness?.score) ? raw.newsworthiness.score : null,
+    articleType: string(raw.article_type, raw.editorial_class, raw.type, 'analysis'),
+    pointInTimeStatus: string(raw.point_in_time_status),
+    verdicts: raw.verdicts && typeof raw.verdicts === 'object' && !Array.isArray(raw.verdicts)
+      ? { ...raw.verdicts }
+      : null,
+    outcomeWindow: raw.outcome_window && typeof raw.outcome_window === 'object' && !Array.isArray(raw.outcome_window)
+      ? { ...raw.outcome_window }
+      : null,
+    fraudMasked: raw.fraud_masked === true,
   }
   record.fingerprint = createHash('sha256').update(JSON.stringify({
     id: record.id,
@@ -134,6 +188,11 @@ export function normalizeRecord(raw, product, fallbackUrl) {
     contribution: record.contribution,
     limitation: record.limitation,
     newsworthiness: record.newsworthiness,
+    articleType: record.articleType,
+    pointInTimeStatus: record.pointInTimeStatus,
+    verdicts: record.verdicts,
+    outcomeWindow: record.outcomeWindow,
+    fraudMasked: record.fraudMasked,
   })).digest('hex')
   return record
 }
@@ -141,9 +200,10 @@ export function normalizeRecord(raw, product, fallbackUrl) {
 export function normalizePayload(payload, source) {
   if (!payload || typeof payload !== 'object') throw new Error('invalid JSON root')
   let rows = []
-  if (source.product === 'liquilens') rows = array(payload.bits)
-  if (source.product === 'seiche') rows = array(payload.entries)
-  if (source.product === 'liquilens-undertow') {
+  if (source.channel === 'article-index') rows = array(payload.articles)
+  else if (source.product === 'liquilens') rows = array(payload.bits)
+  else if (source.product === 'seiche') rows = array(payload.entries)
+  else if (source.product === 'liquilens-undertow') {
     const letters = payload.letters && typeof payload.letters === 'object' ? payload.letters : {}
     const dates = array(payload.entries).length ? payload.entries : Object.keys(letters).sort().reverse()
     const normalized = dates.map((date) => {
@@ -159,6 +219,43 @@ export function normalizePayload(payload, source) {
   const normalized = rows.map((row) => normalizeRecord(row, source.product, source.home)).filter(Boolean)
   if (!normalized.length) throw new Error('source supplied no usable records')
   return normalized
+}
+
+/**
+ * Combine independently cached editorial channels into product feeds. An ID
+ * may repeat only when its full normalized fingerprint is identical; divergent
+ * copies are an upstream contract conflict and fail the build.
+ */
+export function mergeChannelFeeds(channels) {
+  if (!channels || typeof channels !== 'object' || Array.isArray(channels)) {
+    throw new Error('invalid channel cache')
+  }
+  const feeds = {}
+  const recordsById = new Map()
+  for (const channelId of Object.keys(channels).sort()) {
+    const records = channels[channelId]
+    if (!Array.isArray(records)) throw new Error(`invalid channel records: ${channelId}`)
+    for (const story of records) {
+      if (!story?.id || !ALLOWED_PRODUCTS.has(story.product)) {
+        throw new Error(`invalid normalized record in channel: ${channelId}`)
+      }
+      const existing = recordsById.get(story.id)
+      if (existing) {
+        if (existing.fingerprint !== story.fingerprint) {
+          throw new Error(`conflicting source record id: ${story.id}`)
+        }
+        continue
+      }
+      recordsById.set(story.id, story)
+      feeds[story.product] ||= []
+      feeds[story.product].push(story)
+    }
+  }
+  for (const records of Object.values(feeds)) {
+    records.sort((a, b) => Date.parse(b.published) - Date.parse(a.published)
+      || String(a.id).localeCompare(String(b.id)))
+  }
+  return feeds
 }
 
 export function normalizeHouseArticle(raw) {
@@ -185,6 +282,15 @@ export function normalizeHouseArticle(raw) {
     contribution: string(raw.original_contribution, 'original house analysis'),
     limitation: string(array(raw.limitations)[0], 'Read the cited sources and stated boundaries.'),
     newsworthiness: Number.isFinite(raw.newsworthiness?.score) ? raw.newsworthiness.score : null,
+    articleType: string(raw.article_type, raw.editorial_class, 'analysis'),
+    pointInTimeStatus: string(raw.point_in_time_status),
+    verdicts: raw.verdicts && typeof raw.verdicts === 'object' && !Array.isArray(raw.verdicts)
+      ? { ...raw.verdicts }
+      : null,
+    outcomeWindow: raw.outcome_window && typeof raw.outcome_window === 'object' && !Array.isArray(raw.outcome_window)
+      ? { ...raw.outcome_window }
+      : null,
+    fraudMasked: raw.fraud_masked === true,
     article: raw,
   }
   record.fingerprint = createHash('sha256').update(JSON.stringify({
@@ -200,6 +306,11 @@ export function normalizeHouseArticle(raw) {
     limitation: record.limitation,
     sections: raw.sections,
     sources: raw.sources,
+    articleType: record.articleType,
+    pointInTimeStatus: record.pointInTimeStatus,
+    verdicts: record.verdicts,
+    outcomeWindow: record.outcomeWindow,
+    fraudMasked: record.fraudMasked,
   })).digest('hex')
   return record
 }
@@ -494,6 +605,7 @@ function signedWord(value) {
 
 function sourceGroundedPlainEnglish(story) {
   const dek = String(story.dek || '').trim()
+  if (story.articleType === 'case_file') return dek
   if (story.product === 'seiche') {
     const current = dek.match(/^The board reads ([\d.]+) out of 100, ([A-Z_]+); the dated reserve path contributes ([+-]?[\d.]+) points; the pooled five-business-day event read is ([\d.]+)%; plumbing leads market pricing by ([+-]?[\d.]+) percentile points\. The index is ([+-]?[\d.]+) against the last published letter\.$/)
     if (current) {
@@ -572,7 +684,9 @@ export function buildInterpretation(story, consumerCopy = {}) {
     sourceSummary: story.dek,
     inEnglish,
     whyItMatters: reviewed ? consumerCopy.whyItMatters.trim() : contributionExplanation(story.contribution),
-    mentalModel: MENTAL_MODELS[story.product],
+    mentalModel: story.articleType === 'case_file'
+      ? CASE_FILE_MENTAL_MODEL
+      : MENTAL_MODELS[story.product],
     ...(number ? { keyNumber: number } : {}),
     uncertainty: story.limitation,
     publishedAt: new Date(story.published).toISOString(),
@@ -592,7 +706,12 @@ export function buildInterpretation(story, consumerCopy = {}) {
       fingerprint: story.fingerprint,
       beat: story.beat,
       editorialClass: story.editorialClass,
+      articleType: story.articleType,
     },
+    ...(story.pointInTimeStatus ? { pointInTimeStatus: story.pointInTimeStatus } : {}),
+    ...(story.verdicts ? { verdicts: { ...story.verdicts } } : {}),
+    ...(story.outcomeWindow ? { outcomeWindow: { ...story.outcomeWindow } } : {}),
+    ...(story.fraudMasked ? { fraudMasked: true } : {}),
     ...(story.contentNotice ? { contentNotice: story.contentNotice } : {}),
   }
   interpretation.fingerprint = createHash('sha256').update(JSON.stringify(interpretation)).digest('hex')

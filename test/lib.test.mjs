@@ -15,6 +15,7 @@ import {
   buildInterpretation,
   buildSignalPulse,
   chooseLead,
+  mergeChannelFeeds,
   normalizePayload,
   normalizeHouseArticle,
   preserveStableClocks,
@@ -177,6 +178,47 @@ test('normalizes all three product feed shapes', () => {
   const undertow = normalizePayload({ entries: ['2026-08-12'], letters: { '2026-08-12': { story: base } } }, sources.undertow)[0]
   assert.equal(undertow.product, 'liquilens-undertow')
   assert.equal(undertow.url, 'https://liquilens-undertow.com/dispatch/2026-08-12.json')
+})
+
+test('normalizes investigation and historical case-file indexes without dropping their boundaries', () => {
+  const source = {
+    id: 'liquilens-case-files', product: 'liquilens', channel: 'article-index',
+    home: 'https://liquilens.in/replay/',
+  }
+  const raw = {
+    id: 'liquilens:case-file:example', article_type: 'case_file',
+    headline: 'One lens caught Example; the other missed it',
+    dek: 'Action-zone lens: HIT, 12 months early. Funding lens: MISS.',
+    editorial_class: 'case_file', publication_status: 'PUBLISHED',
+    published_at: '2026-08-09T20:27:48+05:30',
+    canonical_url: 'https://liquilens.in/replay/example/',
+    clocks: { event_time: '2020-01-01', knowledge_time: '2026-08-09T20:27:48+05:30' },
+    evidence_status: 'PERIOD_END_PROXY_CONSTRUCTION_PIT',
+    point_in_time_status: 'RECONSTRUCTED_LATER',
+    verdicts: { action_zone: 'HIT', funding_fragility: 'MISS' },
+    outcome_window: { end: '2020-01-01', definition: 'First qualifying pre-failure signal.' },
+    original_contribution: { kinds: ['historical_case_file', 'misses_included'] },
+    limitations: ['Filing availability is proxied, not fully reconstructed.'],
+  }
+  const story = normalizePayload({ articles: [raw] }, source)[0]
+
+  assert.equal(story.articleType, 'case_file')
+  assert.equal(story.pointInTimeStatus, 'RECONSTRUCTED_LATER')
+  assert.deepEqual(story.verdicts, raw.verdicts)
+  assert.deepEqual(story.outcomeWindow, raw.outcome_window)
+  assert.equal(story.limitation, raw.limitations[0])
+})
+
+test('channel merge deduplicates identical records and refuses conflicting copies', () => {
+  const story = {
+    id: 'seiche:same', product: 'seiche', published: '2026-08-12T10:00:00Z', fingerprint: 'same-hash',
+  }
+  const feeds = mergeChannelFeeds({ dispatches: [story], investigations: [{ ...story }] })
+  assert.deepEqual(feeds.seiche, [story])
+  assert.throws(
+    () => mergeChannelFeeds({ dispatches: [story], investigations: [{ ...story, fingerprint: 'other-hash' }] }),
+    /conflicting source record id/,
+  )
 })
 
 test('specialist records receive stable MyQuant reading URLs while house articles stay canonical', () => {

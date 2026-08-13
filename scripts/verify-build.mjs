@@ -74,6 +74,14 @@ for (const story of expectedSourceRecords) {
     || !page.includes(story.limitation.replaceAll('&', '&amp;').replaceAll('<', '&lt;').replaceAll('>', '&gt;').replaceAll('"', '&quot;').replaceAll("'", '&#39;'))) {
     throw new Error(`interpretation page lost source provenance or boundary for ${story.id}`)
   }
+  if (story.articleType === 'case_file') {
+    if (story.pointInTimeStatus !== 'RECONSTRUCTED_LATER'
+      || !story.verdicts
+      || !page.includes('HISTORICAL CASE FILE / MISSES INCLUDED')
+      || !Object.values(story.verdicts).every((verdict) => page.includes(`>${verdict}<`))) {
+      throw new Error(`historical case file lost grading or point-in-time status for ${story.id}`)
+    }
+  }
 }
 const sitemap = await read('sitemap.xml')
 if (expectedSourceRecords.some((story) => !sitemap.includes(publicStoryUrl(story)))) {
@@ -92,4 +100,5 @@ if (homepage.includes('myquant-app.vercel.app')) throw new Error('paused app pre
 const originalTeaser = await readFile(join(dist, 'assets', 'media', 'original-app-teaser-1080x1920.mp4'))
 if (originalTeaser.byteLength < 100_000) throw new Error('original website teaser is missing or truncated')
 
-process.stdout.write(`Verified ${expectedSourceRecords.length} specialist interpretations, ${webFeed.items.length} total web articles, suspended zero-story app feed, original teaser, ${appFeed.notices.length} notices, and ${requiredPages.length} trust pages\n`)
+const caseFileCount = expectedSourceRecords.filter((story) => story.articleType === 'case_file').length
+process.stdout.write(`Verified ${expectedSourceRecords.length} specialist interpretations including ${caseFileCount} historical case files, ${webFeed.items.length} total web articles, suspended zero-story app feed, original teaser, ${appFeed.notices.length} notices, and ${requiredPages.length} trust pages\n`)

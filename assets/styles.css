@@ -261,6 +261,25 @@ footer p { margin: 0; }
 .interpretation-body { margin: 0 auto; }
 .interpretation-clocks { grid-template-columns: 180px 1fr; }
 .source-box code { overflow-wrap: anywhere; font-family: var(--mono); font-size: .78em; }
+.case-file-ledger { border: 2px solid var(--carbon); border-top: 0; background: var(--paper); }
+.case-file-ledger > header { display: grid; grid-template-columns: minmax(0, 1.2fr) minmax(260px, .8fr); gap: 26px 60px; padding: clamp(32px, 5vw, 70px); }
+.case-file-ledger > header .eyebrow { grid-column: 1 / -1; }
+.case-file-ledger > header h2 { margin: 0; font-family: var(--display); font-size: clamp(2.4rem, 5vw, 5.5rem); line-height: .88; letter-spacing: -.06em; }
+.case-file-ledger > header > p:last-child { margin: 0; line-height: 1.45; }
+.case-file-verdicts { display: grid; grid-template-columns: repeat(2, 1fr); border-top: 2px solid var(--carbon); }
+.case-file-verdicts article { display: grid; grid-template-columns: 1fr auto; gap: 18px; padding: 30px; border-right: 2px solid var(--carbon); }
+.case-file-verdicts article:last-child { border-right: 0; }
+.case-file-verdicts span { font-family: var(--mono); font-size: .66rem; text-transform: uppercase; }
+.case-file-verdicts strong { font-family: var(--display); font-size: 2.2rem; line-height: .8; }
+.case-file-verdicts article[data-verdict="HIT"] strong { color: #00604e; }
+.case-file-verdicts article[data-verdict="MISS"] strong { color: #a12222; }
+.case-file-verdicts article[data-verdict="VOID"] strong { color: var(--quiet); }
+.case-file-verdicts p { grid-column: 1 / -1; margin: 0; line-height: 1.4; }
+.case-file-ledger dl { display: grid; grid-template-columns: repeat(3, 1fr); margin: 0; border-top: 2px solid var(--carbon); }
+.case-file-ledger dl div { padding: 24px 28px; border-right: 1px solid var(--line); }
+.case-file-ledger dl div:last-child { border-right: 0; }
+.case-file-ledger dt { font-family: var(--mono); font-size: .62rem; text-transform: uppercase; }
+.case-file-ledger dd { margin: 12px 0 0; line-height: 1.35; }
 
 .advertise-page { background: var(--lemon); }
 .advertise-hero { min-height: 720px; padding: clamp(60px, 9vw, 140px) clamp(24px, 7vw, 100px); }
@@ -369,6 +388,9 @@ footer p { margin: 0; }
   .translation-ledger section + section { border-top: 2px solid var(--carbon); border-left: 0; }
   .key-number { grid-template-columns: 1fr; }
   .key-number span { border-right: 0; border-bottom: 2px solid var(--carbon); }
+  .case-file-ledger > header, .case-file-verdicts, .case-file-ledger dl { grid-template-columns: 1fr; }
+  .case-file-verdicts article, .case-file-ledger dl div { border-right: 0; border-bottom: 1px solid var(--line); }
+  .case-file-verdicts article:last-child, .case-file-ledger dl div:last-child { border-bottom: 0; }
   footer { flex-direction: column; }
 }
 

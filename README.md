@@ -14,6 +14,11 @@ The public site has two explicit lanes:
 - `Interpreted`: plain-English readings of Seiche, LiquiLens, and Undertow work;
 - `MyQuant Analysis`: independently sourced house reporting on important news.
 
+The Interpreted lane includes reviewed longforms and LiquiLens historical case
+files. Case files display each lens's `HIT`, `MISS`, or `VOID` separately and
+state whether the replay was reconstructed later. They are not silently
+promoted into real-time calls or validated-backtest evidence.
+
 Original house reporting lives in `content/` and must declare its sources,
 contribution, limitations, and publication status.
 
@@ -27,7 +32,8 @@ The build has no runtime dependencies. If a source is temporarily unavailable,
 it uses the last successful `data/cache.json` slice for that source and prints the
 coverage state in the generated page.
 
-The scheduled `sync evidence wire` workflow checks upstream publication feeds at
+The scheduled `sync evidence wire` workflow checks seven upstream publication
+channels at
 02:17, 08:17, 14:17, and 20:17 UTC. A changed evidence fingerprint produces one
 small content commit, which becomes the deployment trigger; an unchanged network
 produces no commit and no redeploy. Frequency is a check cadence, not a quota.

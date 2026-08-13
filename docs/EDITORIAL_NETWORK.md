@@ -29,6 +29,11 @@ use one of `HIT`, `PARTIAL`, `MISS`, `VOID`, or `NOT_A_FORECAST`. Misses stay in
 the archive. A backtest result may attract attention, but the headline cannot be
 stronger than the body or hide its denominator.
 
+The current LiquiLens case-file feed grades the action-zone and funding-fragility
+lenses separately. A case may therefore be `HIT/MISS`, `MISS/HIT`, or include a
+`VOID` when a lens was not scoreable. MyQuant renders those verdicts as separate
+cards and never computes a flattering combined grade.
+
 ## Publication cadence
 
 Automation checks for new evidence four times daily. It publishes only when the

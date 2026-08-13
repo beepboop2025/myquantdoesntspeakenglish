@@ -10,6 +10,7 @@ import {
   buildInterpretation,
   buildSignalPulse,
   chooseLead,
+  mergeChannelFeeds,
   normalizeHouseArticle,
   normalizePayload,
   preserveStableClocks,
@@ -59,26 +60,56 @@ async function readCache() {
 
 async function syncFeeds() {
   const cached = await readCache()
-  const feeds = {}
-  const statuses = {}
+  const channels = {}
+  const channelStatuses = {}
+  const legacyPrimaryChannels = new Set([
+    'liquilens-desk', 'seiche-dispatches', 'undertow-dispatches',
+  ])
 
   for (const source of SOURCES) {
     try {
       const payload = await fetchJson(source.url)
       const normalized = normalizePayload(payload, source)
-      feeds[source.product] = preserveStableClocks(normalized, cached.feeds?.[source.product])
-      statuses[source.product] = { state: 'live', detail: `${feeds[source.product].length} records` }
+      const previous = Array.isArray(cached.channels?.[source.id])
+        ? cached.channels[source.id]
+        : legacyPrimaryChannels.has(source.id) && Array.isArray(cached.feeds?.[source.product])
+          ? cached.feeds[source.product]
+          : []
+      channels[source.id] = preserveStableClocks(normalized, previous)
+      channelStatuses[source.id] = { state: 'live', detail: `${channels[source.id].length} records` }
     } catch (error) {
-      const fallback = Array.isArray(cached.feeds?.[source.product]) ? cached.feeds[source.product] : []
+      const fallback = Array.isArray(cached.channels?.[source.id])
+        ? cached.channels[source.id]
+        : legacyPrimaryChannels.has(source.id) && Array.isArray(cached.feeds?.[source.product])
+          ? cached.feeds[source.product]
+          : []
       if (!fallback.length) throw new Error(`${source.label}: ${error.message}; no cache available`)
-      feeds[source.product] = fallback
-      statuses[source.product] = { state: 'cached', detail: `${fallback.length} records · refresh failed` }
+      channels[source.id] = fallback
+      channelStatuses[source.id] = { state: 'cached', detail: `${fallback.length} records · refresh failed` }
     }
   }
 
-  const next = { schema: 'mqdnse.feed-cache.v1', syncedAt: new Date().toISOString(), feeds, statuses }
+  const feeds = mergeChannelFeeds(channels)
+  const statuses = Object.fromEntries([...new Set(SOURCES.map(({ product }) => product))].map((product) => {
+    const sourceIds = SOURCES.filter((source) => source.product === product).map(({ id }) => id)
+    const cachedCount = sourceIds.filter((id) => channelStatuses[id]?.state === 'cached').length
+    return [product, {
+      state: cachedCount ? 'cached' : 'live',
+      detail: `${feeds[product]?.length || 0} records · ${sourceIds.length - cachedCount}/${sourceIds.length} channels connected`,
+    }]
+  }))
+  const next = {
+    schema: 'mqdnse.feed-cache.v2',
+    syncedAt: new Date().toISOString(),
+    channels,
+    channelStatuses,
+    feeds,
+    statuses,
+  }
   await mkdir(dirname(cachePath), { recursive: true })
-  const changed = JSON.stringify(cached.feeds) !== JSON.stringify(feeds)
+  const changed = JSON.stringify(cached.channels) !== JSON.stringify(channels)
+    || JSON.stringify(cached.channelStatuses) !== JSON.stringify(channelStatuses)
+    || JSON.stringify(cached.feeds) !== JSON.stringify(feeds)
     || JSON.stringify(cached.statuses) !== JSON.stringify(statuses)
   if (changed) {
     await writeFile(cachePath, `${JSON.stringify(next, null, 2)}\n`)
@@ -138,7 +169,13 @@ function storyCard(story, index, consumerCopy) {
   const label = productLabel(story.product)
   const interpreted = buildInterpretation(story, consumerCopy?.[story.id])
   const url = publicStoryUrl(story)
-  const lane = interpreted ? 'Interpreted' : story.editorialClass === 'house_investigation' ? 'MyQuant analysis' : 'House note'
+  const lane = interpreted
+    ? story.articleType === 'case_file'
+      ? 'Interpreted case file'
+      : story.articleType === 'investigation'
+        ? 'Interpreted investigation'
+        : 'Interpreted'
+    : story.editorialClass === 'house_investigation' ? 'MyQuant analysis' : 'House note'
   const summary = interpreted?.inEnglish || story.dek
   return `<li class="story-card" data-story data-product="${escapeHtml(story.product)}" data-search="${escapeHtml(`${story.title} ${story.dek} ${story.beat} ${label}`.toLowerCase())}">
     <div class="story-index">${String(index + 1).padStart(2, '0')}</div>
@@ -418,6 +455,20 @@ function renderInterpretation(interpretation) {
     citation: source.url,
     isAccessibleForFree: true,
   }
+  const verdictExplanation = (verdict) => ({
+    HIT: 'A qualifying pre-event signal appears in this reconstruction.',
+    MISS: 'No qualifying pre-event signal appears. The miss stays in the record.',
+    VOID: 'This lens was not scoreable, so it receives no performance credit.',
+    PARTIAL: 'The evidence supports only part of the claimed result.',
+    NOT_A_FORECAST: 'The source did not make a forecast that can be graded.',
+  })[verdict] || 'Read the original case file for the source grading rule.'
+  const caseFile = interpretation.source.articleType === 'case_file'
+    ? `<section class="case-file-ledger" aria-labelledby="case-file-title">
+        <header><p class="eyebrow">HISTORICAL CASE FILE / MISSES INCLUDED</p><h2 id="case-file-title">What happened, and what each lens showed</h2><p>The recorded event date is ${escapeHtml(displayClock(interpretation.evidence.eventTime))}. This page reports the source grading; it does not upgrade a reconstruction into a real-time call.</p></header>
+        <div class="case-file-verdicts">${Object.entries(interpretation.verdicts || {}).map(([lens, verdict]) => `<article data-verdict="${escapeHtml(verdict)}"><span>${escapeHtml(lens.replaceAll('_', ' '))}</span><strong>${escapeHtml(verdict)}</strong><p>${escapeHtml(verdictExplanation(verdict))}</p></article>`).join('')}</div>
+        <dl><div><dt>Point-in-time status</dt><dd>${escapeHtml(interpretation.pointInTimeStatus || 'Not supplied')}</dd></div><div><dt>Outcome rule</dt><dd>${escapeHtml(interpretation.outcomeWindow?.definition || 'Read the original case file.')}</dd></div>${interpretation.fraudMasked ? '<div><dt>Fraud-masked source case</dt><dd>Reported books may not show hidden distress. Misses remain misses and are not reclassified after the event.</dd></div>' : ''}</dl>
+      </section>`
+    : ''
   return `<!doctype html><html lang="en"><head>${head({ title: `${interpretation.title} — explained by ${BRAND_NAME}`, description: interpretation.inEnglish, canonical: interpretation.url, type: 'article' })}</head><body>
     <a class="skip" href="#interpretation">Skip to explanation</a>${masthead()}
     <main class="article-page interpretation-page" id="interpretation">
@@ -429,6 +480,7 @@ function renderInterpretation(interpretation) {
         <section><p class="eyebrow">IN PLAIN ENGLISH</p><h2>${escapeHtml(interpretation.inEnglish)}</h2><p>${interpretation.copyState === 'REVIEWED' ? 'This wording has a reviewed consumer-language record.' : 'This fallback stays inside the source summary; the mental model below explains the mechanism without adding a market claim.'}</p></section>
       </div>
       ${interpretation.keyNumber ? `<aside class="key-number"><span>${escapeHtml(interpretation.keyNumber.value)}</span><p>${escapeHtml(interpretation.keyNumber.label)}</p></aside>` : ''}
+      ${caseFile}
       <div class="article-body interpretation-body">
         <section><h2>Why this matters</h2><p>${escapeHtml(interpretation.whyItMatters)}</p></section>
         <section><h2>Picture it this way</h2><p>${escapeHtml(interpretation.mentalModel)}</p></section>
