@@ -267,15 +267,38 @@ function renderHome(stories, cache) {
   <main>
     <section class="hero" aria-labelledby="hero-title">
       <div class="hero-copy">
-        <p class="eyebrow">THE BIG SHORT REFERENCE HAS ESCAPED CONTAINMENT</p>
+        <p class="eyebrow">WALL STREET / TRANSLATED LIVE</p>
         <h1 id="hero-title">The numbers are fluent.<br><em>The headlines need subtitles.</em></h1>
         <p class="hero-dek">One wire for the plumbing, the institutions, and the exits. Serious evidence. Less-serious furniture.</p>
+        <a class="hero-jump" href="#wire">Read the evidence ↓</a>
       </div>
-      <div class="subtitle-machine" aria-label="Lead story translation">
-        <div><span>QUANT SAYS</span><p>${escapeHtml(lead?.title || 'No lead passed the evidence gate.')}</p></div>
-        <div><span>NORMAL PERSON HEARS</span><p>${escapeHtml(lead?.dek || 'The desk is checking the wires.')}</p></div>
-        ${lead ? `<a href="${escapeHtml(lead.url)}">Open the evidence, not just the vibe ↗</a>` : ''}
+      <div class="hero-reel" data-hero-reel data-state="paused">
+        <div class="reel-chrome">
+          <span><i aria-hidden="true"></i> DESK TAPE / MUTED + SUBTITLED</span>
+          <span data-reel-status>READY 01 / 02</span>
+        </div>
+        <div class="reel-frame">
+          <video id="heroReel" controls muted playsinline preload="metadata" poster="/assets/media/quant-tape-01-poster.jpg" aria-describedby="heroReelTranscript">
+            <source src="/assets/media/quant-tape-01.mp4" type="video/mp4">
+            Your browser cannot play this subtitled desk tape.
+          </video>
+          <span class="reel-bug" data-reel-bug aria-hidden="true">MQDSE / COPY 01</span>
+        </div>
+        <div class="reel-controls">
+          <div class="tape-selector" role="group" aria-label="Choose a desk tape">
+            <button type="button" data-reel-tape data-index="0" data-src="/assets/media/quant-tape-01.mp4" data-poster="/assets/media/quant-tape-01-poster.jpg" aria-pressed="true"><span>01</span> Meet the quant</button>
+            <button type="button" data-reel-tape data-index="1" data-src="/assets/media/quant-tape-02.mp4" data-poster="/assets/media/quant-tape-02-poster.jpg" aria-pressed="false"><span>02</span> Self-interest</button>
+          </div>
+          <button class="reel-toggle" type="button" data-reel-toggle aria-controls="heroReel" aria-label="Play desk tape"><span aria-hidden="true" data-reel-icon>▶</span><span data-reel-toggle-label>Play</span></button>
+        </div>
+        <p class="sr-only" id="heroReelTranscript">Two muted, subtitled desk tapes: a boastful trader introduces his quantitative analyst and corrects the analyst’s name; then a colleague dryly explains why he respects the trader’s ruthless self-interest.</p>
       </div>
+    </section>
+
+    <section class="subtitle-machine" aria-labelledby="translation-title">
+      <div><span id="translation-title">QUANT SAYS</span><p>${escapeHtml(lead?.title || 'No lead passed the evidence gate.')}</p></div>
+      <div><span>NORMAL PERSON HEARS</span><p>${escapeHtml(lead?.dek || 'The desk is checking the wires.')}</p></div>
+      ${lead ? `<a href="${escapeHtml(lead.url)}">Open the evidence, not just the vibe ↗</a>` : ''}
     </section>
 
     <section class="status-band" aria-labelledby="status-title">

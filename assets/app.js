@@ -124,6 +124,237 @@
       renderCadence(windowSize)
     })
   })
-
   selectProduct('all', false)
+
+  const reel = document.querySelector('[data-hero-reel]')
+  if (!reel) return
+
+  const video = reel.querySelector('#heroReel')
+  const tapeButtons = Array.from(reel.querySelectorAll('[data-reel-tape]'))
+  const toggle = reel.querySelector('[data-reel-toggle]')
+  const status = reel.querySelector('[data-reel-status]')
+  const bug = reel.querySelector('[data-reel-bug]')
+  if (!video || tapeButtons.length === 0) return
+
+  const toggleIcon = toggle?.querySelector('[data-reel-icon]')
+  const toggleLabel = toggle?.querySelector('[data-reel-toggle-label]')
+  const reducedMotion = window.matchMedia?.('(prefers-reduced-motion: reduce)')
+  let prefersReducedMotion = reducedMotion?.matches || false
+  let activeTape = Math.max(0, tapeButtons.findIndex(function (button) {
+    return button.getAttribute('aria-pressed') === 'true'
+  }))
+  let wantsPlayback = !prefersReducedMotion
+  let userPlaybackChoice = null
+  let isInViewport = true
+  let playRequest = 0
+  let playIsPending = false
+
+  video.muted = true
+  video.defaultMuted = true
+  video.playsInline = true
+  video.autoplay = false
+  video.controls = false
+  video.setAttribute('muted', '')
+  video.setAttribute('playsinline', '')
+
+  function tapeCounter() {
+    return `${String(activeTape + 1).padStart(2, '0')} / ${String(tapeButtons.length).padStart(2, '0')}`
+  }
+
+  function updateState(state, statusLabel) {
+    const isPlaying = state === 'playing' || state === 'loading'
+    const action = state === 'ended' ? 'Replay' : isPlaying ? 'Pause' : 'Play'
+
+    reel.dataset.state = state
+    reel.dataset.activeTape = tapeButtons[activeTape]?.dataset.index || String(activeTape)
+    if (status) status.textContent = `${statusLabel || state.toUpperCase()} ${tapeCounter()}`
+    if (bug) bug.textContent = `MQDSE / COPY ${String(activeTape + 1).padStart(2, '0')}`
+    if (toggle) {
+      toggle.dataset.state = state
+      toggle.setAttribute('aria-label', `${action} desk tape`)
+      toggle.setAttribute('aria-pressed', String(isPlaying))
+    }
+    if (toggleIcon) toggleIcon.textContent = isPlaying ? 'Ⅱ' : '▶'
+    if (toggleLabel) toggleLabel.textContent = action
+  }
+
+  function environmentAllowsPlayback() {
+    return document.visibilityState !== 'hidden' && isInViewport
+  }
+
+  function stopPlayback(options) {
+    const settings = options || {}
+    playRequest += 1
+    playIsPending = false
+    if (settings.clearIntent) wantsPlayback = false
+    video.pause()
+    updateState(settings.state || 'paused', settings.status || 'PAUSED')
+  }
+
+  function handlePlayRejection(requestId, error) {
+    if (requestId !== playRequest) return
+    playIsPending = false
+    wantsPlayback = false
+    const wasInterrupted = error?.name === 'AbortError'
+    updateState(wasInterrupted ? 'paused' : 'blocked', wasInterrupted ? 'PAUSED' : 'PRESS PLAY')
+  }
+
+  function startPlayback() {
+    wantsPlayback = true
+    if (!environmentAllowsPlayback()) {
+      updateState('paused', 'PAUSED')
+      return
+    }
+
+    if (video.ended) video.currentTime = 0
+    const requestId = ++playRequest
+    playIsPending = true
+    updateState('loading', 'LOADING')
+
+    try {
+      const playPromise = video.play()
+      if (playPromise?.then) {
+        playPromise.then(function () {
+          if (requestId !== playRequest) return
+          playIsPending = false
+          if (!wantsPlayback || !environmentAllowsPlayback()) {
+            stopPlayback({ status: 'PAUSED' })
+            return
+          }
+          updateState('playing', 'PLAYING')
+        }).catch(function (error) {
+          handlePlayRejection(requestId, error)
+        })
+      } else {
+        playIsPending = false
+        updateState('playing', 'PLAYING')
+      }
+    } catch (error) {
+      handlePlayRejection(requestId, error)
+    }
+  }
+
+  function loadTape(index, shouldPlay) {
+    const tape = tapeButtons[index]
+    if (!tape) return
+
+    playRequest += 1
+    playIsPending = false
+    activeTape = index
+    tapeButtons.forEach(function (button, buttonIndex) {
+      button.setAttribute('aria-pressed', String(buttonIndex === activeTape))
+    })
+
+    video.pause()
+    video.src = tape.dataset.src
+    if (tape.dataset.poster) video.poster = tape.dataset.poster
+    video.load()
+    updateState('paused', shouldPlay ? 'LOADING' : prefersReducedMotion ? 'MOTION OFF' : 'READY')
+    if (shouldPlay) startPlayback()
+  }
+
+  tapeButtons.forEach(function (button, index) {
+    button.addEventListener('click', function () {
+      userPlaybackChoice = 'play'
+      wantsPlayback = true
+      loadTape(index, true)
+    })
+  })
+
+  toggle?.addEventListener('click', function () {
+    if ((!video.paused && !video.ended) || playIsPending) {
+      userPlaybackChoice = 'pause'
+      stopPlayback({ clearIntent: true, status: 'PAUSED' })
+      return
+    }
+
+    userPlaybackChoice = 'play'
+    startPlayback()
+  })
+
+  video.addEventListener('play', function () {
+    if (!wantsPlayback || !environmentAllowsPlayback()) {
+      stopPlayback({ status: 'PAUSED' })
+      return
+    }
+    updateState('playing', 'PLAYING')
+  })
+
+  video.addEventListener('playing', function () {
+    playIsPending = false
+    updateState('playing', 'PLAYING')
+  })
+
+  video.addEventListener('waiting', function () {
+    if (wantsPlayback) updateState('loading', 'LOADING')
+  })
+
+  video.addEventListener('pause', function () {
+    if (!video.ended && !playIsPending && reel.dataset.state !== 'blocked') {
+      updateState('paused', prefersReducedMotion && userPlaybackChoice !== 'play' ? 'MOTION OFF' : 'PAUSED')
+    }
+  })
+
+  video.addEventListener('ended', function () {
+    playIsPending = false
+    if (prefersReducedMotion || !wantsPlayback) {
+      wantsPlayback = false
+      updateState('ended', 'COMPLETE')
+      return
+    }
+    loadTape((activeTape + 1) % tapeButtons.length, true)
+  })
+
+  video.addEventListener('error', function () {
+    playRequest += 1
+    playIsPending = false
+    wantsPlayback = false
+    updateState('error', 'UNAVAILABLE')
+  })
+
+  document.addEventListener('visibilitychange', function () {
+    if (document.visibilityState === 'hidden') {
+      if (!video.paused || playIsPending) stopPlayback({ status: 'PAUSED' })
+    } else if (wantsPlayback && isInViewport) {
+      startPlayback()
+    }
+  })
+
+  if ('IntersectionObserver' in window) {
+    const observer = new IntersectionObserver(function (entries) {
+      const entry = entries.find(function (candidate) {
+        return candidate.target === reel
+      })
+      if (!entry) return
+
+      const wasInViewport = isInViewport
+      isInViewport = entry.isIntersecting && entry.intersectionRatio > 0
+      if (!isInViewport && wasInViewport && (!video.paused || playIsPending)) {
+        stopPlayback({ status: 'PAUSED' })
+      } else if (isInViewport && !wasInViewport && wantsPlayback && document.visibilityState !== 'hidden') {
+        startPlayback()
+      }
+    }, { threshold: [0, 0.15] })
+    observer.observe(reel)
+  }
+
+  function handleMotionPreference(event) {
+    prefersReducedMotion = event.matches
+    if (prefersReducedMotion) {
+      stopPlayback({ clearIntent: true, status: 'MOTION OFF' })
+    } else if (userPlaybackChoice !== 'pause') {
+      wantsPlayback = true
+      startPlayback()
+    } else {
+      updateState('paused', 'PAUSED')
+    }
+  }
+
+  if (reducedMotion?.addEventListener) {
+    reducedMotion.addEventListener('change', handleMotionPreference)
+  } else {
+    reducedMotion?.addListener?.(handleMotionPreference)
+  }
+
+  loadTape(activeTape, !prefersReducedMotion)
 }())
