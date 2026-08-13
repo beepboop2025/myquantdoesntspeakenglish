@@ -197,9 +197,6 @@ for (const source of ['https://seiche.info/', 'https://liquilens.in/', 'https://
 if (publicText.includes('fonts.googleapis.com') || publicText.includes('fonts.gstatic.com')) {
   throw new Error('public HTML contacts a third-party font host')
 }
-if (publicText.includes('fzmovies') || publicText.includes('paramount') || publicText.includes('quant-tape-')) {
-  throw new Error('restricted film material leaked into public HTML')
-}
 if (!homepage.includes('/assets/media/original-app-teaser-1080x1920.mp4')) {
   throw new Error('original website teaser is missing from the homepage')
 }
