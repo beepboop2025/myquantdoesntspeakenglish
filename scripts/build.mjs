@@ -740,8 +740,8 @@ function renderFeedJson(stories, consumerCopy) {
           sourceUrl: interpretation ? story.url : story.url,
           evidence: {
             status: story.evidenceStatus,
-            eventTime: story.eventTime,
-            knowledgeTime: story.knowledgeTime,
+            eventTime: isoDate(story.eventTime),
+            knowledgeTime: isoDate(story.knowledgeTime),
             publicationStatus: story.publicationStatus,
             contribution: story.contribution,
             limitation: story.limitation,
