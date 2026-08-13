@@ -54,6 +54,13 @@ const escapeHtml = (value = '') => String(value)
   .replaceAll("'", '&#39;')
 
 if (appFeed.schema !== 'mqdnse.app-feed.v1') throw new Error('unexpected app-feed schema')
+if (webFeed.version !== 'https://jsonfeed.org/version/1.1'
+  || webFeed._mqdnse?.schema !== 'mqdnse.web-feed.v1'
+  || webFeed._mqdnse?.itemSchema !== 'mqdnse.web-feed-item.v1'
+  || webFeed._mqdnse?.authority !== 'PUBLIC_EDITORIAL_ARCHIVE'
+  || webFeed._mqdnse?.appDistribution !== 'SUSPENDED_SEPARATE_CHANNEL') {
+  throw new Error('web feed lost its channel or evidence contract')
+}
 if (releasePolicy.channels?.site?.mode !== 'SOURCE_PUBLISHED') throw new Error('website archive mode is not enabled')
 if (releasePolicy.channels?.['app-feed']?.mode !== 'SUSPENDED') throw new Error('app feed is not explicitly suspended')
 if (appFeed.releaseStatus !== 'SUSPENDED') throw new Error('app feed must report SUSPENDED')
@@ -61,6 +68,40 @@ if (!Array.isArray(appFeed.stories) || appFeed.stories.length !== 0) throw new E
 if (!Array.isArray(appFeed.notices)) throw new Error('app feed lacks correction notices')
 if (!Array.isArray(webFeed.items) || JSON.stringify(actualWebIds) !== JSON.stringify(expectedWebIds)) {
   throw new Error(`web archive mismatch: expected ${expectedWebIds.length}, received ${actualWebIds.length}`)
+}
+for (const item of webFeed.items) {
+  const extension = item._mqdnse
+  const evidence = extension?.evidence
+  const copy = extension?.copy
+  if (extension?.schema !== 'mqdnse.web-feed-item.v1'
+    || extension.sourceRecordId !== item.id
+    || !['INTERPRETED', 'MYQUANT_ANALYSIS'].includes(extension.lane)
+    || !extension.product
+    || !extension.beat
+    || !extension.editorialClass
+    || !extension.articleType
+    || !extension.sourceUrl?.startsWith('https://')
+    || !evidence?.status
+    || !evidence?.eventTime
+    || !evidence?.knowledgeTime
+    || evidence.publicationStatus !== 'PUBLISHED'
+    || !evidence?.contribution
+    || !evidence?.limitation
+    || !evidence?.sourceFingerprint
+    || !copy?.state
+    || !copy?.inEnglish
+    || !copy?.whyItMatters
+    || !copy?.uncertainty
+    || !Array.isArray(extension.sources)
+    || !extension.sources.length) {
+    throw new Error(`web feed item lost its evidence extension: ${item.id}`)
+  }
+  if (item.summary !== copy.inEnglish) {
+    throw new Error(`web feed summary diverges from its evidence extension: ${item.id}`)
+  }
+  if (extension.lane === 'INTERPRETED' && item.external_url !== extension.sourceUrl) {
+    throw new Error(`interpreted web feed item lost its canonical source: ${item.id}`)
+  }
 }
 if ((homepage.match(/data-story(?:\s|>)/g) || []).length !== expectedWebIds.length) {
   throw new Error('homepage does not render every website archive record')
@@ -74,6 +115,10 @@ for (const story of expectedSourceRecords) {
   const feedItem = webFeed.items.find((item) => item.id === story.id)
   if (feedItem?.url !== expectedUrl || feedItem?.external_url !== story.url) {
     throw new Error(`interpretation feed routes are incomplete for ${story.id}`)
+  }
+  if (feedItem?._mqdnse?.evidence?.sourceFingerprint !== story.fingerprint
+    || feedItem?._mqdnse?.copy?.uncertainty !== story.limitation) {
+    throw new Error(`interpretation feed evidence diverges from source cache for ${story.id}`)
   }
   if (!page.includes(`href="${story.url.replaceAll('&', '&amp;')}"`)
     || !page.includes('INTERPRETED /')

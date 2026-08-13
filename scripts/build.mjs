@@ -698,16 +698,59 @@ function renderFeedJson(stories, consumerCopy) {
     version: 'https://jsonfeed.org/version/1.1', title: BRAND_NAME,
     home_page_url: `${SITE_ORIGIN}/`, feed_url: `${SITE_ORIGIN}/feed.json`,
     description: 'Specialist market articles interpreted in plain English, plus sourced MyQuant analysis.',
+    _mqdnse: {
+      schema: 'mqdnse.web-feed.v1',
+      itemSchema: 'mqdnse.web-feed-item.v1',
+      authority: 'PUBLIC_EDITORIAL_ARCHIVE',
+      appDistribution: 'SUSPENDED_SEPARATE_CHANNEL',
+    },
     items: stories.map((story) => {
       const interpretation = buildInterpretation(story, consumerCopy?.[story.id])
+      const copy = {
+        state: interpretation?.copyState || 'HOUSE_AUTHORED',
+        inEnglish: interpretation?.inEnglish || story.dek,
+        whyItMatters: interpretation?.whyItMatters || story.contribution,
+        uncertainty: interpretation?.uncertainty || story.limitation,
+        ...(interpretation?.keyNumber ? { keyNumber: interpretation.keyNumber } : {}),
+      }
+      const sources = interpretation
+        ? [{
+            id: story.id,
+            label: productLabel(story.product),
+            url: story.url,
+            fingerprint: story.fingerprint,
+          }]
+        : story.article.sources.map((source) => ({ ...source }))
       return {
         id: story.id,
         url: publicStoryUrl(story),
         ...(interpretation ? { external_url: story.url } : {}),
         title: story.title,
-        summary: interpretation?.inEnglish || story.dek,
+        summary: copy.inEnglish,
         date_published: isoDate(story.published),
         tags: [interpretation ? 'interpreted' : 'myquant-analysis', story.product, story.beat, story.evidenceStatus],
+        _mqdnse: {
+          schema: 'mqdnse.web-feed-item.v1',
+          lane: interpretation ? 'INTERPRETED' : 'MYQUANT_ANALYSIS',
+          product: story.product,
+          beat: story.beat,
+          editorialClass: story.editorialClass,
+          articleType: story.articleType,
+          sourceRecordId: story.id,
+          sourceUrl: interpretation ? story.url : story.url,
+          evidence: {
+            status: story.evidenceStatus,
+            eventTime: story.eventTime,
+            knowledgeTime: story.knowledgeTime,
+            publicationStatus: story.publicationStatus,
+            contribution: story.contribution,
+            limitation: story.limitation,
+            sourceFingerprint: story.fingerprint,
+          },
+          copy,
+          sources,
+          ...(story.newsGate ? { newsGate: story.newsGate } : {}),
+        },
       }
     }),
   }, null, 2)}\n`

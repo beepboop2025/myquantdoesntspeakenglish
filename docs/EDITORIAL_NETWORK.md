@@ -55,6 +55,13 @@ Reviewed consumer copy is labelled `REVIEWED`. Deterministic copy that only
 rearranges source fields and controlled taxonomy is labelled `SOURCE_GROUNDED`.
 Neither label represents legal or regulatory clearance.
 
+The public JSON Feed keeps the standard JSON Feed 1.1 fields and adds an
+`_mqdnse` extension to every item. That extension carries the source record ID,
+canonical source URL, fingerprint, event and knowledge clocks, evidence status,
+contribution, limitation, copy state, and source list. It is the bounded input
+for downstream corpus capture; the collector must reject the feed if the
+extension disappears or changes shape.
+
 ## News analysis gate
 
 MyQuant Analysis may cover a relevant outside event when it has a primary-source
