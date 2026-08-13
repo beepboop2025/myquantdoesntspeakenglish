@@ -31,6 +31,10 @@ const houseRecords = await Promise.all(houseNames.map((name) => readSourceJson(j
 const publicText = pages.join('\n').toLowerCase()
 const homepage = pages[0]
 
+if (!/<meta name="google-site-verification" content="[A-Za-z0-9_-]+">/.test(homepage)) {
+  throw new Error('homepage is missing Google Search Console ownership verification')
+}
+
 const appliesToSite = (entry) => Array.isArray(entry?.channels)
   && (entry.channels.includes('*') || entry.channels.includes('site'))
 const withdrawnIds = new Set(Object.entries(contentStatus.entries || {})

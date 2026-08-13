@@ -30,6 +30,7 @@ const releasePolicyPath = join(root, 'data', 'release-policy.json')
 const BRAND_NAME = 'my quant doesn’t speak english'
 const ORGANIZATION_ID = `${SITE_ORIGIN}/#organization`
 const WEBSITE_ID = `${SITE_ORIGIN}/#website`
+const GOOGLE_SITE_VERIFICATION = 'Mw8LFtq3k3i_VNKhP5aRgPYN31yx2j8o9S1v7Fl5cSo'
 const escapeHtml = (value = '') => String(value)
   .replaceAll('&', '&amp;')
   .replaceAll('<', '&lt;')
@@ -136,6 +137,7 @@ function head({ title, description, canonical, type = 'website' }) {
   return `
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="google-site-verification" content="${GOOGLE_SITE_VERIFICATION}">
   <title>${escapeHtml(title)}</title>
   <meta name="description" content="${escapeHtml(description)}">
   <link rel="canonical" href="${escapeHtml(canonical)}">
