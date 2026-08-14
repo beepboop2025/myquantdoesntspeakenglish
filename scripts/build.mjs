@@ -163,7 +163,7 @@ function masthead() {
     <nav aria-label="Primary">
       <a href="/#signals">How it works</a>
       <a href="/#wire">All articles</a>
-      <a href="/#desk-tape">Desk tape</a>
+      <a href="/follow">Follow</a>
       <a href="/articles/why-the-quant-needs-subtitles">House rules</a>
       <a class="nav-ad" href="/advertise">Advertise, tastefully</a>
     </nav>
@@ -378,7 +378,10 @@ function renderHome(stories, cache, consumerCopy) {
         <p class="eyebrow">MARKET JARGON / TRANSLATED</p>
         <h1 id="hero-title">The numbers are fluent.<br><em>The headlines need subtitles.</em></h1>
         <p class="hero-dek">Seiche, LiquiLens, and Undertow do the specialist work. MyQuant explains every published piece, then analyzes the important news that connects them. Serious evidence. Less-serious furniture.</p>
-        <a class="hero-jump" href="#wire">Read the articles ↓</a>
+        <div class="hero-actions">
+          <a class="hero-jump" href="#wire">Read the articles ↓</a>
+          <a class="hero-jump hero-jump--follow" href="/follow">Follow the desks →</a>
+        </div>
       </div>
       <div class="hero-reel" id="desk-tape" aria-labelledby="desk-tape-title">
         <div class="reel-chrome">
@@ -642,6 +645,95 @@ function renderInfoPage({ slug, eyebrow, title, dek, sections }) {
       <div class="info-sections">${sections.map((section) => `<section><h2>${escapeHtml(section.heading)}</h2>${section.paragraphs.map((paragraph) => `<p>${paragraph}</p>`).join('')}</section>`).join('')}</div>
     </main>
     <footer><p>General market reporting and plain-English explanations—not personalised investment advice or a transaction recommendation.</p><p><a href="/">Home</a> · <a href="/editorial">Editorial standards</a> · <a href="/corrections">Corrections</a> · <a href="/privacy">Privacy</a> · <a href="/support">Support</a> · <a href="/accessibility">Accessibility</a> · <a href="/security">Security</a></p></footer>
+    <script type="application/ld+json">${JSON.stringify(schema).replaceAll('<', '\\u003c')}</script>
+  </body></html>`
+}
+
+function renderFollow() {
+  const canonical = `${SITE_ORIGIN}/follow`
+  const desks = [
+    ['MyQuant', `${SITE_ORIGIN}/feed.xml`],
+    ['LiquiLens', 'https://t.me/LiquiLens_bot?start=myquant_follow_liquilens'],
+    ['Seiche', 'https://t.me/seiche_desk_bot?start=myquant_follow_seiche'],
+    ['Undertow', 'https://t.me/undertow_LiquiLens_bot?start=myquant_follow_undertow'],
+    ['Palimpsest', 'https://t.me/palimpsest_watch_bot?start=myquant_follow_palimpsest'],
+    ['NarcoScope', 'https://t.me/NarcoScopeEvidenceBot?start=ref_myquant_follow'],
+    ['Liquidity Lab Desk', 'https://t.me/LiquidityLabDesk'],
+  ]
+  const schema = {
+    '@context': 'https://schema.org',
+    '@type': 'CollectionPage',
+    '@id': `${canonical}#webpage`,
+    url: canonical,
+    name: 'Follow the Liquidity Lab desks',
+    description: 'Opt-in feeds and Telegram briefings from MyQuant and the specialist evidence desks.',
+    inLanguage: 'en',
+    isPartOf: { '@type': 'WebSite', '@id': WEBSITE_ID },
+    publisher: { '@type': 'Organization', '@id': ORGANIZATION_ID },
+    mainEntity: {
+      '@type': 'ItemList',
+      itemListElement: desks.map(([name, url], index) => ({
+        '@type': 'ListItem', position: index + 1, name, url,
+      })),
+    },
+  }
+
+  return `<!doctype html><html lang="en"><head>${head({
+    title: `Follow the desks — ${BRAND_NAME}`,
+    description: 'Choose a no-account feed or an attributed Telegram briefing from the Liquidity Lab product network.',
+    canonical,
+  })}</head><body>
+    <a class="skip" href="#follow">Skip to follow options</a>${masthead()}
+    <main class="follow-page" id="follow">
+      <header class="follow-hero">
+        <div>
+          <p class="eyebrow">ONE NETWORK / PICK THE QUESTION</p>
+          <h1>Close the tab.<br><em>Keep the signal.</em></h1>
+          <p class="follow-dek">Choose the desk whose evidence you actually need. Each route says what arrives and when; every Telegram link carries a source tag so the network can learn which promise earned the follow.</p>
+        </div>
+        <p class="follow-privacy"><b>No account, no cookie, no tracking pixel.</b> If you open a bot, Telegram and that bot receive the interaction. The bot records the tagged start link as first-touch acquisition data; <code>/stop</code> ends delivery.</p>
+      </header>
+
+      <section class="follow-grid" aria-label="Follow individual desks">
+        <article class="follow-card" data-product="myquant">
+          <span>01 / PLAIN ENGLISH</span><h2>MyQuant</h2>
+          <p>Every published specialist interpretation and sourced house analysis, in an open feed you control.</p>
+          <div class="follow-actions"><a href="/feed.xml">Atom feed →</a><a href="/feed.json">JSON Feed →</a></div>
+        </article>
+        <article class="follow-card" data-product="liquilens">
+          <span>02 / INSTITUTIONS</span><h2>LiquiLens</h2>
+          <p>The banking failure radar, delivered daily at 09:00 IST with the evidence boundary attached.</p>
+          <div class="follow-actions"><a href="https://t.me/LiquiLens_bot?start=myquant_follow_liquilens" target="_blank" rel="noopener noreferrer">Start the banking brief ↗</a></div>
+        </article>
+        <article class="follow-card" data-product="seiche">
+          <span>03 / FUNDING</span><h2>Seiche</h2>
+          <p>The dollar-funding letter at 11:30 UTC, before the US open, with sources and countercase.</p>
+          <div class="follow-actions"><a href="https://t.me/seiche_desk_bot?start=myquant_follow_seiche" target="_blank" rel="noopener noreferrer">Start the daily letter ↗</a></div>
+        </article>
+        <article class="follow-card" data-product="undertow">
+          <span>04 / MARKETS</span><h2>Undertow</h2>
+          <p>Market-stress alerts and desk updates from the live cross-asset workspace.</p>
+          <div class="follow-actions"><a href="https://t.me/undertow_LiquiLens_bot?start=myquant_follow_undertow" target="_blank" rel="noopener noreferrer">Start market alerts ↗</a></div>
+        </article>
+        <article class="follow-card" data-product="palimpsest">
+          <span>05 / PUBLIC EVIDENCE</span><h2>Palimpsest</h2>
+          <p>A daily observatory read across censorship, network interference, and verifiable AI evaluations.</p>
+          <div class="follow-actions"><a href="https://t.me/palimpsest_watch_bot?start=myquant_follow_palimpsest" target="_blank" rel="noopener noreferrer">Start the observatory read ↗</a></div>
+        </article>
+        <article class="follow-card" data-product="narcoscope">
+          <span>06 / ORGANIZED CRIME</span><h2>NarcoScope</h2>
+          <p>Evidence-led case and network briefings with explicit source and confidence boundaries.</p>
+          <div class="follow-actions"><a href="https://t.me/NarcoScopeEvidenceBot?start=ref_myquant_follow" target="_blank" rel="noopener noreferrer">Start evidence briefings ↗</a></div>
+        </article>
+      </section>
+
+      <aside class="follow-channel">
+        <div><p class="eyebrow">THE COMBINED WIRE</p><h2>One channel. Every desk.</h2></div>
+        <p>Use this when the network matters more than a single question. It is the broadest route, not the quietest one.</p>
+        <a href="https://t.me/LiquidityLabDesk" target="_blank" rel="noopener noreferrer">Follow Liquidity Lab Desk ↗</a>
+      </aside>
+    </main>
+    <footer><p>General market reporting and evidence briefings—not personalised investment advice or a transaction recommendation.</p><p><a href="/">Home</a> · <a href="/privacy">Privacy</a> · <a href="/support">Support</a></p></footer>
     <script type="application/ld+json">${JSON.stringify(schema).replaceAll('<', '\\u003c')}</script>
   </body></html>`
 }
@@ -976,6 +1068,7 @@ async function build() {
   await mkdir(dist, { recursive: true })
   await cp(join(root, 'assets'), join(dist, 'assets'), { recursive: true })
   await write(join(dist, 'index.html'), renderHome(stories, cache, appCopy.stories))
+  await write(join(dist, 'follow', 'index.html'), renderFollow())
   await write(join(dist, 'advertise', 'index.html'), renderAdvertise())
   await write(join(dist, 'privacy', 'index.html'), renderPrivacy())
   await write(join(dist, 'support', 'index.html'), renderSupport())
@@ -1002,6 +1095,7 @@ async function build() {
   const newest = stories[0]?.published ? isoDate(stories[0].published).slice(0, 10) : null
   const urls = [
     { loc: `${SITE_ORIGIN}/`, lastmod: newest },
+    { loc: `${SITE_ORIGIN}/follow` },
     { loc: `${SITE_ORIGIN}/advertise` },
     { loc: `${SITE_ORIGIN}/privacy` },
     { loc: `${SITE_ORIGIN}/support` },
