@@ -125,7 +125,7 @@ const SUPPORT_FIELDS = Object.freeze(['inEnglish', 'whyItMatters', 'uncertainty'
 const SUPPORT_PREFIXES = Object.freeze(['/evidence/', '/clocks/', '/lineage/', '/source/'])
 
 const object = (value) => Boolean(value && typeof value === 'object' && !Array.isArray(value))
-const canonicalValue = (value) => {
+export const canonicalValue = (value) => {
   if (Array.isArray(value)) return value.map(canonicalValue)
   if (!object(value)) return value
   return Object.fromEntries(Object.keys(value).sort().map((key) => [key, canonicalValue(value[key])]))
@@ -133,6 +133,9 @@ const canonicalValue = (value) => {
 export const canonicalJsonSha256 = (value) => `sha256:${createHash('sha256')
   .update(JSON.stringify(canonicalValue(value)))
   .digest('hex')}`
+export const validAppCopyDocument = (value) => object(value)
+  && value.schema === APP_COPY_SCHEMA
+  && object(value.stories)
 const validTimestamp = (value) => typeof value === 'string'
   && /(?:Z|[+-]\d{2}:\d{2})$/.test(value)
   && Number.isFinite(Date.parse(value))
@@ -201,6 +204,7 @@ export function reviewedConsumerCopy(story, value) {
       && validTimestamp(row.reviewedAt))
     && object(adjudicator)
     && Boolean(string(adjudicator.id))
+    && !reviewers.some((row) => string(row?.id) === string(adjudicator.id))
     && validTimestamp(adjudicator.reviewedAt)
     && review.reviewedAt === adjudicator.reviewedAt
     && reviewers.every((row) => Date.parse(row.reviewedAt) <= Date.parse(review.reviewedAt))

@@ -180,6 +180,19 @@ test('offline importer migrates legacy prose and writes a revision-bound reviewe
   assert.deepEqual(buildAppFeed([held.story], '2026-08-13T12:00:00Z', {
     [held.story.id]: copy,
   }).stories.map(({ id }) => id), [held.story.id])
+
+  const firstBody = await readFile(appCopyPath)
+  const repeated = await importReviewedShadow({
+    packetPath: paths.packet,
+    candidatePath: paths.candidate,
+    validatorPath: paths.validator,
+    reviewPath: paths.review,
+    sourceCachePath,
+    appCopyPath,
+    now: Date.parse('2026-08-13T12:00:00Z'),
+  })
+  assert.equal(repeated.changed, false)
+  assert.deepEqual(await readFile(appCopyPath), firstBody)
 })
 
 test('offline importer rejects stale source bindings, missing support, and incomplete review', () => {
@@ -208,5 +221,17 @@ test('offline importer rejects stale source bindings, missing support, and incom
   assert.throws(
     () => build({ review: { ...held.review, reviews: held.review.reviews.slice(0, 1) } }),
     /at least two independent reviews/,
+  )
+  assert.throws(
+    () => build({
+      review: {
+        ...held.review,
+        adjudication: {
+          ...held.review.adjudication,
+          adjudicatorId: held.review.reviews[0].reviewerId,
+        },
+      },
+    }),
+    /adjudicator must be independent/,
   )
 })

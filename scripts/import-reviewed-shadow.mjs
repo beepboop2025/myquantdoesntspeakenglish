@@ -1,8 +1,8 @@
 import { createHash } from 'node:crypto'
 import { lstat, mkdir, readFile, rename, unlink, writeFile } from 'node:fs/promises'
-import { dirname, join, resolve } from 'node:path'
+import { basename, dirname, join, resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
-import { APP_COPY_SCHEMA, canonicalJsonSha256 } from './lib.mjs'
+import { APP_COPY_SCHEMA, canonicalJsonSha256, canonicalValue } from './lib.mjs'
 
 export const PUBLIC_COPY_REVIEW_SCHEMA = 'mqdnse.public-copy-review.v1'
 
@@ -31,12 +31,6 @@ function exactKeys(value, keys, label) {
   const actual = Object.keys(value).sort()
   invariant(JSON.stringify(actual) === JSON.stringify(expected), `${label} has an invalid shape`)
   return value
-}
-
-function canonicalValue(value) {
-  if (Array.isArray(value)) return value.map(canonicalValue)
-  if (!isObject(value)) return value
-  return Object.fromEntries(Object.keys(value).sort().map((key) => [key, canonicalValue(value[key])]))
 }
 
 function canonicalJson(value) {
@@ -202,7 +196,11 @@ function validateReview(review, story, packet, candidate, validator, bodies, now
   exactKeys(review.adjudication, [
     'adjudicatorId', 'adjudicatedAt', 'decision', 'approvedCopy',
   ], 'review adjudication')
-  identifier(review.adjudication.adjudicatorId, 'review adjudication.adjudicatorId')
+  const adjudicatorId = identifier(
+    review.adjudication.adjudicatorId,
+    'review adjudication.adjudicatorId',
+  )
+  invariant(!reviewerIds.includes(adjudicatorId), 'adjudicator must be independent of the reviewers')
   const adjudicatedAt = timestamp(review.adjudication.adjudicatedAt, 'review adjudication.adjudicatedAt', now)
   invariant(reviewTimes.every((held) => held <= adjudicatedAt), 'adjudication predates a reviewer decision')
   invariant(review.adjudication.decision === 'APPROVED', 'adjudication did not approve publication copy')
@@ -311,12 +309,19 @@ async function writeAtomicJson(path, value, previousBody) {
   const body = Buffer.from(`${JSON.stringify(value, null, 2)}\n`, 'utf8')
   if (previousBody?.equals(body)) return false
   await mkdir(dirname(path), { recursive: true })
-  const temporary = join(dirname(path), `.${path.split('/').at(-1)}.tmp-${process.pid}`)
+  const temporary = join(dirname(path), `.${basename(path)}.tmp-${process.pid}`)
   try {
     await writeFile(temporary, body, { flag: 'wx' })
     await rename(temporary, path)
-  } finally {
-    await unlink(temporary).catch(() => {})
+  } catch (error) {
+    try {
+      await unlink(temporary)
+    } catch (cleanupError) {
+      if (cleanupError?.code !== 'ENOENT') {
+        throw new AggregateError([error, cleanupError], 'app-copy write and cleanup both failed')
+      }
+    }
+    throw error
   }
   return true
 }

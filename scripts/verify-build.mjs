@@ -1,10 +1,10 @@
 import { readFile, readdir } from 'node:fs/promises'
 import { join } from 'node:path'
 import {
-  APP_COPY_SCHEMA,
   publicStoryUrl,
   reviewedConsumerCopy,
   storySlug,
+  validAppCopyDocument,
 } from './lib.mjs'
 
 const root = process.cwd()
@@ -65,10 +65,7 @@ const escapeHtml = (value = '') => String(value)
   .replaceAll("'", '&#39;')
 
 if (appFeed.schema !== 'mqdnse.app-feed.v1') throw new Error('unexpected app-feed schema')
-if (appCopy.schema !== APP_COPY_SCHEMA
-  || !appCopy.stories
-  || typeof appCopy.stories !== 'object'
-  || Array.isArray(appCopy.stories)) {
+if (!validAppCopyDocument(appCopy)) {
   throw new Error('reviewed copy does not use the revision-bound app-copy contract')
 }
 if (webFeed.version !== 'https://jsonfeed.org/version/1.1'

@@ -85,6 +85,13 @@ test('reviewed-copy contract is explicitly revision bound', () => {
   assert.equal(reviewedConsumerCopy(story, copy), true)
   assert.equal(reviewedConsumerCopy({ ...story, fingerprint: sourceFingerprint('b') }, copy), false)
   assert.equal(reviewedConsumerCopy(story, { ...copy, validatorReceipt: undefined }), false)
+  assert.equal(reviewedConsumerCopy(story, {
+    ...copy,
+    review: {
+      ...copy.review,
+      adjudicator: { ...copy.review.adjudicator, id: copy.review.reviewers[0].id },
+    },
+  }), false)
 })
 
 test('positive approvals lock distribution to an exact fingerprint and expiry', () => {
