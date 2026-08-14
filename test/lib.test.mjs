@@ -1,6 +1,7 @@
 import test from 'node:test'
 import assert from 'node:assert/strict'
 import {
+  APP_COPY_SCHEMA,
   APP_FEED_SCHEMA,
   CONTENT_STATUS_SCHEMA,
   INTERPRETATION_SCHEMA,
@@ -14,15 +15,77 @@ import {
   buildAppFeed,
   buildInterpretation,
   buildSignalPulse,
+  canonicalJsonSha256,
   chooseLead,
   mergeChannelFeeds,
   normalizePayload,
   normalizeHouseArticle,
   preserveStableClocks,
   publicStoryUrl,
+  reviewedConsumerCopy,
   selectPublicationCandidates,
   storySlug,
 } from '../scripts/lib.mjs'
+
+const sha256 = (character) => `sha256:${character.repeat(64)}`
+const sourceFingerprint = (character = 'a') => character.repeat(64)
+
+function revisionBoundCopy(story, copy = {}) {
+  const held = {
+    inEnglish: copy.inEnglish || 'Reviewed plain-English copy.',
+    whyItMatters: copy.whyItMatters || 'Reviewed explanation of why the record matters.',
+    uncertainty: copy.uncertainty || story.limitation || 'A reviewed source limitation.',
+    ...(copy.keyNumber ? { keyNumber: copy.keyNumber } : {}),
+  }
+  const supportRefs = {
+    inEnglish: ['/evidence/claims/0'],
+    whyItMatters: ['/evidence/claims/0'],
+    uncertainty: ['/evidence/limitations/0'],
+    ...(held.keyNumber ? { keyNumber: ['/evidence/claims/0'] } : {}),
+  }
+  const approvedCopy = {
+    inEnglish: held.inEnglish,
+    whyItMatters: held.whyItMatters,
+    uncertainty: held.uncertainty,
+    keyNumber: held.keyNumber || null,
+    supportRefs,
+  }
+  return {
+    sourceId: story.id,
+    sourceFingerprint: story.fingerprint,
+    evidencePacket: {
+      id: sha256('a'),
+      sha256: sha256('b'),
+      semanticRevisionHash: sha256('c'),
+    },
+    candidate: { schema: 'mqdnse.analysis-draft.v1', sha256: sha256('d') },
+    validatorReceipt: { schema: 'mqdnse.draft-validation.v1', sha256: sha256('e') },
+    teacher: { id: 'teacher-model', revision: sha256('f') },
+    model: { id: 'candidate-model', revision: sha256('0') },
+    copySha256: canonicalJsonSha256(approvedCopy),
+    review: {
+      decision: 'APPROVED',
+      reviewedAt: '2026-08-13T12:05:00Z',
+      reviewers: [
+        { id: 'reviewer-a', reviewedAt: '2026-08-13T12:00:00Z' },
+        { id: 'reviewer-b', reviewedAt: '2026-08-13T12:01:00Z' },
+      ],
+      adjudicator: { id: 'editor', reviewedAt: '2026-08-13T12:05:00Z' },
+      receiptSha256: sha256('1'),
+    },
+    supportRefs,
+    ...held,
+  }
+}
+
+test('reviewed-copy contract is explicitly revision bound', () => {
+  assert.equal(APP_COPY_SCHEMA, 'mqdnse.app-copy.v2')
+  const story = { id: 'seiche:daily', fingerprint: sourceFingerprint(), limitation: 'Bounded.' }
+  const copy = revisionBoundCopy(story)
+  assert.equal(reviewedConsumerCopy(story, copy), true)
+  assert.equal(reviewedConsumerCopy({ ...story, fingerprint: sourceFingerprint('b') }, copy), false)
+  assert.equal(reviewedConsumerCopy(story, { ...copy, validatorReceipt: undefined }), false)
+})
 
 test('positive approvals lock distribution to an exact fingerprint and expiry', () => {
   const stories = [
@@ -248,13 +311,13 @@ test('interpretation preserves the specialist claim, canonical source, fingerpri
     published: '2026-08-12T10:00:00Z', eventTime: '2026-08-11T00:00:00Z',
     knowledgeTime: '2026-08-12T09:50:00Z', evidenceStatus: 'DERIVED',
     contribution: 'cross_sectional_review_breadth',
-    limitation: 'The denominator is the covered board, not the whole system.', fingerprint: 'source-hash',
+    limitation: 'The denominator is the covered board, not the whole system.', fingerprint: sourceFingerprint(),
   }
-  const copy = {
+  const copy = revisionBoundCopy(story, {
     inEnglish: 'Four names on this covered list need a closer look.',
     whyItMatters: 'The denominator keeps a review queue from becoming a system-wide claim.',
     keyNumber: { value: '4 / 19', label: 'covered names above green' },
-  }
+  })
   const interpretation = buildInterpretation(story, copy)
 
   assert.equal(interpretation.schema, INTERPRETATION_SCHEMA)
@@ -267,6 +330,30 @@ test('interpretation preserves the specialist claim, canonical source, fingerpri
   assert.equal(interpretation.source.fingerprint, story.fingerprint)
   assert.deepEqual(interpretation.keyNumber, copy.keyNumber)
   assert.match(interpretation.fingerprint, /^[a-f0-9]{64}$/)
+})
+
+test('stale reviewed copy falls back on the website and is excluded from the app feed', () => {
+  const story = {
+    id: 'seiche:revision-bound', product: 'seiche', title: 'Technical source claim',
+    dek: 'The board reads 45 out of 100.', url: 'https://seiche.info/dispatches/revision-bound.html',
+    beat: 'funding', editorialClass: 'desk_brief', publicationStatus: 'PUBLISHED',
+    published: '2026-08-12T10:00:00Z', eventTime: '2026-08-12T09:00:00Z',
+    knowledgeTime: '2026-08-12T10:00:00Z', evidenceStatus: 'DERIVED',
+    contribution: 'fresh_longitudinal_delta', limitation: 'A bounded source limitation.',
+    fingerprint: sourceFingerprint('3'),
+  }
+  const copy = revisionBoundCopy(story, {
+    inEnglish: 'A reviewed explanation for the old revision.',
+    whyItMatters: 'The old revision had an approved explanation.',
+    keyNumber: { value: '99', label: 'stale reviewed number' },
+  })
+  const changed = { ...story, fingerprint: sourceFingerprint('4') }
+
+  assert.equal(buildInterpretation(story, copy).copyState, 'REVIEWED')
+  const fallback = buildInterpretation(changed, copy)
+  assert.equal(fallback.copyState, 'SOURCE_GROUNDED')
+  assert.notEqual(fallback.keyNumber?.value, copy.keyNumber.value)
+  assert.deepEqual(buildAppFeed([changed], '2026-08-13T12:00:00Z', { [changed.id]: copy }).stories, [])
 })
 
 test('unreviewed interpretation is explicitly source-grounded and never invents consumer copy', () => {
@@ -438,12 +525,13 @@ test('app feed exposes plain-language fields without dropping evidence', () => {
     evidenceStatus: 'DERIVED',
     contribution: 'fresh_longitudinal_delta · cross_signal_divergence',
     limitation: 'The composite is a derivation, not an observed market price.',
+    fingerprint: sourceFingerprint(),
   }
   const feed = buildAppFeed([story], '2026-08-12T12:00:00+00:00', {
-    [story.id]: {
+    [story.id]: revisionBoundCopy(story, {
       inEnglish: story.dek,
       whyItMatters: "It identifies what changed over time. It shows where the source's signals disagree.",
-    },
+    }),
   })
   const item = feed.stories[0]
 
@@ -483,18 +571,20 @@ test('app feed keeps house citations, omits absent key numbers, and sorts newest
   const older = {
     ...shared, id: 'myquant:older', title: 'Older', dek: 'No numeral here.', published: '2026-08-11T10:30:00Z',
     url: 'https://myquantdoesntspeakenglish.com/articles/older', article: { slug: 'older', sections: [], sources: [] },
+    fingerprint: sourceFingerprint('b'),
   }
   const newer = {
     ...shared, id: 'myquant:newer', title: 'Newer', dek: 'Still written without digits.', published: '2026-08-12T10:30:00Z',
     url: 'https://myquantdoesntspeakenglish.com/articles/newer',
     article: { slug: 'newer', sections: [], sources: [{ label: 'Primary record', url: 'https://example.com/record' }] },
+    fingerprint: sourceFingerprint('c'),
   }
   const feed = buildAppFeed(
     [older, { ...older, id: 'draft', publicationStatus: 'DRAFT' }, newer],
     '2026-08-12T12:00:00Z',
     {
-      [older.id]: { inEnglish: older.dek, whyItMatters: older.contribution },
-      [newer.id]: { inEnglish: newer.dek, whyItMatters: newer.contribution },
+      [older.id]: revisionBoundCopy(older, { inEnglish: older.dek, whyItMatters: older.contribution }),
+      [newer.id]: revisionBoundCopy(newer, { inEnglish: newer.dek, whyItMatters: newer.contribution }),
       draft: { inEnglish: 'Draft translation.', whyItMatters: 'Draft context.' },
     },
   )
@@ -511,12 +601,13 @@ test('app-feed edition identity changes with content, not generation time', () =
     beat: 'dollar-funding-plumbing', publicationStatus: 'PUBLISHED', published: '2026-08-12T10:00:00Z',
     eventTime: '2026-08-12T09:00:00Z', knowledgeTime: '2026-08-12T10:00:00Z', evidenceStatus: 'DECLARED',
     contribution: 'A contribution.', limitation: 'A limitation.',
+    fingerprint: sourceFingerprint('d'),
   }
-  const copy = { [record.id]: { inEnglish: 'Plain summary.', whyItMatters: 'Why this record matters.' } }
+  const copy = { [record.id]: revisionBoundCopy(record, { inEnglish: 'Plain summary.', whyItMatters: 'Why this record matters.' }) }
   const first = buildAppFeed([record], '2026-08-12T12:00:00Z', copy)
   const later = buildAppFeed([record], '2026-08-13T12:00:00Z', copy)
   const changed = buildAppFeed([record], '2026-08-13T12:00:00Z', {
-    [record.id]: { ...copy[record.id], inEnglish: 'Changed plain summary.' },
+    [record.id]: revisionBoundCopy(record, { inEnglish: 'Changed plain summary.', whyItMatters: 'Why this record matters.' }),
   })
 
   assert.equal(first.editionId, later.editionId)
@@ -529,14 +620,17 @@ test('app feed rejects slug collisions instead of publishing ambiguous routes', 
     product: 'seiche', title: 'Title', dek: 'Summary', url: 'https://seiche.info/dispatches/', beat: 'wire',
     publicationStatus: 'PUBLISHED', published: '2026-08-12T10:00:00Z', eventTime: '2026-08-12T09:00:00Z',
     knowledgeTime: '2026-08-12T10:00:00Z', evidenceStatus: 'DECLARED', contribution: 'A contribution.', limitation: 'A limitation.',
+    fingerprint: sourceFingerprint('e'),
   }
+  const first = { ...record, id: 'same:id' }
+  const second = { ...record, id: 'same/id' }
   assert.throws(
     () => buildAppFeed(
-      [{ ...record, id: 'same:id' }, { ...record, id: 'same/id' }],
+      [first, second],
       '2026-08-12T12:00:00Z',
       {
-        'same:id': { inEnglish: 'First translation.', whyItMatters: 'First context.' },
-        'same/id': { inEnglish: 'Second translation.', whyItMatters: 'Second context.' },
+        'same:id': revisionBoundCopy(first, { inEnglish: 'First translation.', whyItMatters: 'First context.' }),
+        'same/id': revisionBoundCopy(second, { inEnglish: 'Second translation.', whyItMatters: 'Second context.' }),
       },
     ),
     /duplicate app-feed slug/,
@@ -550,13 +644,14 @@ test('app feed applies reviewed consumer copy without changing the source claim 
     publicationStatus: 'PUBLISHED', published: '2026-08-12T10:00:00Z', eventTime: '2026-08-12T09:00:00Z',
     knowledgeTime: '2026-08-12T10:00:00Z', evidenceStatus: 'DERIVED', contribution: 'peer_relative_change',
     limitation: 'The source limitation remains attached.',
+    fingerprint: sourceFingerprint('f'),
   }
   const copy = {
-    'liquilens:reviewed': {
+    'liquilens:reviewed': revisionBoundCopy(story, {
       inEnglish: 'A reviewed explanation for a non-specialist.',
       whyItMatters: 'A reviewed explanation of the mechanism.',
       keyNumber: { value: '4 / 19', label: 'covered names' },
-    },
+    }),
   }
   const item = buildAppFeed([story], '2026-08-12T12:00:00Z', copy).stories[0]
 
@@ -575,12 +670,13 @@ test('app feed keeps unreviewed and incomplete translations out of the consumer 
     published: '2026-08-12T10:00:00Z', eventTime: '2026-08-12T09:00:00Z',
     knowledgeTime: '2026-08-12T10:00:00Z', evidenceStatus: 'DERIVED',
     contribution: 'fresh_longitudinal_delta', limitation: 'A source limitation.',
+    fingerprint: sourceFingerprint('2'),
   }
   const reviewed = { ...shared, id: 'reviewed' }
   const missingWhy = { ...shared, id: 'missing-why' }
   const unreviewed = { ...shared, id: 'unreviewed' }
   const feed = buildAppFeed([reviewed, missingWhy, unreviewed], '2026-08-12T12:00:00Z', {
-    reviewed: { inEnglish: 'A complete translation.', whyItMatters: 'A complete mechanism.' },
+    reviewed: revisionBoundCopy(reviewed, { inEnglish: 'A complete translation.', whyItMatters: 'A complete mechanism.' }),
     'missing-why': { inEnglish: 'Only half of the required consumer copy.' },
   })
 

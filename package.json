@@ -6,6 +6,7 @@
   "scripts": {
     "build": "node scripts/build.mjs",
     "sync": "node scripts/build.mjs",
+    "app-copy:import": "node scripts/import-reviewed-shadow.mjs",
     "dev": "node scripts/serve.mjs",
     "legal:check": "node scripts/check-operator-profile.mjs data/operator-profile.json",
     "test": "node --test",

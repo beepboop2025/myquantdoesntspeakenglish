@@ -2,6 +2,7 @@ import { cp, mkdir, readFile, readdir, rm, writeFile } from 'node:fs/promises'
 import { dirname, join } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import {
+  APP_COPY_SCHEMA,
   SITE_ORIGIN,
   SOURCES,
   applyContentStatus,
@@ -931,7 +932,10 @@ async function build() {
   const publicationApprovals = await readJson(publicationApprovalsPath)
   const contentStatus = await readJson(contentStatusPath)
   const releasePolicy = await readJson(releasePolicyPath)
-  if (appCopy.schema !== 'mqdnse.app-copy.v1' || !appCopy.stories || typeof appCopy.stories !== 'object') {
+  if (appCopy.schema !== APP_COPY_SCHEMA
+    || !appCopy.stories
+    || typeof appCopy.stories !== 'object'
+    || Array.isArray(appCopy.stories)) {
     throw new Error('data/app-copy.json: invalid app-copy contract')
   }
   const house = await loadHouseArticles()
