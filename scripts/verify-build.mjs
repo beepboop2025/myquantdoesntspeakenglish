@@ -14,6 +14,7 @@ const read = (path) => readFile(join(dist, path), 'utf8')
 const readSourceJson = (path) => readFile(join(root, path), 'utf8').then(JSON.parse)
 const requiredPages = [
   'index.html',
+  'follow/index.html',
   'privacy/index.html',
   'support/index.html',
   'editorial/index.html',
@@ -36,9 +37,31 @@ const houseNames = (await readdir(join(root, 'content'))).filter((name) => name.
 const houseRecords = await Promise.all(houseNames.map((name) => readSourceJson(join('content', name))))
 const publicText = pages.join('\n').toLowerCase()
 const homepage = pages[0]
+const followPage = pages[requiredPages.indexOf('follow/index.html')]
 
 if (!/<meta name="google-site-verification" content="[A-Za-z0-9_-]+">/.test(homepage)) {
   throw new Error('homepage is missing Google Search Console ownership verification')
+}
+if (!homepage.includes('<a href="/follow">Follow</a>')
+  || !homepage.includes('class="hero-jump hero-jump--follow" href="/follow"')) {
+  throw new Error('homepage does not expose the follow hub in navigation and hero')
+}
+for (const required of [
+  'Close the tab.<br><em>Keep the signal.</em>',
+  'No account, no cookie, no tracking pixel.',
+  'https://t.me/LiquiLens_bot?start=myquant_follow_liquilens',
+  'https://t.me/seiche_desk_bot?start=myquant_follow_seiche',
+  'https://t.me/undertow_LiquiLens_bot?start=myquant_follow_undertow',
+  'https://t.me/palimpsest_watch_bot?start=myquant_follow_palimpsest',
+  'https://t.me/NarcoScopeEvidenceBot?start=ref_myquant_follow',
+  'https://t.me/LiquidityLabDesk',
+  'href="/feed.xml"',
+  'href="/feed.json"',
+]) {
+  if (!followPage.includes(required)) throw new Error(`follow hub omits ${required}`)
+}
+if ((followPage.match(/rel="noopener noreferrer"/g) || []).length !== 6) {
+  throw new Error('follow hub external delivery links are not consistently isolated')
 }
 
 const appliesToSite = (entry) => Array.isArray(entry?.channels)
@@ -220,4 +243,4 @@ const originalTeaser = await readFile(join(dist, 'assets', 'media', 'original-ap
 if (originalTeaser.byteLength < 100_000) throw new Error('original website teaser is missing or truncated')
 
 const caseFileCount = expectedSourceRecords.filter((story) => story.articleType === 'case_file').length
-process.stdout.write(`Verified ${expectedSourceRecords.length} specialist interpretations including ${caseFileCount} historical case files, ${webFeed.items.length} total web articles, suspended zero-story app feed, original teaser, ${appFeed.notices.length} notices, and ${requiredPages.length} trust pages\n`)
+process.stdout.write(`Verified ${expectedSourceRecords.length} specialist interpretations including ${caseFileCount} historical case files, ${webFeed.items.length} total web articles, suspended zero-story app feed, original teaser, ${appFeed.notices.length} notices, and ${requiredPages.length} required pages\n`)
