@@ -32,6 +32,26 @@ The build has no runtime dependencies. If a source is temporarily unavailable,
 it uses the last successful `data/cache.json` slice for that source and prints the
 coverage state in the generated page.
 
+## Reviewed shadow copy
+
+Model output never enters the network build or scheduled sync path. An operator
+may import one immutable, already-validated candidate with:
+
+```bash
+npm run app-copy:import -- \
+  --packet /absolute/path/evidence-packet.json \
+  --candidate /absolute/path/draft.json \
+  --validator /absolute/path/validation.json \
+  --review /absolute/path/public-copy-review.json
+```
+
+The importer checks exact file hashes, source ID and fingerprint, evidence
+packet and validator bindings, support pointers, shadow-only authority, immutable
+teacher/model revisions, and two-reviewer adjudication. A source revision makes
+the copy ineligible immediately: the website uses its deterministic
+`SOURCE_GROUNDED` explanation and the app edition omits the record. See
+`docs/APP-COPY-IMPORT.md` for the review receipt contract.
+
 The scheduled `sync evidence wire` workflow checks seven upstream publication
 channels at
 02:17, 08:17, 14:17, and 20:17 UTC. A changed evidence fingerprint produces one

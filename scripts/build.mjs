@@ -17,6 +17,7 @@ import {
   productLabel,
   publicStoryUrl,
   selectPublicationCandidates,
+  validAppCopyDocument,
 } from './lib.mjs'
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..')
@@ -931,7 +932,7 @@ async function build() {
   const publicationApprovals = await readJson(publicationApprovalsPath)
   const contentStatus = await readJson(contentStatusPath)
   const releasePolicy = await readJson(releasePolicyPath)
-  if (appCopy.schema !== 'mqdnse.app-copy.v1' || !appCopy.stories || typeof appCopy.stories !== 'object') {
+  if (!validAppCopyDocument(appCopy)) {
     throw new Error('data/app-copy.json: invalid app-copy contract')
   }
   const house = await loadHouseArticles()

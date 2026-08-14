@@ -1,6 +1,7 @@
 {
-  "schema": "mqdnse.app-copy.v1",
-  "stories": {
+  "schema": "mqdnse.app-copy.v2",
+  "stories": {},
+  "legacyUnboundStories": {
     "liquilens-india-breadth-2026-08-12": {
       "inEnglish": "Four names on this specific, freshly checked list need more attention than the green group. The list is not the whole Indian financial system.",
       "whyItMatters": "The denominator changes the story. This is a review queue for covered institutions, not a nationwide health score.",

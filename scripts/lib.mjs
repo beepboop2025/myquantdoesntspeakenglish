@@ -4,6 +4,7 @@ const ALLOWED_PRODUCTS = new Set(['liquilens', 'seiche', 'liquilens-undertow', '
 
 export const SITE_ORIGIN = 'https://myquantdoesntspeakenglish.com'
 export const APP_FEED_SCHEMA = 'mqdnse.app-feed.v1'
+export const APP_COPY_SCHEMA = 'mqdnse.app-copy.v2'
 export const INTERPRETATION_SCHEMA = 'mqdnse.interpretation.v1'
 export const PUBLICATION_HOLDS_SCHEMA = 'mqdnse.publication-holds.v1'
 export const PUBLICATION_APPROVALS_SCHEMA = 'mqdnse.publication-approvals.v1'
@@ -118,11 +119,100 @@ const CASE_FILE_MENTAL_MODEL = 'Imagine checking two smoke alarms after a fire. 
 
 const string = (...values) => values.find((value) => typeof value === 'string' && value.trim())?.trim() || ''
 const array = (value) => Array.isArray(value) ? value : []
+const SHA256 = /^sha256:[a-f0-9]{64}$/
+const SOURCE_FINGERPRINT = /^[a-f0-9]{64}$/
+const SUPPORT_FIELDS = Object.freeze(['inEnglish', 'whyItMatters', 'uncertainty', 'keyNumber'])
+const SUPPORT_PREFIXES = Object.freeze(['/evidence/', '/clocks/', '/lineage/', '/source/'])
 
-function reviewedConsumerCopy(value) {
-  return value && typeof value === 'object' && !Array.isArray(value)
+const object = (value) => Boolean(value && typeof value === 'object' && !Array.isArray(value))
+export const canonicalValue = (value) => {
+  if (Array.isArray(value)) return value.map(canonicalValue)
+  if (!object(value)) return value
+  return Object.fromEntries(Object.keys(value).sort().map((key) => [key, canonicalValue(value[key])]))
+}
+export const canonicalJsonSha256 = (value) => `sha256:${createHash('sha256')
+  .update(JSON.stringify(canonicalValue(value)))
+  .digest('hex')}`
+export const validAppCopyDocument = (value) => object(value)
+  && value.schema === APP_COPY_SCHEMA
+  && object(value.stories)
+const validTimestamp = (value) => typeof value === 'string'
+  && /(?:Z|[+-]\d{2}:\d{2})$/.test(value)
+  && Number.isFinite(Date.parse(value))
+const validArtifact = (value, schema) => object(value)
+  && value.schema === schema
+  && SHA256.test(string(value.sha256))
+const validModelRevision = (value) => object(value)
+  && Boolean(string(value.id))
+  && SHA256.test(string(value.revision))
+const validSupportRefs = (value, hasKeyNumber) => {
+  if (!object(value)) return false
+  const expected = new Set(hasKeyNumber ? SUPPORT_FIELDS : SUPPORT_FIELDS.slice(0, 3))
+  if (Object.keys(value).length !== expected.size || Object.keys(value).some((field) => !expected.has(field))) {
+    return false
+  }
+  return Object.values(value).every((paths) => Array.isArray(paths)
+    && paths.length > 0
+    && new Set(paths).size === paths.length
+    && paths.every((path) => typeof path === 'string'
+      && SUPPORT_PREFIXES.some((prefix) => path.startsWith(prefix))))
+    && value.uncertainty.some((path) => path.startsWith('/evidence/limitations/'))
+}
+
+/**
+ * A reviewed copy is usable only for the exact normalized source revision that
+ * was adjudicated. Model and validator outputs remain shadow artifacts; this
+ * check recognizes the separate human publication decision recorded offline.
+ */
+export function reviewedConsumerCopy(story, value) {
+  const review = value?.review
+  const reviewers = array(review?.reviewers)
+  const adjudicator = review?.adjudicator
+  const keyNumberPresent = value?.keyNumber !== undefined && value?.keyNumber !== null
+  const keyNumberValid = !keyNumberPresent || (object(value.keyNumber)
+    && Boolean(string(value.keyNumber.value))
+    && Boolean(string(value.keyNumber.label)))
+  const approvedCopy = {
+    inEnglish: value?.inEnglish,
+    whyItMatters: value?.whyItMatters,
+    uncertainty: value?.uncertainty,
+    keyNumber: keyNumberPresent ? value.keyNumber : null,
+    supportRefs: value?.supportRefs,
+  }
+  return object(story)
+    && object(value)
+    && SOURCE_FINGERPRINT.test(string(story.fingerprint))
+    && value.sourceId === story.id
+    && value.sourceFingerprint === story.fingerprint
+    && object(value.evidencePacket)
+    && SHA256.test(string(value.evidencePacket.id))
+    && SHA256.test(string(value.evidencePacket.sha256))
+    && SHA256.test(string(value.evidencePacket.semanticRevisionHash))
+    && validArtifact(value.candidate, 'mqdnse.analysis-draft.v1')
+    && validArtifact(value.validatorReceipt, 'mqdnse.draft-validation.v1')
+    && validModelRevision(value.teacher)
+    && validModelRevision(value.model)
+    && SHA256.test(string(value.copySha256))
+    && value.copySha256 === canonicalJsonSha256(approvedCopy)
+    && review?.decision === 'APPROVED'
+    && validTimestamp(review.reviewedAt)
+    && SHA256.test(string(review.receiptSha256))
+    && reviewers.length >= 2
+    && new Set(reviewers.map((row) => string(row?.id))).size === reviewers.length
+    && reviewers.every((row) => object(row)
+      && Boolean(string(row.id))
+      && validTimestamp(row.reviewedAt))
+    && object(adjudicator)
+    && Boolean(string(adjudicator.id))
+    && !reviewers.some((row) => string(row?.id) === string(adjudicator.id))
+    && validTimestamp(adjudicator.reviewedAt)
+    && review.reviewedAt === adjudicator.reviewedAt
+    && reviewers.every((row) => Date.parse(row.reviewedAt) <= Date.parse(review.reviewedAt))
     && Boolean(string(value.inEnglish))
     && Boolean(string(value.whyItMatters))
+    && Boolean(string(value.uncertainty))
+    && keyNumberValid
+    && validSupportRefs(value.supportRefs, keyNumberPresent)
 }
 
 export function validHttpsUrl(value, fallback) {
@@ -731,9 +821,12 @@ export function buildInterpretation(story, consumerCopy = {}) {
   const url = publicStoryUrl(story)
   if (!slug || !url || !MENTAL_MODELS[story.product]) return null
 
-  const reviewed = reviewedConsumerCopy(consumerCopy)
+  const reviewed = reviewedConsumerCopy(story, consumerCopy)
   const inEnglish = reviewed ? consumerCopy.inEnglish.trim() : sourceGroundedPlainEnglish(story)
-  const number = reviewedKeyNumber(consumerCopy) || keyNumber(inEnglish) || keyNumber(story.dek) || keyNumber(story.title)
+  const number = (reviewed ? reviewedKeyNumber(consumerCopy) : null)
+    || keyNumber(inEnglish)
+    || keyNumber(story.dek)
+    || keyNumber(story.title)
   const interpretation = {
     schema: INTERPRETATION_SCHEMA,
     id: story.id,
@@ -813,7 +906,7 @@ export function buildAppFeed(
   }
 
   const published = array(stories)
-    .filter((story) => story?.publicationStatus === 'PUBLISHED' && reviewedConsumerCopy(consumerCopy[story.id]))
+    .filter((story) => story?.publicationStatus === 'PUBLISHED' && reviewedConsumerCopy(story, consumerCopy[story.id]))
     .sort((a, b) => Date.parse(b.published) - Date.parse(a.published) || String(a.id).localeCompare(String(b.id)))
   const slugs = new Set()
   const appStories = published.map((story) => {

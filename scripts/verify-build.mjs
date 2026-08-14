@@ -1,6 +1,11 @@
 import { readFile, readdir } from 'node:fs/promises'
 import { join } from 'node:path'
-import { publicStoryUrl, storySlug } from './lib.mjs'
+import {
+  publicStoryUrl,
+  reviewedConsumerCopy,
+  storySlug,
+  validAppCopyDocument,
+} from './lib.mjs'
 
 const root = process.cwd()
 const dist = join(root, 'dist')
@@ -21,8 +26,9 @@ const pages = await Promise.all(requiredPages.map(read))
 const appFeed = JSON.parse(await read('app-feed/v1.json'))
 const webFeed = JSON.parse(await read('feed.json'))
 const atomFeed = await read('feed.xml')
-const [cache, contentStatus, releasePolicy] = await Promise.all([
+const [cache, appCopy, contentStatus, releasePolicy] = await Promise.all([
   readSourceJson('data/cache.json'),
+  readSourceJson('data/app-copy.json'),
   readSourceJson('data/content-status.json'),
   readSourceJson('data/release-policy.json'),
 ])
@@ -59,6 +65,9 @@ const escapeHtml = (value = '') => String(value)
   .replaceAll("'", '&#39;')
 
 if (appFeed.schema !== 'mqdnse.app-feed.v1') throw new Error('unexpected app-feed schema')
+if (!validAppCopyDocument(appCopy)) {
+  throw new Error('reviewed copy does not use the revision-bound app-copy contract')
+}
 if (webFeed.version !== 'https://jsonfeed.org/version/1.1'
   || webFeed._mqdnse?.schema !== 'mqdnse.web-feed.v1'
   || webFeed._mqdnse?.itemSchema !== 'mqdnse.web-feed-item.v1'
@@ -124,6 +133,12 @@ for (const story of expectedSourceRecords) {
   if (feedItem?._mqdnse?.evidence?.sourceFingerprint !== story.fingerprint
     || feedItem?._mqdnse?.copy?.uncertainty !== story.limitation) {
     throw new Error(`interpretation feed evidence diverges from source cache for ${story.id}`)
+  }
+  const expectedCopyState = reviewedConsumerCopy(story, appCopy.stories[story.id])
+    ? 'REVIEWED'
+    : 'SOURCE_GROUNDED'
+  if (feedItem?._mqdnse?.copy?.state !== expectedCopyState) {
+    throw new Error(`interpretation copy state is not bound to the current source revision: ${story.id}`)
   }
   if (!page.includes(`href="${story.url.replaceAll('&', '&amp;')}"`)
     || !page.includes('INTERPRETED /')
