@@ -1,6 +1,6 @@
 {
   "schema": "mqdnse.feed-cache.v2",
-  "syncedAt": "2026-08-14T15:09:13.572Z",
+  "syncedAt": "2026-08-15T08:47:25.405Z",
   "channels": {
     "liquilens-desk": [
       {
@@ -559,6 +559,29 @@
       }
     ],
     "seiche-dispatches": [
+      {
+        "id": "seiche:2026-08-15-daily",
+        "product": "seiche",
+        "title": "S&P 500 index sits at 7,785.76 pts, +2.5 sigma from its own median: a level, not a move",
+        "dek": "The board reads 45 out of 100, STRAIN; the dated reserve path contributes 11.0 points; the pooled five-business-day event read is 6.6%; plumbing leads market pricing by +37 percentile points. The index is +0.0 against the last published letter.",
+        "url": "https://seiche.info/dispatches/2026-08-15-daily",
+        "beat": "dollar-funding-plumbing",
+        "editorialClass": "full_story",
+        "publicationStatus": "PUBLISHED",
+        "published": "2026-08-15T05:48:44Z",
+        "eventTime": "2026-08-14T00:00:00Z",
+        "knowledgeTime": "2026-08-15T05:48:44Z",
+        "evidenceStatus": "DERIVED",
+        "contribution": "fresh_longitudinal_delta · cross_signal_divergence · dated_forward_test",
+        "limitation": "The composite is a Seiche derivation, not an observed market price.",
+        "newsworthiness": 70,
+        "articleType": "full_story",
+        "pointInTimeStatus": "",
+        "verdicts": null,
+        "outcomeWindow": null,
+        "fraudMasked": false,
+        "fingerprint": "d04d1906f65273a9352bed6861fc09850cbb54ce4a012527f37f526570270374"
+      },
       {
         "id": "seiche:2026-08-14-daily",
         "product": "seiche",
@@ -1449,6 +1472,29 @@
     ],
     "undertow-dispatches": [
       {
+        "id": "liquilens-undertow:2026-08-15",
+        "product": "liquilens-undertow",
+        "title": "No segment changed tier; funding STRAIN persists across a quiet board.",
+        "dek": "1 of 9 segments score today; UST, HY, EQUITY, ETF, FX, CN, CRYPTO, BSTOCK still accrue history. The funding overlay reads STRAIN. Qualifying measures disagree inside at least one scored cell; every such cell's span is Agent/Desk tier today, because the span would hand back the percentile of a row the free board withholds.",
+        "url": "https://liquilens-undertow.com/dispatch/2026-08-15.json",
+        "beat": "cross-market-liquidity",
+        "editorialClass": "watch_note",
+        "publicationStatus": "PUBLISHED",
+        "published": "2026-08-15T05:43:10+00:00",
+        "eventTime": "2026-08-15T00:00:00Z",
+        "knowledgeTime": "2026-08-15T05:43:10+00:00",
+        "evidenceStatus": "DERIVED",
+        "contribution": "bounded_no_change_record",
+        "limitation": "PARTIAL means still accruing: a scored tier needs at least 2 measures with a stress percentile at 60+ observations each; an accruing or absent measure is disclosed, never rendered as calm. Research and market data, not investment advice.",
+        "newsworthiness": 25,
+        "articleType": "watch_note",
+        "pointInTimeStatus": "",
+        "verdicts": null,
+        "outcomeWindow": null,
+        "fraudMasked": false,
+        "fingerprint": "cbe079eb6741aa170314e5e52d8ac4d2cf56a42d4fd803e1bb6f7bea016dd3eb"
+      },
+      {
         "id": "liquilens-undertow:2026-08-14",
         "product": "liquilens-undertow",
         "title": "Funding moves EROSION to STRAIN; segment tiers hold.",
@@ -1904,7 +1950,7 @@
     },
     "seiche-dispatches": {
       "state": "live",
-      "detail": "37 records"
+      "detail": "38 records"
     },
     "seiche-investigations": {
       "state": "live",
@@ -1912,7 +1958,7 @@
     },
     "undertow-dispatches": {
       "state": "live",
-      "detail": "18 records"
+      "detail": "19 records"
     },
     "undertow-investigations": {
       "state": "cached",
@@ -2473,6 +2519,29 @@
       }
     ],
     "seiche": [
+      {
+        "id": "seiche:2026-08-15-daily",
+        "product": "seiche",
+        "title": "S&P 500 index sits at 7,785.76 pts, +2.5 sigma from its own median: a level, not a move",
+        "dek": "The board reads 45 out of 100, STRAIN; the dated reserve path contributes 11.0 points; the pooled five-business-day event read is 6.6%; plumbing leads market pricing by +37 percentile points. The index is +0.0 against the last published letter.",
+        "url": "https://seiche.info/dispatches/2026-08-15-daily",
+        "beat": "dollar-funding-plumbing",
+        "editorialClass": "full_story",
+        "publicationStatus": "PUBLISHED",
+        "published": "2026-08-15T05:48:44Z",
+        "eventTime": "2026-08-14T00:00:00Z",
+        "knowledgeTime": "2026-08-15T05:48:44Z",
+        "evidenceStatus": "DERIVED",
+        "contribution": "fresh_longitudinal_delta · cross_signal_divergence · dated_forward_test",
+        "limitation": "The composite is a Seiche derivation, not an observed market price.",
+        "newsworthiness": 70,
+        "articleType": "full_story",
+        "pointInTimeStatus": "",
+        "verdicts": null,
+        "outcomeWindow": null,
+        "fraudMasked": false,
+        "fingerprint": "d04d1906f65273a9352bed6861fc09850cbb54ce4a012527f37f526570270374"
+      },
       {
         "id": "seiche:2026-08-14-daily",
         "product": "seiche",
@@ -3361,6 +3430,29 @@
     ],
     "liquilens-undertow": [
       {
+        "id": "liquilens-undertow:2026-08-15",
+        "product": "liquilens-undertow",
+        "title": "No segment changed tier; funding STRAIN persists across a quiet board.",
+        "dek": "1 of 9 segments score today; UST, HY, EQUITY, ETF, FX, CN, CRYPTO, BSTOCK still accrue history. The funding overlay reads STRAIN. Qualifying measures disagree inside at least one scored cell; every such cell's span is Agent/Desk tier today, because the span would hand back the percentile of a row the free board withholds.",
+        "url": "https://liquilens-undertow.com/dispatch/2026-08-15.json",
+        "beat": "cross-market-liquidity",
+        "editorialClass": "watch_note",
+        "publicationStatus": "PUBLISHED",
+        "published": "2026-08-15T05:43:10+00:00",
+        "eventTime": "2026-08-15T00:00:00Z",
+        "knowledgeTime": "2026-08-15T05:43:10+00:00",
+        "evidenceStatus": "DERIVED",
+        "contribution": "bounded_no_change_record",
+        "limitation": "PARTIAL means still accruing: a scored tier needs at least 2 measures with a stress percentile at 60+ observations each; an accruing or absent measure is disclosed, never rendered as calm. Research and market data, not investment advice.",
+        "newsworthiness": 25,
+        "articleType": "watch_note",
+        "pointInTimeStatus": "",
+        "verdicts": null,
+        "outcomeWindow": null,
+        "fraudMasked": false,
+        "fingerprint": "cbe079eb6741aa170314e5e52d8ac4d2cf56a42d4fd803e1bb6f7bea016dd3eb"
+      },
+      {
         "id": "liquilens-undertow:2026-08-14",
         "product": "liquilens-undertow",
         "title": "Funding moves EROSION to STRAIN; segment tiers hold.",
@@ -3806,11 +3898,11 @@
     },
     "seiche": {
       "state": "live",
-      "detail": "38 records · 2/2 channels connected"
+      "detail": "39 records · 2/2 channels connected"
     },
     "liquilens-undertow": {
       "state": "cached",
-      "detail": "19 records · 1/2 channels connected"
+      "detail": "20 records · 1/2 channels connected"
     }
   }
 }
