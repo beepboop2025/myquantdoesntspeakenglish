@@ -1,6 +1,6 @@
 {
   "schema": "mqdnse.feed-cache.v2",
-  "syncedAt": "2026-08-16T08:48:45.865Z",
+  "syncedAt": "2026-08-16T20:41:06.147Z",
   "channels": {
     "liquilens-desk": [
       {
@@ -559,6 +559,29 @@
       }
     ],
     "seiche-dispatches": [
+      {
+        "id": "seiche:2026-08-16-daily",
+        "product": "seiche",
+        "title": "The Tell reads +37.1: plumbing at the 64th percentile of its own history, screens at the 27th",
+        "dek": "The board reads 45 out of 100, STRAIN; the dated reserve path contributes 11.0 points; the pooled five-business-day event read is 6.6%; plumbing leads market pricing by +37 percentile points. The index is +0.0 against the last published letter.",
+        "url": "https://seiche.info/dispatches/2026-08-16-daily",
+        "beat": "dollar-funding-plumbing",
+        "editorialClass": "desk_brief",
+        "publicationStatus": "PUBLISHED",
+        "published": "2026-08-16T11:11:42Z",
+        "eventTime": "2026-08-16T00:00:00Z",
+        "knowledgeTime": "2026-08-16T11:11:42Z",
+        "evidenceStatus": "DERIVED",
+        "contribution": "dated_forward_test",
+        "limitation": "The composite is a Seiche derivation, not an observed market price.",
+        "newsworthiness": 5,
+        "articleType": "desk_brief",
+        "pointInTimeStatus": "",
+        "verdicts": null,
+        "outcomeWindow": null,
+        "fraudMasked": false,
+        "fingerprint": "57a5b359864eec1fde65af630105c5a2fbaac2a17b75e06bb27b0ac668080ec5"
+      },
       {
         "id": "seiche:2026-08-15-daily",
         "product": "seiche",
@@ -1973,7 +1996,7 @@
     },
     "seiche-dispatches": {
       "state": "live",
-      "detail": "38 records"
+      "detail": "39 records"
     },
     "seiche-investigations": {
       "state": "live",
@@ -2542,6 +2565,29 @@
       }
     ],
     "seiche": [
+      {
+        "id": "seiche:2026-08-16-daily",
+        "product": "seiche",
+        "title": "The Tell reads +37.1: plumbing at the 64th percentile of its own history, screens at the 27th",
+        "dek": "The board reads 45 out of 100, STRAIN; the dated reserve path contributes 11.0 points; the pooled five-business-day event read is 6.6%; plumbing leads market pricing by +37 percentile points. The index is +0.0 against the last published letter.",
+        "url": "https://seiche.info/dispatches/2026-08-16-daily",
+        "beat": "dollar-funding-plumbing",
+        "editorialClass": "desk_brief",
+        "publicationStatus": "PUBLISHED",
+        "published": "2026-08-16T11:11:42Z",
+        "eventTime": "2026-08-16T00:00:00Z",
+        "knowledgeTime": "2026-08-16T11:11:42Z",
+        "evidenceStatus": "DERIVED",
+        "contribution": "dated_forward_test",
+        "limitation": "The composite is a Seiche derivation, not an observed market price.",
+        "newsworthiness": 5,
+        "articleType": "desk_brief",
+        "pointInTimeStatus": "",
+        "verdicts": null,
+        "outcomeWindow": null,
+        "fraudMasked": false,
+        "fingerprint": "57a5b359864eec1fde65af630105c5a2fbaac2a17b75e06bb27b0ac668080ec5"
+      },
       {
         "id": "seiche:2026-08-15-daily",
         "product": "seiche",
@@ -3944,7 +3990,7 @@
     },
     "seiche": {
       "state": "live",
-      "detail": "39 records · 2/2 channels connected"
+      "detail": "40 records · 2/2 channels connected"
     },
     "liquilens-undertow": {
       "state": "cached",
