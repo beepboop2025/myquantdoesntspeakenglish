@@ -1,6 +1,6 @@
 {
   "schema": "mqdnse.feed-cache.v2",
-  "syncedAt": "2026-08-17T09:03:14.772Z",
+  "syncedAt": "2026-08-17T14:47:06.327Z",
   "channels": {
     "liquilens-desk": [
       {
@@ -559,6 +559,52 @@
       }
     ],
     "seiche-dispatches": [
+      {
+        "id": "seiche:2026-08-17-daily",
+        "product": "seiche",
+        "title": "The Tell reads +37.3: plumbing at the 64th percentile of its own history, screens at the 27th",
+        "dek": "The board reads 47 out of 100, STRAIN; the dated reserve path contributes 11.7 points; the pooled five-business-day event read is 6.5%; plumbing leads market pricing by +37 percentile points. The index is +1.8 against the last published letter.",
+        "url": "https://seiche.info/dispatches/2026-08-17-daily",
+        "beat": "dollar-funding-plumbing",
+        "editorialClass": "desk_brief",
+        "publicationStatus": "PUBLISHED",
+        "published": "2026-08-17T11:16:11Z",
+        "eventTime": "2026-08-17T00:00:00Z",
+        "knowledgeTime": "2026-08-17T11:16:11Z",
+        "evidenceStatus": "DERIVED",
+        "contribution": "dated_forward_test",
+        "limitation": "The composite is a Seiche derivation, not an observed market price.",
+        "newsworthiness": 5,
+        "articleType": "desk_brief",
+        "pointInTimeStatus": "",
+        "verdicts": null,
+        "outcomeWindow": null,
+        "fraudMasked": false,
+        "fingerprint": "eda06da653c8a015fdba815d8a1ee780054f4ab0d12760e300ab03286d26fe24"
+      },
+      {
+        "id": "seiche:2026-08-17-week-ahead",
+        "product": "seiche",
+        "title": "The Week Ahead 3: 1 dated events and 5 calls on the record",
+        "dek": "Issue 3 of the Monday letter. The composite reads 47, regime STRAIN. 5 pre-registered calls for the week and 1 dated items on the calendar. Last week's calls graded 2 of 4, misses first.",
+        "url": "https://seiche.info/dispatches/2026-08-17-week-ahead",
+        "beat": "evidence-wire",
+        "editorialClass": "legacy_dispatch",
+        "publicationStatus": "PUBLISHED",
+        "published": "2026-08-17T00:00:00Z",
+        "eventTime": "2026-08-17T00:00:00Z",
+        "knowledgeTime": "2026-08-17T00:00:00Z",
+        "evidenceStatus": "DECLARED",
+        "contribution": "evidence-backed desk finding",
+        "limitation": "Published before the structured analytical-story contract.",
+        "newsworthiness": null,
+        "articleType": "legacy_dispatch",
+        "pointInTimeStatus": "",
+        "verdicts": null,
+        "outcomeWindow": null,
+        "fraudMasked": false,
+        "fingerprint": "93e14f4772e6d919b38dda214aac4f27ce96085e9a20a0f4eb1172051033b59d"
+      },
       {
         "id": "seiche:2026-08-16-daily",
         "product": "seiche",
@@ -2019,7 +2065,7 @@
     },
     "seiche-dispatches": {
       "state": "live",
-      "detail": "39 records"
+      "detail": "41 records"
     },
     "seiche-investigations": {
       "state": "live",
@@ -2588,6 +2634,52 @@
       }
     ],
     "seiche": [
+      {
+        "id": "seiche:2026-08-17-daily",
+        "product": "seiche",
+        "title": "The Tell reads +37.3: plumbing at the 64th percentile of its own history, screens at the 27th",
+        "dek": "The board reads 47 out of 100, STRAIN; the dated reserve path contributes 11.7 points; the pooled five-business-day event read is 6.5%; plumbing leads market pricing by +37 percentile points. The index is +1.8 against the last published letter.",
+        "url": "https://seiche.info/dispatches/2026-08-17-daily",
+        "beat": "dollar-funding-plumbing",
+        "editorialClass": "desk_brief",
+        "publicationStatus": "PUBLISHED",
+        "published": "2026-08-17T11:16:11Z",
+        "eventTime": "2026-08-17T00:00:00Z",
+        "knowledgeTime": "2026-08-17T11:16:11Z",
+        "evidenceStatus": "DERIVED",
+        "contribution": "dated_forward_test",
+        "limitation": "The composite is a Seiche derivation, not an observed market price.",
+        "newsworthiness": 5,
+        "articleType": "desk_brief",
+        "pointInTimeStatus": "",
+        "verdicts": null,
+        "outcomeWindow": null,
+        "fraudMasked": false,
+        "fingerprint": "eda06da653c8a015fdba815d8a1ee780054f4ab0d12760e300ab03286d26fe24"
+      },
+      {
+        "id": "seiche:2026-08-17-week-ahead",
+        "product": "seiche",
+        "title": "The Week Ahead 3: 1 dated events and 5 calls on the record",
+        "dek": "Issue 3 of the Monday letter. The composite reads 47, regime STRAIN. 5 pre-registered calls for the week and 1 dated items on the calendar. Last week's calls graded 2 of 4, misses first.",
+        "url": "https://seiche.info/dispatches/2026-08-17-week-ahead",
+        "beat": "evidence-wire",
+        "editorialClass": "legacy_dispatch",
+        "publicationStatus": "PUBLISHED",
+        "published": "2026-08-17T00:00:00Z",
+        "eventTime": "2026-08-17T00:00:00Z",
+        "knowledgeTime": "2026-08-17T00:00:00Z",
+        "evidenceStatus": "DECLARED",
+        "contribution": "evidence-backed desk finding",
+        "limitation": "Published before the structured analytical-story contract.",
+        "newsworthiness": null,
+        "articleType": "legacy_dispatch",
+        "pointInTimeStatus": "",
+        "verdicts": null,
+        "outcomeWindow": null,
+        "fraudMasked": false,
+        "fingerprint": "93e14f4772e6d919b38dda214aac4f27ce96085e9a20a0f4eb1172051033b59d"
+      },
       {
         "id": "seiche:2026-08-16-daily",
         "product": "seiche",
@@ -4036,7 +4128,7 @@
     },
     "seiche": {
       "state": "live",
-      "detail": "40 records · 2/2 channels connected"
+      "detail": "42 records · 2/2 channels connected"
     },
     "liquilens-undertow": {
       "state": "cached",
