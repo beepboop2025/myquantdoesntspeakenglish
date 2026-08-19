@@ -1,6 +1,6 @@
 {
   "schema": "mqdnse.feed-cache.v2",
-  "syncedAt": "2026-08-19T14:54:43.618Z",
+  "syncedAt": "2026-08-19T20:48:08.344Z",
   "channels": {
     "liquilens-desk": [
       {
@@ -2144,8 +2144,8 @@
   },
   "channelStatuses": {
     "liquilens-desk": {
-      "state": "live",
-      "detail": "4 records"
+      "state": "cached",
+      "detail": "4 records · refresh failed"
     },
     "liquilens-investigations": {
       "state": "live",
@@ -4307,8 +4307,8 @@
   },
   "statuses": {
     "liquilens": {
-      "state": "live",
-      "detail": "20 records · 3/3 channels connected"
+      "state": "cached",
+      "detail": "20 records · 2/3 channels connected"
     },
     "seiche": {
       "state": "live",
