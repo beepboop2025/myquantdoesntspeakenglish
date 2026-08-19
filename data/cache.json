@@ -1,6 +1,6 @@
 {
   "schema": "mqdnse.feed-cache.v2",
-  "syncedAt": "2026-08-19T08:56:54.926Z",
+  "syncedAt": "2026-08-19T14:54:43.618Z",
   "channels": {
     "liquilens-desk": [
       {
@@ -559,6 +559,29 @@
       }
     ],
     "seiche-dispatches": [
+      {
+        "id": "seiche:2026-08-19-daily",
+        "product": "seiche",
+        "title": "The calendar is carrying the strain call; the price of overnight cash still says abundance",
+        "dek": "The board reads 46 out of 100, STRAIN; the dated reserve path contributes 11.0 points; the pooled five-business-day event read is 6.3%; plumbing leads market pricing by +35 percentile points. The index is -1.8 against the last published letter.",
+        "url": "https://seiche.info/dispatches/2026-08-19-daily",
+        "beat": "dollar-funding-plumbing",
+        "editorialClass": "full_story",
+        "publicationStatus": "PUBLISHED",
+        "published": "2026-08-19T11:10:48Z",
+        "eventTime": "2026-08-17T00:00:00Z",
+        "knowledgeTime": "2026-08-19T11:10:48Z",
+        "evidenceStatus": "DERIVED",
+        "contribution": "fresh_longitudinal_delta · cross_signal_divergence · dated_forward_test",
+        "limitation": "The composite is a Seiche derivation, not an observed market price.",
+        "newsworthiness": 70,
+        "articleType": "full_story",
+        "pointInTimeStatus": "",
+        "verdicts": null,
+        "outcomeWindow": null,
+        "fraudMasked": false,
+        "fingerprint": "276fe796a95faa5b883dfa64891587ec62fd799f01643d48b4010472683dfd29"
+      },
       {
         "id": "seiche:2026-08-18-daily",
         "product": "seiche",
@@ -2134,7 +2157,7 @@
     },
     "seiche-dispatches": {
       "state": "live",
-      "detail": "42 records"
+      "detail": "43 records"
     },
     "seiche-investigations": {
       "state": "live",
@@ -2703,6 +2726,29 @@
       }
     ],
     "seiche": [
+      {
+        "id": "seiche:2026-08-19-daily",
+        "product": "seiche",
+        "title": "The calendar is carrying the strain call; the price of overnight cash still says abundance",
+        "dek": "The board reads 46 out of 100, STRAIN; the dated reserve path contributes 11.0 points; the pooled five-business-day event read is 6.3%; plumbing leads market pricing by +35 percentile points. The index is -1.8 against the last published letter.",
+        "url": "https://seiche.info/dispatches/2026-08-19-daily",
+        "beat": "dollar-funding-plumbing",
+        "editorialClass": "full_story",
+        "publicationStatus": "PUBLISHED",
+        "published": "2026-08-19T11:10:48Z",
+        "eventTime": "2026-08-17T00:00:00Z",
+        "knowledgeTime": "2026-08-19T11:10:48Z",
+        "evidenceStatus": "DERIVED",
+        "contribution": "fresh_longitudinal_delta · cross_signal_divergence · dated_forward_test",
+        "limitation": "The composite is a Seiche derivation, not an observed market price.",
+        "newsworthiness": 70,
+        "articleType": "full_story",
+        "pointInTimeStatus": "",
+        "verdicts": null,
+        "outcomeWindow": null,
+        "fraudMasked": false,
+        "fingerprint": "276fe796a95faa5b883dfa64891587ec62fd799f01643d48b4010472683dfd29"
+      },
       {
         "id": "seiche:2026-08-18-daily",
         "product": "seiche",
@@ -4266,7 +4312,7 @@
     },
     "seiche": {
       "state": "live",
-      "detail": "43 records · 2/2 channels connected"
+      "detail": "44 records · 2/2 channels connected"
     },
     "liquilens-undertow": {
       "state": "cached",
