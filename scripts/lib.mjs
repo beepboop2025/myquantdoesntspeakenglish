@@ -17,6 +17,7 @@ export const SOURCES = [
     product: 'liquilens',
     label: 'LiquiLens',
     channel: 'desk',
+    expectedSchema: 'liquilens.desk-bit-feed.v1',
     url: 'https://api.liquilens.in/api/experimental/v1/desk/bits',
     home: 'https://liquilens.in/desk/',
   },
@@ -299,6 +300,14 @@ export function normalizeRecord(raw, product, fallbackUrl) {
 
 export function normalizePayload(payload, source) {
   if (!payload || typeof payload !== 'object') throw new Error('invalid JSON root')
+  if (source.expectedSchema && payload.schema !== source.expectedSchema) {
+    const received = typeof payload.schema === 'string'
+      ? payload.schema.slice(0, 120)
+      : payload.schema === undefined
+        ? 'missing'
+        : typeof payload.schema
+    throw new Error(`source schema mismatch: expected ${source.expectedSchema}; received ${received}`)
+  }
   let rows = []
   if (source.channel === 'article-index') rows = array(payload.articles)
   else if (source.product === 'liquilens') rows = array(payload.bits)
@@ -356,6 +365,19 @@ export function mergeChannelFeeds(channels) {
       || String(a.id).localeCompare(String(b.id)))
   }
   return feeds
+}
+
+export function buildProductFeedStatuses(channelStatuses, feeds, sources = SOURCES) {
+  return Object.fromEntries([...new Set(sources.map(({ product }) => product))].map((product) => {
+    const sourceIds = sources.filter((source) => source.product === product).map(({ id }) => id)
+    const cachedSourceIds = sourceIds.filter((id) => channelStatuses[id]?.state === 'cached')
+    return [product, {
+      state: cachedSourceIds.length ? 'cached' : 'live',
+      detail: cachedSourceIds.length
+        ? `${feeds[product]?.length || 0} records · degraded channels: ${cachedSourceIds.join(', ')}`
+        : `${feeds[product]?.length || 0} records · all ${sourceIds.length} channels connected`,
+    }]
+  }))
 }
 
 export function normalizeHouseArticle(raw) {
