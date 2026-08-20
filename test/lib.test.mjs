@@ -14,6 +14,7 @@ import {
   applyReleasePolicy,
   buildAppFeed,
   buildInterpretation,
+  buildProductFeedStatuses,
   buildSignalPulse,
   canonicalJsonSha256,
   chooseLead,
@@ -248,6 +249,47 @@ test('normalizes all three product feed shapes', () => {
   const undertow = normalizePayload({ entries: ['2026-08-12'], letters: { '2026-08-12': { story: base } } }, sources.undertow)[0]
   assert.equal(undertow.product, 'liquilens-undertow')
   assert.equal(undertow.url, 'https://liquilens-undertow.com/dispatch/2026-08-12.json')
+})
+
+test('pins the LiquiLens desk payload schema while leaving other source contracts independent', () => {
+  const source = {
+    id: 'liquilens-desk',
+    product: 'liquilens',
+    channel: 'desk',
+    expectedSchema: 'liquilens.desk-bit-feed.v1',
+    home: 'https://liquilens.in/desk/',
+  }
+  const bit = {
+    id: 'liquilens:desk:test',
+    headline: 'Evidence moved',
+    published_at: '2026-08-20T06:25:45Z',
+  }
+
+  assert.equal(normalizePayload({
+    schema: 'liquilens.desk-bit-feed.v1',
+    bits: [bit],
+  }, source)[0].id, bit.id)
+  assert.throws(
+    () => normalizePayload({ schema: 'liquilens.desk-bit-feed.v2', bits: [bit] }, source),
+    /source schema mismatch: expected liquilens\.desk-bit-feed\.v1; received liquilens\.desk-bit-feed\.v2/,
+  )
+  assert.throws(
+    () => normalizePayload({ bits: [bit] }, source),
+    /source schema mismatch: expected liquilens\.desk-bit-feed\.v1; received missing/,
+  )
+
+  const statuses = buildProductFeedStatuses(
+    {
+      'liquilens-desk': { state: 'cached' },
+      'liquilens-investigations': { state: 'live' },
+    },
+    { liquilens: [{ id: bit.id }] },
+    [source, { id: 'liquilens-investigations', product: 'liquilens' }],
+  )
+  assert.deepEqual(statuses.liquilens, {
+    state: 'cached',
+    detail: '1 records · degraded channels: liquilens-desk',
+  })
 })
 
 test('normalizes investigation and historical case-file indexes without dropping their boundaries', () => {

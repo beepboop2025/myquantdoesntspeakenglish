@@ -30,7 +30,24 @@ npm run dev
 
 The build has no runtime dependencies. If a source is temporarily unavailable,
 it uses the last successful `data/cache.json` slice for that source and prints the
-coverage state in the generated page.
+coverage state in the generated page. The LiquiLens desk channel is additionally
+pinned to `liquilens.desk-bit-feed.v1`; a missing or changed root schema is treated
+as an upstream contract failure, so the build keeps the last accepted channel and
+marks LiquiLens as cached/degraded instead of normalizing an unknown shape.
+
+## Public API and MCP
+
+The product exposes read-only discovery without accounts or user state:
+
+- `GET /api/v1/capabilities` describes the editorial, feed, and evidence surfaces;
+- `GET /api/v1/health` returns a non-sensitive compatibility heartbeat;
+- `POST /mcp` serves the stateless MCP discovery and health tools.
+
+The MCP endpoint supports the current per-request protocol metadata as well as
+the listed legacy protocol handshakes. Legacy `Mcp-Session-Id` headers are
+accepted for compatibility but never create server-side sessions. Cross-origin
+MCP requests are limited to the configured MyQuant site origin; the REST
+metadata remains public and cacheable.
 
 ## Reviewed shadow copy
 

@@ -4,6 +4,10 @@
   "outputDirectory": "dist",
   "cleanUrls": true,
   "trailingSlash": false,
+  "rewrites": [
+    { "source": "/mcp", "destination": "/api/mcp" },
+    { "source": "/api/v1/:resource", "destination": "/api/v1?resource=:resource" }
+  ],
   "headers": [
     {
       "source": "/app-feed/v1.json",

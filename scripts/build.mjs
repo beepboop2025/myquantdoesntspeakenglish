@@ -8,6 +8,7 @@ import {
   applyReleasePolicy,
   buildAppFeed,
   buildInterpretation,
+  buildProductFeedStatuses,
   buildSignalPulse,
   chooseLead,
   mergeChannelFeeds,
@@ -82,26 +83,24 @@ async function syncFeeds() {
       channels[source.id] = preserveStableClocks(normalized, previous)
       channelStatuses[source.id] = { state: 'live', detail: `${channels[source.id].length} records` }
     } catch (error) {
+      const reason = String(error?.message || error).replaceAll(/\s+/g, ' ').slice(0, 180)
       const fallback = Array.isArray(cached.channels?.[source.id])
         ? cached.channels[source.id]
         : legacyPrimaryChannels.has(source.id) && Array.isArray(cached.feeds?.[source.product])
           ? cached.feeds[source.product]
           : []
-      if (!fallback.length) throw new Error(`${source.label}: ${error.message}; no cache available`)
+      if (!fallback.length) throw new Error(`${source.label}: ${reason}; no cache available`)
       channels[source.id] = fallback
-      channelStatuses[source.id] = { state: 'cached', detail: `${fallback.length} records · refresh failed` }
+      channelStatuses[source.id] = {
+        state: 'cached',
+        detail: `${fallback.length} records · refresh failed: ${reason}`,
+      }
+      console.warn(`[feed-cache] ${source.id} degraded; using cached records (${reason})`)
     }
   }
 
   const feeds = mergeChannelFeeds(channels)
-  const statuses = Object.fromEntries([...new Set(SOURCES.map(({ product }) => product))].map((product) => {
-    const sourceIds = SOURCES.filter((source) => source.product === product).map(({ id }) => id)
-    const cachedCount = sourceIds.filter((id) => channelStatuses[id]?.state === 'cached').length
-    return [product, {
-      state: cachedCount ? 'cached' : 'live',
-      detail: `${feeds[product]?.length || 0} records · ${sourceIds.length - cachedCount}/${sourceIds.length} channels connected`,
-    }]
-  }))
+  const statuses = buildProductFeedStatuses(channelStatuses, feeds)
   const next = {
     schema: 'mqdnse.feed-cache.v2',
     syncedAt: new Date().toISOString(),
@@ -199,7 +198,7 @@ function sourceStatus(cache, product, publicCount) {
   const status = cache.statuses[product] || { state: 'gap', detail: 'status unavailable' }
   const publicState = status.state === 'live' ? 'connected' : status.state
   const detail = status.state === 'cached'
-    ? `${publicCount} articles · latest check failed`
+    ? status.detail || `${publicCount} articles · latest check failed`
     : `${publicCount} articles available`
   return `<li data-state="${escapeHtml(status.state)}"><span>${escapeHtml(productLabel(product))}</span><b>${escapeHtml(publicState)}</b><small>${escapeHtml(detail)}</small></li>`
 }
