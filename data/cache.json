@@ -1,6 +1,6 @@
 {
   "schema": "mqdnse.feed-cache.v2",
-  "syncedAt": "2026-08-20T08:58:31.353Z",
+  "syncedAt": "2026-08-20T14:57:45.009Z",
   "channels": {
     "liquilens-desk": [
       {
@@ -559,6 +559,29 @@
       }
     ],
     "seiche-dispatches": [
+      {
+        "id": "seiche:2026-08-20-daily",
+        "product": "seiche",
+        "title": "2y Treasury constant maturity yield sits at 4.19 %, +2.6 sigma from its own median: a level, not a move",
+        "dek": "The board reads 45 out of 100, STRAIN; the dated reserve path contributes 11.0 points; the pooled five-business-day event read is 6.7%; plumbing leads market pricing by +32 percentile points. The index is +0.0 against the last published letter.",
+        "url": "https://seiche.info/dispatches/2026-08-20-daily",
+        "beat": "dollar-funding-plumbing",
+        "editorialClass": "full_story",
+        "publicationStatus": "PUBLISHED",
+        "published": "2026-08-20T11:17:09Z",
+        "eventTime": "2026-08-18T00:00:00Z",
+        "knowledgeTime": "2026-08-20T11:17:09Z",
+        "evidenceStatus": "DERIVED",
+        "contribution": "fresh_longitudinal_delta · cross_signal_divergence · dated_forward_test",
+        "limitation": "The composite is a Seiche derivation, not an observed market price.",
+        "newsworthiness": 70,
+        "articleType": "full_story",
+        "pointInTimeStatus": "",
+        "verdicts": null,
+        "outcomeWindow": null,
+        "fraudMasked": false,
+        "fingerprint": "429c3c91590bd5ae4ea55fd64a13c3635465bd440508045910e5794b7002541e"
+      },
       {
         "id": "seiche:2026-08-19-daily",
         "product": "seiche",
@@ -2180,7 +2203,7 @@
     },
     "seiche-dispatches": {
       "state": "live",
-      "detail": "43 records"
+      "detail": "44 records"
     },
     "seiche-investigations": {
       "state": "live",
@@ -2749,6 +2772,29 @@
       }
     ],
     "seiche": [
+      {
+        "id": "seiche:2026-08-20-daily",
+        "product": "seiche",
+        "title": "2y Treasury constant maturity yield sits at 4.19 %, +2.6 sigma from its own median: a level, not a move",
+        "dek": "The board reads 45 out of 100, STRAIN; the dated reserve path contributes 11.0 points; the pooled five-business-day event read is 6.7%; plumbing leads market pricing by +32 percentile points. The index is +0.0 against the last published letter.",
+        "url": "https://seiche.info/dispatches/2026-08-20-daily",
+        "beat": "dollar-funding-plumbing",
+        "editorialClass": "full_story",
+        "publicationStatus": "PUBLISHED",
+        "published": "2026-08-20T11:17:09Z",
+        "eventTime": "2026-08-18T00:00:00Z",
+        "knowledgeTime": "2026-08-20T11:17:09Z",
+        "evidenceStatus": "DERIVED",
+        "contribution": "fresh_longitudinal_delta · cross_signal_divergence · dated_forward_test",
+        "limitation": "The composite is a Seiche derivation, not an observed market price.",
+        "newsworthiness": 70,
+        "articleType": "full_story",
+        "pointInTimeStatus": "",
+        "verdicts": null,
+        "outcomeWindow": null,
+        "fraudMasked": false,
+        "fingerprint": "429c3c91590bd5ae4ea55fd64a13c3635465bd440508045910e5794b7002541e"
+      },
       {
         "id": "seiche:2026-08-19-daily",
         "product": "seiche",
@@ -4358,7 +4404,7 @@
     },
     "seiche": {
       "state": "live",
-      "detail": "44 records · all 2 channels connected"
+      "detail": "45 records · all 2 channels connected"
     },
     "liquilens-undertow": {
       "state": "cached",
