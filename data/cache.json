@@ -1,6 +1,6 @@
 {
   "schema": "mqdnse.feed-cache.v2",
-  "syncedAt": "2026-08-20T03:11:55.278Z",
+  "syncedAt": "2026-08-20T08:58:31.353Z",
   "channels": {
     "liquilens-desk": [
       {
@@ -1587,6 +1587,29 @@
     ],
     "undertow-dispatches": [
       {
+        "id": "liquilens-undertow:2026-08-20",
+        "product": "liquilens-undertow",
+        "title": "No segment changed tier; funding STRAIN persists across a quiet board.",
+        "dek": "1 of 9 segments score today; UST, HY, EQUITY, ETF, FX, CN, CRYPTO, BSTOCK still accrue history. The funding overlay reads STRAIN. Qualifying measures disagree inside at least one scored cell; every such cell's span is Agent/Desk tier today, because the span would hand back the percentile of a row the free board withholds.",
+        "url": "https://liquilens-undertow.com/dispatch/2026-08-20.json",
+        "beat": "cross-market-liquidity",
+        "editorialClass": "watch_note",
+        "publicationStatus": "PUBLISHED",
+        "published": "2026-08-20T03:46:21+00:00",
+        "eventTime": "2026-08-20T00:00:00Z",
+        "knowledgeTime": "2026-08-20T03:46:21+00:00",
+        "evidenceStatus": "DERIVED",
+        "contribution": "bounded_no_change_record",
+        "limitation": "PARTIAL means still accruing: a scored tier needs at least 2 measures with a stress percentile at 60+ observations each; an accruing or absent measure is disclosed, never rendered as calm. Research and market data, not investment advice.",
+        "newsworthiness": 25,
+        "articleType": "watch_note",
+        "pointInTimeStatus": "",
+        "verdicts": null,
+        "outcomeWindow": null,
+        "fraudMasked": false,
+        "fingerprint": "93d36a09be3c28c36c0d13d71d2b6e2eb53de8edebbedc54d73c6978b2118d2f"
+      },
+      {
         "id": "liquilens-undertow:2026-08-19",
         "product": "liquilens-undertow",
         "title": "No segment changed tier; funding STRAIN persists across a quiet board.",
@@ -2165,11 +2188,11 @@
     },
     "undertow-dispatches": {
       "state": "live",
-      "detail": "23 records"
+      "detail": "24 records"
     },
     "undertow-investigations": {
       "state": "cached",
-      "detail": "1 records · refresh failed"
+      "detail": "1 records · refresh failed: HTTP 403"
     }
   },
   "feeds": {
@@ -3752,6 +3775,29 @@
     ],
     "liquilens-undertow": [
       {
+        "id": "liquilens-undertow:2026-08-20",
+        "product": "liquilens-undertow",
+        "title": "No segment changed tier; funding STRAIN persists across a quiet board.",
+        "dek": "1 of 9 segments score today; UST, HY, EQUITY, ETF, FX, CN, CRYPTO, BSTOCK still accrue history. The funding overlay reads STRAIN. Qualifying measures disagree inside at least one scored cell; every such cell's span is Agent/Desk tier today, because the span would hand back the percentile of a row the free board withholds.",
+        "url": "https://liquilens-undertow.com/dispatch/2026-08-20.json",
+        "beat": "cross-market-liquidity",
+        "editorialClass": "watch_note",
+        "publicationStatus": "PUBLISHED",
+        "published": "2026-08-20T03:46:21+00:00",
+        "eventTime": "2026-08-20T00:00:00Z",
+        "knowledgeTime": "2026-08-20T03:46:21+00:00",
+        "evidenceStatus": "DERIVED",
+        "contribution": "bounded_no_change_record",
+        "limitation": "PARTIAL means still accruing: a scored tier needs at least 2 measures with a stress percentile at 60+ observations each; an accruing or absent measure is disclosed, never rendered as calm. Research and market data, not investment advice.",
+        "newsworthiness": 25,
+        "articleType": "watch_note",
+        "pointInTimeStatus": "",
+        "verdicts": null,
+        "outcomeWindow": null,
+        "fraudMasked": false,
+        "fingerprint": "93d36a09be3c28c36c0d13d71d2b6e2eb53de8edebbedc54d73c6978b2118d2f"
+      },
+      {
         "id": "liquilens-undertow:2026-08-19",
         "product": "liquilens-undertow",
         "title": "No segment changed tier; funding STRAIN persists across a quiet board.",
@@ -4308,15 +4354,15 @@
   "statuses": {
     "liquilens": {
       "state": "live",
-      "detail": "20 records · 3/3 channels connected"
+      "detail": "20 records · all 3 channels connected"
     },
     "seiche": {
       "state": "live",
-      "detail": "44 records · 2/2 channels connected"
+      "detail": "44 records · all 2 channels connected"
     },
     "liquilens-undertow": {
       "state": "cached",
-      "detail": "24 records · 1/2 channels connected"
+      "detail": "25 records · degraded channels: undertow-investigations"
     }
   }
 }
