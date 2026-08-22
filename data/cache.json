@@ -1,6 +1,6 @@
 {
   "schema": "mqdnse.feed-cache.v2",
-  "syncedAt": "2026-08-22T08:50:10.166Z",
+  "syncedAt": "2026-08-22T14:41:07.697Z",
   "channels": {
     "liquilens-desk": [
       {
@@ -27,17 +27,17 @@
         "fingerprint": "e72e80a4ee6fd11fb940da5d11e4789e4f765f0db9812b064a68151597f2769e"
       },
       {
-        "id": "liquilens-india-breadth-2026-08-21",
+        "id": "liquilens-india-breadth-2026-08-22",
         "product": "liquilens",
         "title": "4 of 19 covered Indian institutions sit above green",
         "dek": "This is the breadth of the vetted live board, not the breadth of the entire Indian financial system; stale and uncovered names remain outside the denominator.",
-        "url": "https://liquilens.in/desk/#liquilens-india-breadth-2026-08-21",
+        "url": "https://liquilens.in/desk/#liquilens-india-breadth-2026-08-22",
         "beat": "institution-risk",
         "editorialClass": "desk_brief",
         "publicationStatus": "PUBLISHED",
-        "published": "2026-08-21T14:55:48Z",
-        "eventTime": "2026-08-21T00:00:00Z",
-        "knowledgeTime": "2026-08-21T14:55:48Z",
+        "published": "2026-08-22T14:41:06Z",
+        "eventTime": "2026-08-22T00:00:00Z",
+        "knowledgeTime": "2026-08-22T14:41:06Z",
         "evidenceStatus": "DERIVED",
         "contribution": "cross_sectional_review_breadth",
         "limitation": "The denominator is the fresh-vetted board, not all regulated institutions.",
@@ -47,7 +47,7 @@
         "verdicts": null,
         "outcomeWindow": null,
         "fraudMasked": false,
-        "fingerprint": "fab8bad9e70c293717d5939bc8640ee34ff38d7a72e1b5b2073cb414af5c484b"
+        "fingerprint": "4319fadefb8a0092f9a52674ad6b1c5af8c0d7bddd9fb6cb57a745c54677f732"
       },
       {
         "id": "liquilens-us-ndfi-34953-2026-03-31",
@@ -559,6 +559,29 @@
       }
     ],
     "seiche-dispatches": [
+      {
+        "id": "seiche:2026-08-22-daily",
+        "product": "seiche",
+        "title": "2y Treasury constant maturity yield prints 4.19 % on its latest print: 2.6 sigma against its own history",
+        "dek": "The board reads 45 out of 100, STRAIN; the dated reserve path contributes 11.0 points; the pooled five-business-day event read is 5.9%; plumbing leads market pricing by +23 percentile points. The index is +0.0 against the last published letter.",
+        "url": "https://seiche.info/dispatches/2026-08-22-daily",
+        "beat": "dollar-funding-plumbing",
+        "editorialClass": "full_story",
+        "publicationStatus": "PUBLISHED",
+        "published": "2026-08-22T11:11:04Z",
+        "eventTime": "2026-08-20T00:00:00Z",
+        "knowledgeTime": "2026-08-22T11:11:04Z",
+        "evidenceStatus": "DERIVED",
+        "contribution": "fresh_longitudinal_delta · cross_signal_divergence · dated_forward_test",
+        "limitation": "The composite is a Seiche derivation, not an observed market price.",
+        "newsworthiness": 70,
+        "articleType": "full_story",
+        "pointInTimeStatus": "",
+        "verdicts": null,
+        "outcomeWindow": null,
+        "fraudMasked": false,
+        "fingerprint": "5f5f279b8bc7cf6753aba20fc6504a31985a606275555cbb3284bad6c76cd681"
+      },
       {
         "id": "seiche:2026-08-21-daily",
         "product": "seiche",
@@ -2272,7 +2295,7 @@
     },
     "seiche-dispatches": {
       "state": "live",
-      "detail": "45 records"
+      "detail": "46 records"
     },
     "seiche-investigations": {
       "state": "live",
@@ -2290,17 +2313,17 @@
   "feeds": {
     "liquilens": [
       {
-        "id": "liquilens-india-breadth-2026-08-21",
+        "id": "liquilens-india-breadth-2026-08-22",
         "product": "liquilens",
         "title": "4 of 19 covered Indian institutions sit above green",
         "dek": "This is the breadth of the vetted live board, not the breadth of the entire Indian financial system; stale and uncovered names remain outside the denominator.",
-        "url": "https://liquilens.in/desk/#liquilens-india-breadth-2026-08-21",
+        "url": "https://liquilens.in/desk/#liquilens-india-breadth-2026-08-22",
         "beat": "institution-risk",
         "editorialClass": "desk_brief",
         "publicationStatus": "PUBLISHED",
-        "published": "2026-08-21T14:55:48Z",
-        "eventTime": "2026-08-21T00:00:00Z",
-        "knowledgeTime": "2026-08-21T14:55:48Z",
+        "published": "2026-08-22T14:41:06Z",
+        "eventTime": "2026-08-22T00:00:00Z",
+        "knowledgeTime": "2026-08-22T14:41:06Z",
         "evidenceStatus": "DERIVED",
         "contribution": "cross_sectional_review_breadth",
         "limitation": "The denominator is the fresh-vetted board, not all regulated institutions.",
@@ -2310,7 +2333,7 @@
         "verdicts": null,
         "outcomeWindow": null,
         "fraudMasked": false,
-        "fingerprint": "fab8bad9e70c293717d5939bc8640ee34ff38d7a72e1b5b2073cb414af5c484b"
+        "fingerprint": "4319fadefb8a0092f9a52674ad6b1c5af8c0d7bddd9fb6cb57a745c54677f732"
       },
       {
         "id": "liquilens-india-utkarsh-sfb-2025-2025-03-31",
@@ -2841,6 +2864,29 @@
       }
     ],
     "seiche": [
+      {
+        "id": "seiche:2026-08-22-daily",
+        "product": "seiche",
+        "title": "2y Treasury constant maturity yield prints 4.19 % on its latest print: 2.6 sigma against its own history",
+        "dek": "The board reads 45 out of 100, STRAIN; the dated reserve path contributes 11.0 points; the pooled five-business-day event read is 5.9%; plumbing leads market pricing by +23 percentile points. The index is +0.0 against the last published letter.",
+        "url": "https://seiche.info/dispatches/2026-08-22-daily",
+        "beat": "dollar-funding-plumbing",
+        "editorialClass": "full_story",
+        "publicationStatus": "PUBLISHED",
+        "published": "2026-08-22T11:11:04Z",
+        "eventTime": "2026-08-20T00:00:00Z",
+        "knowledgeTime": "2026-08-22T11:11:04Z",
+        "evidenceStatus": "DERIVED",
+        "contribution": "fresh_longitudinal_delta · cross_signal_divergence · dated_forward_test",
+        "limitation": "The composite is a Seiche derivation, not an observed market price.",
+        "newsworthiness": 70,
+        "articleType": "full_story",
+        "pointInTimeStatus": "",
+        "verdicts": null,
+        "outcomeWindow": null,
+        "fraudMasked": false,
+        "fingerprint": "5f5f279b8bc7cf6753aba20fc6504a31985a606275555cbb3284bad6c76cd681"
+      },
       {
         "id": "seiche:2026-08-21-daily",
         "product": "seiche",
@@ -4542,7 +4588,7 @@
     },
     "seiche": {
       "state": "live",
-      "detail": "46 records · all 2 channels connected"
+      "detail": "47 records · all 2 channels connected"
     },
     "liquilens-undertow": {
       "state": "cached",
