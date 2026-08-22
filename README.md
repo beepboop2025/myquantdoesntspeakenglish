@@ -42,6 +42,18 @@ The product exposes read-only discovery without accounts or user state:
 - `GET /api/v1/capabilities` describes the editorial, feed, and evidence surfaces;
 - `GET /api/v1/health` returns a non-sensitive compatibility heartbeat;
 - `POST /mcp` serves the stateless MCP discovery and health tools.
+- `GET /openapi.json` is the curated REST contract;
+- `GET /.well-known/ai-catalog.json` and `GET /.well-known/mcp.json` expose
+  public AI/MCP discovery, with the Registry manifest at `GET /server.json`.
+
+The product version (`0.1.0`), REST contract (`myquant.editorial/1.1`), and
+MCP server (`2.0.0`) stay distinct. Public health also reports Vercel's exact
+deployed Git SHA when available, allowing scheduled smoke and Registry
+publication to bind the live endpoint to a reviewed commit.
+
+Registry verification builds with `MYQUANT_USE_REVIEWED_CACHE=1`; this uses
+the committed evidence receipt instead of pulling a different editorial wire
+after the release SHA has already been selected.
 
 The MCP endpoint supports the current per-request protocol metadata as well as
 the listed legacy protocol handshakes. Legacy `Mcp-Session-Id` headers are

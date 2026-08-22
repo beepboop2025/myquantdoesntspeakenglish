@@ -6,7 +6,8 @@
   "trailingSlash": false,
   "rewrites": [
     { "source": "/mcp", "destination": "/api/mcp" },
-    { "source": "/api/v1/:resource", "destination": "/api/v1?resource=:resource" }
+    { "source": "/api/v1/:resource", "destination": "/api/v1?resource=:resource" },
+    { "source": "/api/openapi.json", "destination": "/openapi.json" }
   ],
   "headers": [
     {
@@ -14,6 +15,30 @@
       "headers": [
         { "key": "Access-Control-Allow-Origin", "value": "*" },
         { "key": "Cache-Control", "value": "public, max-age=0, s-maxage=300, stale-while-revalidate=86400" }
+      ]
+    },
+    {
+      "source": "/openapi.json",
+      "headers": [
+        { "key": "Access-Control-Allow-Origin", "value": "*" },
+        { "key": "Cache-Control", "value": "public, max-age=60, s-maxage=300, stale-while-revalidate=3600" },
+        { "key": "Content-Type", "value": "application/json; charset=utf-8" }
+      ]
+    },
+    {
+      "source": "/server.json",
+      "headers": [
+        { "key": "Access-Control-Allow-Origin", "value": "*" },
+        { "key": "Cache-Control", "value": "public, max-age=60, s-maxage=300, stale-while-revalidate=3600" },
+        { "key": "Content-Type", "value": "application/json; charset=utf-8" }
+      ]
+    },
+    {
+      "source": "/.well-known/:file",
+      "headers": [
+        { "key": "Access-Control-Allow-Origin", "value": "*" },
+        { "key": "Cache-Control", "value": "public, max-age=60, s-maxage=300, stale-while-revalidate=3600" },
+        { "key": "Content-Type", "value": "application/json; charset=utf-8" }
       ]
     },
     {

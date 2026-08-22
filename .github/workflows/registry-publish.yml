@@ -1,0 +1,76 @@
+name: Publish MCP Registry record
+
+on:
+  workflow_dispatch:
+    inputs:
+      release_sha:
+        description: "Exact deployed main SHA to publish"
+        required: true
+        type: string
+
+permissions:
+  contents: read
+
+concurrency:
+  group: myquant-editorial-mcp-registry
+  cancel-in-progress: false
+
+env:
+  MCP_PUBLISHER_VERSION: "1.8.1"
+  MCP_PUBLISHER_SHA256: "a06c9096dcb9727c13555b6be26c7effa707b01f06a4c561ba7a3635443cf2cc"
+  EXPECTED_RELEASE_SHA: ${{ inputs.release_sha }}
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    environment: mcp-registry
+    permissions:
+      contents: read
+      id-token: write
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          ref: ${{ env.EXPECTED_RELEASE_SHA }}
+          fetch-depth: 0
+          persist-credentials: false
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: 24
+          cache: npm
+      - name: Bind publication to current main
+        run: |
+          [[ "$EXPECTED_RELEASE_SHA" =~ ^[0-9a-f]{40}$ ]]
+          test "$(git rev-parse HEAD)" = "$EXPECTED_RELEASE_SHA"
+          git fetch --no-tags origin +refs/heads/main:refs/remotes/origin/main
+          test "$(git rev-parse refs/remotes/origin/main)" = "$EXPECTED_RELEASE_SHA"
+          test -z "$(git status --porcelain)"
+      - run: npm ci
+      - run: npm test
+      - run: MYQUANT_USE_REVIEWED_CACHE=1 npm run build
+      - run: npm run verify
+      - name: Require the reviewed checkout to remain unchanged
+        run: test -z "$(git status --porcelain --untracked-files=no)"
+      - run: npm run smoke:live
+      - name: Validate Registry manifest identity
+        run: |
+          node --input-type=module <<'NODE'
+          import { readFile } from 'node:fs/promises'
+          const server = JSON.parse(await readFile('server.json', 'utf8'))
+          if (server.name !== 'io.github.beepboop2025/myquant-editorial'
+            || server.version !== '2.0.0'
+            || server.remotes?.[0]?.url !== 'https://myquantdoesntspeakenglish.com/mcp') {
+            throw new Error('unexpected Registry identity')
+          }
+          NODE
+      - name: Install mcp-publisher (pinned and hash-verified)
+        run: |
+          curl -sSLo mcp-publisher.tar.gz \
+            "https://github.com/modelcontextprotocol/registry/releases/download/v${MCP_PUBLISHER_VERSION}/mcp-publisher_linux_amd64.tar.gz"
+          echo "${MCP_PUBLISHER_SHA256}  mcp-publisher.tar.gz" | sha256sum -c -
+          tar xzf mcp-publisher.tar.gz mcp-publisher
+          chmod +x mcp-publisher
+      - name: Authenticate by OIDC and publish
+        run: |
+          ./mcp-publisher login github-oidc
+          ./mcp-publisher publish

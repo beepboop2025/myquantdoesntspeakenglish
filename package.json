@@ -10,7 +10,8 @@
     "dev": "node scripts/serve.mjs",
     "legal:check": "node scripts/check-operator-profile.mjs data/operator-profile.json",
     "test": "node --test",
-    "verify": "node scripts/verify-build.mjs"
+    "verify": "node scripts/verify-build.mjs",
+    "smoke:live": "node scripts/live-smoke.mjs"
   },
   "engines": {
     "node": ">=22"

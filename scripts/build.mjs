@@ -65,6 +65,16 @@ async function readCache() {
 
 async function syncFeeds() {
   const cached = await readCache()
+  if (process.env.MYQUANT_USE_REVIEWED_CACHE === '1') {
+    if (cached.schema !== 'mqdnse.feed-cache.v2'
+      || !cached.channels
+      || !cached.channelStatuses
+      || !cached.feeds
+      || !cached.statuses) {
+      throw new Error('reviewed cache mode requires a complete mqdnse.feed-cache.v2 receipt')
+    }
+    return cached
+  }
   const channels = {}
   const channelStatuses = {}
   const legacyPrimaryChannels = new Set([
@@ -144,6 +154,7 @@ function head({ title, description, canonical, type = 'website' }) {
   <link rel="icon" href="/assets/favicon.svg" type="image/svg+xml">
   <link rel="alternate" type="application/feed+json" href="${SITE_ORIGIN}/feed.json" title="${BRAND_NAME}">
   <link rel="alternate" type="application/atom+xml" href="${SITE_ORIGIN}/feed.xml" title="${BRAND_NAME}">
+  <link rel="ai-catalog" type="application/json" href="/.well-known/ai-catalog.json">
   <meta name="theme-color" content="#1746d1">
   <meta property="og:type" content="${type}">
   <meta property="og:title" content="${escapeHtml(title)}">
@@ -992,6 +1003,11 @@ MyQuant publishes two explicit lanes: Interpreted pages for source-published Sei
 - JSON Feed: ${SITE_ORIGIN}/feed.json
 - Atom: ${SITE_ORIGIN}/feed.xml
 - Suspended app feed: ${SITE_ORIGIN}/app-feed/v1.json
+- Public API: ${SITE_ORIGIN}/api/v1/capabilities
+- OpenAPI: ${SITE_ORIGIN}/openapi.json
+- MCP: ${SITE_ORIGIN}/mcp
+- MCP discovery: ${SITE_ORIGIN}/.well-known/mcp.json
+- AI catalog: ${SITE_ORIGIN}/.well-known/ai-catalog.json
 - Editorial standard: ${SITE_ORIGIN}/editorial
 - Corrections: ${SITE_ORIGIN}/corrections
 - Privacy: ${SITE_ORIGIN}/privacy
@@ -1066,6 +1082,8 @@ async function build() {
   await rm(dist, { recursive: true, force: true })
   await mkdir(dist, { recursive: true })
   await cp(join(root, 'assets'), join(dist, 'assets'), { recursive: true })
+  await cp(join(root, 'public'), dist, { recursive: true })
+  await cp(join(root, 'server.json'), join(dist, 'server.json'))
   await write(join(dist, 'index.html'), renderHome(stories, cache, appCopy.stories))
   await write(join(dist, 'follow', 'index.html'), renderFollow())
   await write(join(dist, 'advertise', 'index.html'), renderAdvertise())

@@ -5,6 +5,12 @@ import {
 
 export const SITE_URL = (process.env.MYQUANT_SITE_URL || 'https://myquantdoesntspeakenglish.com').replace(/\/$/, '')
 export const API_VERSION = 'myquant.editorial/1.1'
+export const MCP_VERSION = '2.0.0'
+
+function deployedSourceSha() {
+  const value = process.env.VERCEL_GIT_COMMIT_SHA || ''
+  return /^[0-9a-f]{40}$/.test(value) ? value : null
+}
 
 export const CAPABILITIES = Object.freeze({
   schema: 'product.capabilities.v1',
@@ -17,7 +23,9 @@ export const CAPABILITIES = Object.freeze({
   },
   release: {
     api_version: API_VERSION,
-    updated_at: '2026-08-20',
+    mcp_version: MCP_VERSION,
+    source_sha: deployedSourceSha(),
+    updated_at: '2026-08-22',
     compatibility: 'additive',
     existing_routes_unchanged: true,
   },
@@ -40,6 +48,12 @@ export const CAPABILITIES = Object.freeze({
       legacy_protocol_versions: LEGACY_MCP_PROTOCOL_VERSIONS,
       tools: ['list_capabilities', 'get_health'],
     },
+    discovery: {
+      openapi: `${SITE_URL}/openapi.json`,
+      ai_catalog: `${SITE_URL}/.well-known/ai-catalog.json`,
+      mcp: `${SITE_URL}/.well-known/mcp.json`,
+      registry_manifest: `${SITE_URL}/server.json`,
+    },
   },
   session_compatibility: {
     mcp: 'Legacy Mcp-Session-Id values are accepted without rotation; the public MCP surface is stateless.',
@@ -59,6 +73,8 @@ export function getHealth() {
     product: CAPABILITIES.product.id,
     api_version: API_VERSION,
     mcp_protocol_version: MCP_PROTOCOL_VERSION,
+    mcp_version: MCP_VERSION,
+    source_sha: deployedSourceSha(),
     session_mode: 'stateless-compatible',
     checked_at: new Date().toISOString(),
   }

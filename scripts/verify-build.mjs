@@ -232,6 +232,45 @@ const llms = await read('llms.txt')
 for (const source of ['https://seiche.info/', 'https://liquilens.in/', 'https://liquilens-undertow.com/']) {
   if (!llms.includes(source)) throw new Error(`llms.txt omits specialist source ${source}`)
 }
+for (const route of ['/api/v1/capabilities', '/openapi.json', '/mcp', '/.well-known/mcp.json', '/.well-known/ai-catalog.json']) {
+  if (!llms.includes(`${SITE_ORIGIN}${route}`)) throw new Error(`llms.txt omits discovery route ${route}`)
+}
+const [serverManifest, publicServerManifest, openapi, mcpDiscovery, aiCatalog] = await Promise.all([
+  readSourceJson('server.json'),
+  read('server.json').then(JSON.parse),
+  read('openapi.json').then(JSON.parse),
+  read('.well-known/mcp.json').then(JSON.parse),
+  read('.well-known/ai-catalog.json').then(JSON.parse),
+])
+if (JSON.stringify(publicServerManifest) !== JSON.stringify(serverManifest)
+  || serverManifest.name !== 'io.github.beepboop2025/myquant-editorial'
+  || serverManifest.version !== '2.0.0'
+  || serverManifest.remotes?.[0]?.url !== `${SITE_ORIGIN}/mcp`) {
+  throw new Error('server.json does not describe the public editorial MCP endpoint')
+}
+if (openapi.openapi !== '3.1.0'
+  || openapi.info?.version !== '1.1.0'
+  || !openapi.paths?.['/api/v1/capabilities']?.get
+  || !openapi.paths?.['/api/v1/health']?.get) {
+  throw new Error('curated OpenAPI document is incomplete')
+}
+if (mcpDiscovery.canonicalCatalog !== `${SITE_ORIGIN}/.well-known/ai-catalog.json`
+  || mcpDiscovery.servers?.length !== 1
+  || mcpDiscovery.servers[0]?.name !== serverManifest.name
+  || mcpDiscovery.servers[0]?.url !== `${SITE_ORIGIN}/mcp`) {
+  throw new Error('well-known MCP discovery is not canonical')
+}
+const mcpEntry = aiCatalog.entries?.find((entry) => entry.type === 'application/json')
+const openapiEntry = aiCatalog.entries?.find((entry) => entry.type === 'application/vnd.oai.openapi+json')
+if (aiCatalog.specVersion !== '1.0'
+  || JSON.stringify(mcpEntry?.data) !== JSON.stringify(serverManifest)
+  || openapiEntry?.url !== `${SITE_ORIGIN}/openapi.json`) {
+  throw new Error('AI catalog is not bound to server.json and OpenAPI')
+}
+if (!homepage.includes('rel="ai-catalog"')
+  || !homepage.includes('href="/.well-known/ai-catalog.json"')) {
+  throw new Error('homepage does not advertise the AI catalog')
+}
 if (publicText.includes('fonts.googleapis.com') || publicText.includes('fonts.gstatic.com')) {
   throw new Error('public HTML contacts a third-party font host')
 }

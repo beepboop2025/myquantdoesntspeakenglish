@@ -1,0 +1,70 @@
+{
+  "specVersion": "1.0",
+  "host": {
+    "displayName": "my quant doesn’t speak english",
+    "documentationUrl": "https://myquantdoesntspeakenglish.com/editorial",
+    "logoUrl": "https://myquantdoesntspeakenglish.com/assets/og-card.svg"
+  },
+  "entries": [
+    {
+      "identifier": "urn:air:myquantdoesntspeakenglish.com:mcp:editorial",
+      "displayName": "MyQuant Editorial MCP Server",
+      "type": "application/json",
+      "data": {
+        "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
+        "name": "io.github.beepboop2025/myquant-editorial",
+        "title": "my quant doesn’t speak english — editorial discovery",
+        "description": "Read-only discovery for a finite market briefing with explicit evidence boundaries.",
+        "version": "2.0.0",
+        "repository": {
+          "url": "https://github.com/beepboop2025/myquantdoesntspeakenglish",
+          "source": "github"
+        },
+        "websiteUrl": "https://myquantdoesntspeakenglish.com",
+        "remotes": [
+          {
+            "type": "streamable-http",
+            "url": "https://myquantdoesntspeakenglish.com/mcp"
+          }
+        ]
+      },
+      "description": "Two anonymous read-only tools for product capability discovery and a non-sensitive compatibility heartbeat.",
+      "tags": ["market editorial", "plain English", "evidence boundaries", "MCP"],
+      "capabilities": ["list_capabilities", "get_health"],
+      "representativeQueries": [
+        "What public MyQuant editorial and evidence surfaces are available?",
+        "Is the MyQuant public API and MCP surface healthy?"
+      ],
+      "version": "2.0.0",
+      "updatedAt": "2026-08-22T12:00:00Z",
+      "metadata": {
+        "authentication": "none",
+        "access": "public-read-only",
+        "productVersion": "0.1.0",
+        "apiVersion": "myquant.editorial/1.1",
+        "publicToolCount": 2
+      }
+    },
+    {
+      "identifier": "urn:air:myquantdoesntspeakenglish.com:openapi:editorial",
+      "displayName": "MyQuant Editorial Public API",
+      "type": "application/vnd.oai.openapi+json",
+      "url": "https://myquantdoesntspeakenglish.com/openapi.json",
+      "description": "Curated OpenAPI contract for public product capabilities and a non-sensitive health receipt.",
+      "tags": ["OpenAPI", "market editorial", "product discovery"],
+      "capabilities": ["product capabilities", "health and source receipt"],
+      "representativeQueries": [
+        "List the public MyQuant editorial product surfaces.",
+        "Check the deployed MyQuant source receipt."
+      ],
+      "version": "1.1.0",
+      "updatedAt": "2026-08-22T12:00:00Z",
+      "metadata": {
+        "authentication": "none",
+        "access": "public-read-only",
+        "productVersion": "0.1.0",
+        "apiVersion": "myquant.editorial/1.1"
+      }
+    }
+  ]
+}

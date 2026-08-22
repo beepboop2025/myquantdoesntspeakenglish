@@ -1,0 +1,9 @@
+{
+  "canonicalCatalog": "https://myquantdoesntspeakenglish.com/.well-known/ai-catalog.json",
+  "servers": [
+    {
+      "name": "io.github.beepboop2025/myquant-editorial",
+      "url": "https://myquantdoesntspeakenglish.com/mcp"
+    }
+  ]
+}

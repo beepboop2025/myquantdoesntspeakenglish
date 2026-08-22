@@ -1,11 +1,11 @@
 import { createMcpServer } from './lib/mcp-compat.mjs'
-import { SITE_URL, TOOLS } from './lib/product-surface.mjs'
+import { MCP_VERSION, SITE_URL, TOOLS } from './lib/product-surface.mjs'
 
 export const server = createMcpServer({
   serverInfo: {
     name: 'myquant-editorial',
     title: 'my quant doesn’t speak english',
-    version: '2.0.0',
+    version: MCP_VERSION,
     description: 'Read-only discovery for the finite, evidence-bounded market briefing.',
     websiteUrl: SITE_URL,
   },

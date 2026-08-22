@@ -3,6 +3,7 @@ import test from 'node:test'
 
 import handler, { dispatch } from '../api/mcp.mjs'
 import apiHandler from '../api/v1.mjs'
+import { CAPABILITIES, getHealth } from '../api/lib/product-surface.mjs'
 
 function responseRecorder() {
   return {
@@ -161,4 +162,19 @@ test('REST discovery supports GET, HEAD, CORS preflight, and explicit errors', a
   await apiHandler({ method: 'POST', headers: {} }, write)
   assert.equal(write.statusCode, 405)
   assert.equal(write.headers.Allow, 'GET, HEAD, OPTIONS')
+})
+
+test('product, REST, MCP, and deployed-source versions remain explicit', () => {
+  assert.equal(CAPABILITIES.product.version, '0.1.0')
+  assert.equal(CAPABILITIES.release.api_version, 'myquant.editorial/1.1')
+  assert.equal(CAPABILITIES.release.mcp_version, '2.0.0')
+  assert.equal(CAPABILITIES.release.source_sha, null)
+  assert.deepEqual(CAPABILITIES.surfaces.discovery, {
+    openapi: 'https://myquantdoesntspeakenglish.com/openapi.json',
+    ai_catalog: 'https://myquantdoesntspeakenglish.com/.well-known/ai-catalog.json',
+    mcp: 'https://myquantdoesntspeakenglish.com/.well-known/mcp.json',
+    registry_manifest: 'https://myquantdoesntspeakenglish.com/server.json',
+  })
+  assert.equal(getHealth().mcp_version, '2.0.0')
+  assert.equal(getHealth().source_sha, null)
 })
