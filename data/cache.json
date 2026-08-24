@@ -1,6 +1,6 @@
 {
   "schema": "mqdnse.feed-cache.v2",
-  "syncedAt": "2026-08-24T09:07:10.739Z",
+  "syncedAt": "2026-08-24T15:03:07.057Z",
   "channels": {
     "liquilens-desk": [
       {
@@ -27,17 +27,17 @@
         "fingerprint": "e72e80a4ee6fd11fb940da5d11e4789e4f765f0db9812b064a68151597f2769e"
       },
       {
-        "id": "liquilens-india-breadth-2026-08-23",
+        "id": "liquilens-india-breadth-2026-08-24",
         "product": "liquilens",
         "title": "4 of 19 covered Indian institutions sit above green",
         "dek": "This is the breadth of the vetted live board, not the breadth of the entire Indian financial system; stale and uncovered names remain outside the denominator.",
-        "url": "https://liquilens.in/desk/#liquilens-india-breadth-2026-08-23",
+        "url": "https://liquilens.in/desk/#liquilens-india-breadth-2026-08-24",
         "beat": "institution-risk",
         "editorialClass": "desk_brief",
         "publicationStatus": "PUBLISHED",
-        "published": "2026-08-23T03:17:06Z",
-        "eventTime": "2026-08-23T00:00:00Z",
-        "knowledgeTime": "2026-08-23T03:17:06Z",
+        "published": "2026-08-24T15:03:04Z",
+        "eventTime": "2026-08-24T00:00:00Z",
+        "knowledgeTime": "2026-08-24T15:03:04Z",
         "evidenceStatus": "DERIVED",
         "contribution": "cross_sectional_review_breadth",
         "limitation": "The denominator is the fresh-vetted board, not all regulated institutions.",
@@ -47,7 +47,7 @@
         "verdicts": null,
         "outcomeWindow": null,
         "fraudMasked": false,
-        "fingerprint": "926772e0a597bea01423d132433836daa9f78cf4516ac8ed910c94124b694e00"
+        "fingerprint": "628df46667e95bdd6dfb799f9348ca77d4278ab907743c64c4493ce2944c8648"
       },
       {
         "id": "liquilens-us-ndfi-34953-2026-03-31",
@@ -559,6 +559,52 @@
       }
     ],
     "seiche-dispatches": [
+      {
+        "id": "seiche:2026-08-24-daily",
+        "product": "seiche",
+        "title": "No print cleared the 2.5 sigma bar: the freshest standing flag is 4 days old, strain at 45",
+        "dek": "The board reads 45 out of 100, STRAIN; the dated reserve path contributes 11.0 points; the pooled five-business-day event read is 5.8%; plumbing leads market pricing by +23 percentile points. The index is +0.0 against the last published letter.",
+        "url": "https://seiche.info/dispatches/2026-08-24-daily",
+        "beat": "dollar-funding-plumbing",
+        "editorialClass": "desk_brief",
+        "publicationStatus": "PUBLISHED",
+        "published": "2026-08-24T11:14:05Z",
+        "eventTime": "2026-08-24T00:00:00Z",
+        "knowledgeTime": "2026-08-24T11:14:05Z",
+        "evidenceStatus": "DERIVED",
+        "contribution": "dated_forward_test",
+        "limitation": "The composite is a Seiche derivation, not an observed market price.",
+        "newsworthiness": 25,
+        "articleType": "desk_brief",
+        "pointInTimeStatus": "",
+        "verdicts": null,
+        "outcomeWindow": null,
+        "fraudMasked": false,
+        "fingerprint": "9ba27996cf0fdaa57724d6ae1d1e0ad0a685b92d83a09645fb8fed65b88208cf"
+      },
+      {
+        "id": "seiche:2026-08-24-week-ahead",
+        "product": "seiche",
+        "title": "The Week Ahead 4: 7 dated events and 5 calls on the record",
+        "dek": "Issue 4 of the Monday letter. The composite reads 45, regime STRAIN. 5 pre-registered calls for the week and 7 dated items on the calendar. Last week's calls graded 4 of 6, misses first.",
+        "url": "https://seiche.info/dispatches/2026-08-24-week-ahead",
+        "beat": "evidence-wire",
+        "editorialClass": "legacy_dispatch",
+        "publicationStatus": "PUBLISHED",
+        "published": "2026-08-24T00:00:00Z",
+        "eventTime": "2026-08-24T00:00:00Z",
+        "knowledgeTime": "2026-08-24T00:00:00Z",
+        "evidenceStatus": "DECLARED",
+        "contribution": "evidence-backed desk finding",
+        "limitation": "Published before the structured analytical-story contract.",
+        "newsworthiness": null,
+        "articleType": "legacy_dispatch",
+        "pointInTimeStatus": "",
+        "verdicts": null,
+        "outcomeWindow": null,
+        "fraudMasked": false,
+        "fingerprint": "bb5093ac3004c28366f4cc893d7e908eb2c4e63f0138af9061d33a2d839dbff4"
+      },
       {
         "id": "seiche:2026-08-23-daily",
         "product": "seiche",
@@ -2364,7 +2410,7 @@
     },
     "seiche-dispatches": {
       "state": "live",
-      "detail": "47 records"
+      "detail": "49 records"
     },
     "seiche-investigations": {
       "state": "live",
@@ -2382,17 +2428,17 @@
   "feeds": {
     "liquilens": [
       {
-        "id": "liquilens-india-breadth-2026-08-23",
+        "id": "liquilens-india-breadth-2026-08-24",
         "product": "liquilens",
         "title": "4 of 19 covered Indian institutions sit above green",
         "dek": "This is the breadth of the vetted live board, not the breadth of the entire Indian financial system; stale and uncovered names remain outside the denominator.",
-        "url": "https://liquilens.in/desk/#liquilens-india-breadth-2026-08-23",
+        "url": "https://liquilens.in/desk/#liquilens-india-breadth-2026-08-24",
         "beat": "institution-risk",
         "editorialClass": "desk_brief",
         "publicationStatus": "PUBLISHED",
-        "published": "2026-08-23T03:17:06Z",
-        "eventTime": "2026-08-23T00:00:00Z",
-        "knowledgeTime": "2026-08-23T03:17:06Z",
+        "published": "2026-08-24T15:03:04Z",
+        "eventTime": "2026-08-24T00:00:00Z",
+        "knowledgeTime": "2026-08-24T15:03:04Z",
         "evidenceStatus": "DERIVED",
         "contribution": "cross_sectional_review_breadth",
         "limitation": "The denominator is the fresh-vetted board, not all regulated institutions.",
@@ -2402,7 +2448,7 @@
         "verdicts": null,
         "outcomeWindow": null,
         "fraudMasked": false,
-        "fingerprint": "926772e0a597bea01423d132433836daa9f78cf4516ac8ed910c94124b694e00"
+        "fingerprint": "628df46667e95bdd6dfb799f9348ca77d4278ab907743c64c4493ce2944c8648"
       },
       {
         "id": "liquilens-india-utkarsh-sfb-2025-2025-03-31",
@@ -2933,6 +2979,52 @@
       }
     ],
     "seiche": [
+      {
+        "id": "seiche:2026-08-24-daily",
+        "product": "seiche",
+        "title": "No print cleared the 2.5 sigma bar: the freshest standing flag is 4 days old, strain at 45",
+        "dek": "The board reads 45 out of 100, STRAIN; the dated reserve path contributes 11.0 points; the pooled five-business-day event read is 5.8%; plumbing leads market pricing by +23 percentile points. The index is +0.0 against the last published letter.",
+        "url": "https://seiche.info/dispatches/2026-08-24-daily",
+        "beat": "dollar-funding-plumbing",
+        "editorialClass": "desk_brief",
+        "publicationStatus": "PUBLISHED",
+        "published": "2026-08-24T11:14:05Z",
+        "eventTime": "2026-08-24T00:00:00Z",
+        "knowledgeTime": "2026-08-24T11:14:05Z",
+        "evidenceStatus": "DERIVED",
+        "contribution": "dated_forward_test",
+        "limitation": "The composite is a Seiche derivation, not an observed market price.",
+        "newsworthiness": 25,
+        "articleType": "desk_brief",
+        "pointInTimeStatus": "",
+        "verdicts": null,
+        "outcomeWindow": null,
+        "fraudMasked": false,
+        "fingerprint": "9ba27996cf0fdaa57724d6ae1d1e0ad0a685b92d83a09645fb8fed65b88208cf"
+      },
+      {
+        "id": "seiche:2026-08-24-week-ahead",
+        "product": "seiche",
+        "title": "The Week Ahead 4: 7 dated events and 5 calls on the record",
+        "dek": "Issue 4 of the Monday letter. The composite reads 45, regime STRAIN. 5 pre-registered calls for the week and 7 dated items on the calendar. Last week's calls graded 4 of 6, misses first.",
+        "url": "https://seiche.info/dispatches/2026-08-24-week-ahead",
+        "beat": "evidence-wire",
+        "editorialClass": "legacy_dispatch",
+        "publicationStatus": "PUBLISHED",
+        "published": "2026-08-24T00:00:00Z",
+        "eventTime": "2026-08-24T00:00:00Z",
+        "knowledgeTime": "2026-08-24T00:00:00Z",
+        "evidenceStatus": "DECLARED",
+        "contribution": "evidence-backed desk finding",
+        "limitation": "Published before the structured analytical-story contract.",
+        "newsworthiness": null,
+        "articleType": "legacy_dispatch",
+        "pointInTimeStatus": "",
+        "verdicts": null,
+        "outcomeWindow": null,
+        "fraudMasked": false,
+        "fingerprint": "bb5093ac3004c28366f4cc893d7e908eb2c4e63f0138af9061d33a2d839dbff4"
+      },
       {
         "id": "seiche:2026-08-23-daily",
         "product": "seiche",
@@ -4726,7 +4818,7 @@
     },
     "seiche": {
       "state": "live",
-      "detail": "48 records · all 2 channels connected"
+      "detail": "50 records · all 2 channels connected"
     },
     "liquilens-undertow": {
       "state": "cached",
