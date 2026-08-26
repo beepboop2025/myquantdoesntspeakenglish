@@ -1,6 +1,6 @@
 {
   "schema": "mqdnse.feed-cache.v2",
-  "syncedAt": "2026-08-26T03:27:11.436Z",
+  "syncedAt": "2026-08-26T09:04:47.277Z",
   "channels": {
     "liquilens-desk": [
       {
@@ -27,17 +27,17 @@
         "fingerprint": "e72e80a4ee6fd11fb940da5d11e4789e4f765f0db9812b064a68151597f2769e"
       },
       {
-        "id": "liquilens-india-breadth-2026-08-25",
+        "id": "liquilens-india-breadth-2026-08-26",
         "product": "liquilens",
         "title": "4 of 19 covered Indian institutions sit above green",
         "dek": "This is the breadth of the vetted live board, not the breadth of the entire Indian financial system; stale and uncovered names remain outside the denominator.",
-        "url": "https://liquilens.in/desk/#liquilens-india-breadth-2026-08-25",
+        "url": "https://liquilens.in/desk/#liquilens-india-breadth-2026-08-26",
         "beat": "institution-risk",
         "editorialClass": "desk_brief",
         "publicationStatus": "PUBLISHED",
-        "published": "2026-08-26T03:27:10Z",
-        "eventTime": "2026-08-25T00:00:00Z",
-        "knowledgeTime": "2026-08-26T03:27:10Z",
+        "published": "2026-08-26T09:04:46Z",
+        "eventTime": "2026-08-26T00:00:00Z",
+        "knowledgeTime": "2026-08-26T09:04:46Z",
         "evidenceStatus": "DERIVED",
         "contribution": "cross_sectional_review_breadth",
         "limitation": "The denominator is the fresh-vetted board, not all regulated institutions.",
@@ -47,7 +47,7 @@
         "verdicts": null,
         "outcomeWindow": null,
         "fraudMasked": false,
-        "fingerprint": "43e61824e40f09a0c51be37a27c7e8c13da3ba1fe6d5fa54df850e05e48c0db5"
+        "fingerprint": "a0a04eeb89abafe402ff15047d44970053389ec55dfca23bd875e3ca5d2f9c56"
       },
       {
         "id": "liquilens-us-ndfi-34953-2026-03-31",
@@ -1748,6 +1748,29 @@
     ],
     "undertow-dispatches": [
       {
+        "id": "liquilens-undertow:2026-08-26",
+        "product": "liquilens-undertow",
+        "title": "No segment changed tier; funding STRAIN persists across a quiet board.",
+        "dek": "1 of 9 segments score today; UST, HY, EQUITY, ETF, FX, CN, CRYPTO, BSTOCK still accrue history. The funding overlay reads STRAIN. Qualifying measures disagree inside at least one scored cell; every such cell's span is Agent/Desk tier today, because the span would hand back the percentile of a row the free board withholds.",
+        "url": "https://liquilens-undertow.com/dispatch/2026-08-26.json",
+        "beat": "cross-market-liquidity",
+        "editorialClass": "watch_note",
+        "publicationStatus": "PUBLISHED",
+        "published": "2026-08-26T03:45:27+00:00",
+        "eventTime": "2026-08-26T00:00:00Z",
+        "knowledgeTime": "2026-08-26T03:45:27+00:00",
+        "evidenceStatus": "DERIVED",
+        "contribution": "bounded_no_change_record",
+        "limitation": "PARTIAL means still accruing: a scored tier needs at least 2 measures with a stress percentile at 60+ observations each; an accruing or absent measure is disclosed, never rendered as calm. Research and market data, not investment advice.",
+        "newsworthiness": 25,
+        "articleType": "watch_note",
+        "pointInTimeStatus": "",
+        "verdicts": null,
+        "outcomeWindow": null,
+        "fraudMasked": false,
+        "fingerprint": "9929d4b220ef469dd61b988507eb4b538780f262908ccf2e3d35ee932be5adf9"
+      },
+      {
         "id": "liquilens-undertow:2026-08-25",
         "product": "liquilens-undertow",
         "title": "No segment changed tier; funding STRAIN persists across a quiet board.",
@@ -2464,7 +2487,7 @@
     },
     "undertow-dispatches": {
       "state": "live",
-      "detail": "29 records"
+      "detail": "30 records"
     },
     "undertow-investigations": {
       "state": "cached",
@@ -2474,17 +2497,17 @@
   "feeds": {
     "liquilens": [
       {
-        "id": "liquilens-india-breadth-2026-08-25",
+        "id": "liquilens-india-breadth-2026-08-26",
         "product": "liquilens",
         "title": "4 of 19 covered Indian institutions sit above green",
         "dek": "This is the breadth of the vetted live board, not the breadth of the entire Indian financial system; stale and uncovered names remain outside the denominator.",
-        "url": "https://liquilens.in/desk/#liquilens-india-breadth-2026-08-25",
+        "url": "https://liquilens.in/desk/#liquilens-india-breadth-2026-08-26",
         "beat": "institution-risk",
         "editorialClass": "desk_brief",
         "publicationStatus": "PUBLISHED",
-        "published": "2026-08-26T03:27:10Z",
-        "eventTime": "2026-08-25T00:00:00Z",
-        "knowledgeTime": "2026-08-26T03:27:10Z",
+        "published": "2026-08-26T09:04:46Z",
+        "eventTime": "2026-08-26T00:00:00Z",
+        "knowledgeTime": "2026-08-26T09:04:46Z",
         "evidenceStatus": "DERIVED",
         "contribution": "cross_sectional_review_breadth",
         "limitation": "The denominator is the fresh-vetted board, not all regulated institutions.",
@@ -2494,7 +2517,7 @@
         "verdicts": null,
         "outcomeWindow": null,
         "fraudMasked": false,
-        "fingerprint": "43e61824e40f09a0c51be37a27c7e8c13da3ba1fe6d5fa54df850e05e48c0db5"
+        "fingerprint": "a0a04eeb89abafe402ff15047d44970053389ec55dfca23bd875e3ca5d2f9c56"
       },
       {
         "id": "liquilens-india-utkarsh-sfb-2025-2025-03-31",
@@ -4212,6 +4235,29 @@
     ],
     "liquilens-undertow": [
       {
+        "id": "liquilens-undertow:2026-08-26",
+        "product": "liquilens-undertow",
+        "title": "No segment changed tier; funding STRAIN persists across a quiet board.",
+        "dek": "1 of 9 segments score today; UST, HY, EQUITY, ETF, FX, CN, CRYPTO, BSTOCK still accrue history. The funding overlay reads STRAIN. Qualifying measures disagree inside at least one scored cell; every such cell's span is Agent/Desk tier today, because the span would hand back the percentile of a row the free board withholds.",
+        "url": "https://liquilens-undertow.com/dispatch/2026-08-26.json",
+        "beat": "cross-market-liquidity",
+        "editorialClass": "watch_note",
+        "publicationStatus": "PUBLISHED",
+        "published": "2026-08-26T03:45:27+00:00",
+        "eventTime": "2026-08-26T00:00:00Z",
+        "knowledgeTime": "2026-08-26T03:45:27+00:00",
+        "evidenceStatus": "DERIVED",
+        "contribution": "bounded_no_change_record",
+        "limitation": "PARTIAL means still accruing: a scored tier needs at least 2 measures with a stress percentile at 60+ observations each; an accruing or absent measure is disclosed, never rendered as calm. Research and market data, not investment advice.",
+        "newsworthiness": 25,
+        "articleType": "watch_note",
+        "pointInTimeStatus": "",
+        "verdicts": null,
+        "outcomeWindow": null,
+        "fraudMasked": false,
+        "fingerprint": "9929d4b220ef469dd61b988507eb4b538780f262908ccf2e3d35ee932be5adf9"
+      },
+      {
         "id": "liquilens-undertow:2026-08-25",
         "product": "liquilens-undertow",
         "title": "No segment changed tier; funding STRAIN persists across a quiet board.",
@@ -4914,7 +4960,7 @@
     },
     "liquilens-undertow": {
       "state": "cached",
-      "detail": "30 records · degraded channels: undertow-investigations"
+      "detail": "31 records · degraded channels: undertow-investigations"
     }
   }
 }
