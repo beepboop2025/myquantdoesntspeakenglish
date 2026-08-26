@@ -21,6 +21,7 @@ test('Registry, AI catalog, and well-known discovery share one MCP identity', as
   )
   assert.equal(server.name, 'io.github.beepboop2025/myquant-editorial')
   assert.equal(server.version, '2.1.0')
+  assert.ok(server.description.length <= 100, 'Registry description must fit the 100-character limit')
   assert.deepEqual(server.remotes, [{
     type: 'streamable-http',
     url: 'https://myquantdoesntspeakenglish.com/mcp',
