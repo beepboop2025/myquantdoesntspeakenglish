@@ -9,6 +9,20 @@ MyQuant reading page, while preserving the specialist's canonical URL, exact
 claim, evidence clocks, fingerprint, and limitation. The mobile app feed is
 independently `SUSPENDED` and contains zero stories.
 
+Every specialist page must also pass the analysis-quality gate. It answers what
+the source says, what changed (or why a comparison is unavailable), why the
+mechanism matters, what to inspect next, and where the evidence stops. The JSON
+Feed carries the same change/next-check fields and its `PASSED` receipt. A build
+fails instead of publishing thin labels, missing source identity, missing clocks,
+or known invalid comparison grammar.
+
+`data/fleet-registry.json` maps the complete registered family at an immutable
+LiquiLens `family.toml` revision: seven core repositories, six research modules,
+and ten adjacent surfaces. Coverage does not imply ingestion. Only LiquiLens,
+Seiche, and Undertow market-liquidity currently publish compatible direct
+readings; upstream, research, private, paused, delivery, and separate-domain
+projects remain visible at `/coverage` with their exact reason.
+
 The public site has two explicit lanes:
 
 - `Interpreted`: plain-English readings of Seiche, LiquiLens, and Undertow work;
@@ -24,7 +38,8 @@ contribution, limitations, and publication status.
 
 ```bash
 npm test
-npm run sync
+MYQUANT_USE_REVIEWED_CACHE=1 npm run build
+npm run verify
 npm run dev
 ```
 
@@ -101,4 +116,5 @@ Website archive mode is an operator distribution instruction, not a claim that
 every source record received legal or regulatory clearance. Corrections,
 retractions, canonical links, content boundaries, and the emergency stop remain
 active. The homepage uses a first-party silent cinema cut derived from the
-approved app launch creative and documented in `assets/media/`.
+approved app launch creative and documented in `assets/media/`. Third-party
+field recordings are explicitly excluded from the published build.

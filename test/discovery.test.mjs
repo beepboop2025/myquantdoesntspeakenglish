@@ -2,10 +2,29 @@ import assert from 'node:assert/strict'
 import { readFile } from 'node:fs/promises'
 import test from 'node:test'
 
+import {
+  REGISTERED_FLEET_IDS,
+  fleetRegistryIssues,
+} from '../scripts/lib.mjs'
+
 const readJson = (path) => readFile(
   new URL(`../${path}`, import.meta.url),
   'utf8',
 ).then(JSON.parse)
+
+test('fleet coverage is complete, immutable-source-bound, and honest about direct readings', async () => {
+  const registry = await readJson('data/fleet-registry.json')
+  const direct = registry.projects.filter((project) => project.analysis.mode === 'DIRECT_READING_SOURCE')
+
+  assert.deepEqual(fleetRegistryIssues(registry), [])
+  assert.deepEqual(registry.projects.map(({ id }) => id).sort(), [...REGISTERED_FLEET_IDS].sort())
+  assert.deepEqual(direct.map(({ analysis }) => analysis.product).sort(), [
+    'liquilens', 'liquilens-undertow', 'seiche',
+  ])
+  assert.equal(registry.projects.filter((project) => project.group === 'core').length, 7)
+  assert.equal(registry.projects.filter((project) => project.group === 'module').length, 6)
+  assert.equal(registry.projects.filter((project) => project.group === 'adjacent').length, 10)
+})
 
 test('Registry, AI catalog, and well-known discovery share one MCP identity', async () => {
   const [server, catalog, discovery] = await Promise.all([

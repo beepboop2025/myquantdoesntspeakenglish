@@ -14,6 +14,8 @@ import {
   mergeChannelFeeds,
   normalizeHouseArticle,
   normalizePayload,
+  fleetRegistryIssues,
+  interpretationQualityIssues,
   preserveStableClocks,
   productLabel,
   publicStoryUrl,
@@ -29,6 +31,7 @@ const publicationHoldsPath = join(root, 'data', 'publication-holds.json')
 const publicationApprovalsPath = join(root, 'data', 'publication-approvals.json')
 const contentStatusPath = join(root, 'data', 'content-status.json')
 const releasePolicyPath = join(root, 'data', 'release-policy.json')
+const fleetRegistryPath = join(root, 'data', 'fleet-registry.json')
 const BRAND_NAME = 'my quant doesn’t speak english'
 const ORGANIZATION_ID = `${SITE_ORIGIN}/#organization`
 const WEBSITE_ID = `${SITE_ORIGIN}/#website`
@@ -48,6 +51,13 @@ const shortDate = (value) => new Intl.DateTimeFormat('en-GB', {
 
 async function readJson(path) {
   return JSON.parse(await readFile(path, 'utf8'))
+}
+
+async function loadFleetRegistry() {
+  const registry = await readJson(fleetRegistryPath)
+  const issues = fleetRegistryIssues(registry)
+  if (issues.length) throw new Error(`fleet registry failed closed: ${issues.join('; ')}`)
+  return registry
 }
 
 async function fetchJson(url) {
@@ -173,6 +183,7 @@ function masthead() {
     <nav aria-label="Primary">
       <a href="/#signals">How it works</a>
       <a href="/#wire">All articles</a>
+      <a href="/coverage">Coverage</a>
       <a href="/follow">Follow</a>
       <a href="/articles/why-the-quant-needs-subtitles">House rules</a>
       <a class="nav-ad" href="/advertise">Advertise, tastefully</a>
@@ -291,7 +302,7 @@ function signalMap() {
 
 function signalCockpit(pulse) {
   return `<section class="signal-cockpit" id="signals" aria-labelledby="signals-title">
-    <header class="cockpit-head"><div><p class="eyebrow">THE EDITORIAL NETWORK, MAPPED</p><h2 id="signals-title">One chain. Three specialists.<br><em>A translator at the end.</em></h2></div><p>Every mark below comes from a source-published article. MyQuant adds a reading layer while source labels and evidence boundaries remain attached.</p></header>
+    <header class="cockpit-head"><div><p class="eyebrow">THE DIRECT READING NETWORK, MAPPED</p><h2 id="signals-title">Three compatible desks.<br><em>A translator at the end.</em></h2></div><p>Every mark below comes from a source-published article. The wider fleet remains visible in the coverage ledger without being blended into these readings.</p></header>
     <div class="cockpit-grid">
       <article class="flow-panel"><header><span>A / SIGNAL ROUTE</span><p>System pressure becomes institution context, market-exit context, then an explanation you can inspect.</p></header>${signalMap()}</article>
       <article class="cadence-panel"><header><div><span>B / ARTICLE CADENCE</span><p>Published output, stacked by the desk that produced it.</p></div><div class="range-buttons" role="group" aria-label="Article cadence range"><button type="button" data-window="7">7D</button><button type="button" data-window="14" class="active">14D</button><button type="button" data-window="28">28D</button></div></header>${cadenceSvg(pulse)}</article>
@@ -301,31 +312,123 @@ function signalCockpit(pulse) {
   </section>`
 }
 
-function filmReel({ id, src, poster, label, runtime, copy, caption, transcript }) {
-  return `<figure class="film-reel" data-film-reel data-state="ready">
-    <div class="film-chrome" aria-hidden="true">
-      <span><i></i>${escapeHtml(label)}</span>
-      <span>${escapeHtml(runtime)} / SILENT</span>
-    </div>
-    <div class="film-frame">
-      <video id="${escapeHtml(id)}" muted loop playsinline preload="metadata" poster="${escapeHtml(poster)}" aria-describedby="${escapeHtml(id)}-transcript">
-        <source src="${escapeHtml(src)}" type="video/mp4">
-        Your browser cannot play this silent, subtitled field tape.
-      </video>
-      <span class="film-grain" aria-hidden="true"></span>
-      <span class="film-bug" aria-hidden="true">MQDSE / ${escapeHtml(copy)}</span>
-      <button class="film-toggle" type="button" data-film-toggle aria-controls="${escapeHtml(id)}" aria-label="Play ${escapeHtml(label.toLowerCase())}">
-        <span data-film-icon aria-hidden="true">▶</span><span data-film-label>Play reel</span>
-      </button>
-    </div>
-    <figcaption><span>${escapeHtml(copy)}</span><p>${escapeHtml(caption)}</p></figcaption>
-    <p class="sr-only" id="${escapeHtml(id)}-transcript">${escapeHtml(transcript)}</p>
-  </figure>`
+const ANALYSIS_MODE_LABELS = Object.freeze({
+  DIRECT_READING_SOURCE: 'Direct readings',
+  UPSTREAM_EVIDENCE: 'Upstream evidence',
+  UPSTREAM_VIA_PRODUCT: 'Published through a product',
+  RESEARCH_ONLY: 'Research only',
+  DELIVERY_SURFACE: 'Delivery surface',
+  EDITORIAL_PUBLISHER: 'Editorial publisher',
+  PRIVATE_AUTHORITY: 'Private review authority',
+  PAUSED_CLIENT: 'Paused client',
+  ADJACENT_EVIDENCE: 'Separate evidence domain',
+})
+
+function projectCountByGroup(registry) {
+  return Object.fromEntries(['core', 'module', 'adjacent'].map((group) => [
+    group,
+    registry.projects.filter((project) => project.group === group).length,
+  ]))
 }
 
-function renderHome(stories, cache, consumerCopy) {
+function fleetProjectCard(project, storyCounts = {}, cache = {}) {
+  const analysis = project.analysis
+  const directCount = analysis.product ? storyCounts[analysis.product] || 0 : null
+  const sourceState = analysis.product ? cache.statuses?.[analysis.product]?.state || 'gap' : null
+  const title = project.url
+    ? `<a href="${escapeHtml(project.url)}">${escapeHtml(project.label)} ↗</a>`
+    : escapeHtml(project.label)
+  const direct = directCount === null
+    ? ''
+    : `<p class="coverage-count"><strong>${directCount}</strong> current reading${directCount === 1 ? '' : 's'} · ${escapeHtml(sourceState)}</p>`
+  return `<article class="coverage-card" data-mode="${escapeHtml(analysis.mode)}">
+    <div class="coverage-card__meta"><span>${escapeHtml(project.group || 'network')}</span><b>${escapeHtml(ANALYSIS_MODE_LABELS[analysis.mode] || analysis.mode)}</b></div>
+    <h3>${title}</h3>
+    <p>${escapeHtml(project.role)}</p>
+    ${direct}
+    <aside>${escapeHtml(analysis.reason)}</aside>
+  </article>`
+}
+
+function renderFleetSummary(registry, storyCounts, cache) {
+  const groups = projectCountByGroup(registry)
+  const direct = registry.projects.filter((project) => project.analysis.mode === 'DIRECT_READING_SOURCE')
+  const directReadings = direct.reduce((total, project) => total + (storyCounts[project.analysis.product] || 0), 0)
+  return `<section class="fleet-summary" aria-labelledby="fleet-summary-title">
+    <div>
+      <p class="eyebrow">WHOLE FLEET / NO PHANTOM COVERAGE</p>
+      <h2 id="fleet-summary-title">Every registered project accounted for.<br><em>Only compatible readings analyzed.</em></h2>
+      <p>${registry.projects.length} registered family projects are mapped: ${groups.core} core repositories, ${groups.module} research modules, and ${groups.adjacent} adjacent surfaces. ${direct.length} desks currently publish the ${directReadings} specialist readings analyzed here.</p>
+    </div>
+    <dl>
+      <div><dt>Direct</dt><dd>${direct.length} desks</dd></div>
+      <div><dt>Readings</dt><dd>${directReadings}</dd></div>
+      <div><dt>Mapped</dt><dd>${registry.projects.length}</dd></div>
+      <div><dt>Silent omissions</dt><dd>0</dd></div>
+    </dl>
+    <a href="/coverage">Inspect the complete coverage ledger →</a>
+  </section>`
+}
+
+function renderAnalysisStandard(stories, consumerCopy) {
+  const interpretations = stories
+    .filter((story) => story.product !== 'myquant')
+    .map((story) => buildInterpretation(story, consumerCopy?.[story.id]))
+  const passed = interpretations.filter((interpretation) => interpretation?.analysis.qualityGate === 'PASSED').length
+  const reviewed = interpretations.filter((interpretation) => interpretation?.copyState === 'REVIEWED').length
+  return `<section class="analysis-standard" aria-labelledby="analysis-standard-title">
+    <header>
+      <p class="eyebrow">ANALYSIS QUALITY / FAIL-CLOSED</p>
+      <h2 id="analysis-standard-title">A reading needs more than<br><em>a rewritten headline.</em></h2>
+      <p>${passed} of ${interpretations.length} specialist readings pass the structural analysis gate. ${reviewed} use revision-bound reviewed copy; the rest are labelled deterministic and source-grounded.</p>
+    </header>
+    <ol>
+      <li><span>01</span><b>What the source says</b><p>Keep the canonical claim and URL attached.</p></li>
+      <li><span>02</span><b>What changed</b><p>Name the comparison—or say there is none.</p></li>
+      <li><span>03</span><b>Why it matters</b><p>Explain the mechanism, not the label.</p></li>
+      <li><span>04</span><b>What to check next</b><p>Make the next revision falsifiable.</p></li>
+      <li><span>05</span><b>Where it stops</b><p>Print the clock, evidence state, and limit.</p></li>
+    </ol>
+  </section>`
+}
+
+function renderCoverage(registry, cache, stories) {
+  const counts = Object.fromEntries(['liquilens', 'seiche', 'liquilens-undertow', 'myquant']
+    .map((product) => [product, stories.filter((story) => story.product === product).length]))
+  const groups = projectCountByGroup(registry)
+  const familyCards = ['core', 'module', 'adjacent'].map((group) => `
+    <section class="coverage-group" aria-labelledby="coverage-${group}">
+      <header><p class="eyebrow">${escapeHtml(group.toUpperCase())} / ${groups[group]} PROJECTS</p><h2 id="coverage-${group}">${group === 'core' ? 'Product and evidence owners' : group === 'module' ? 'Declared research modules' : 'Clients, listings, sites, and authorities'}</h2></header>
+      <div>${registry.projects.filter((project) => project.group === group).map((project) => fleetProjectCard(project, counts, cache)).join('')}</div>
+    </section>`).join('')
+  const networkCards = registry.networkProjects.map((project) => fleetProjectCard({ ...project, group: 'network' }, counts, cache)).join('')
+
+  return `<!doctype html><html lang="en"><head>${head({
+    title: `Coverage ledger — ${BRAND_NAME}`,
+    description: 'Exact fleet coverage, analysis eligibility, and current direct-reading status for the MyQuant editorial network.',
+    canonical: `${SITE_ORIGIN}/coverage`,
+  })}</head><body>
+    <a class="skip" href="#coverage-ledger">Skip to coverage ledger</a>${masthead()}
+    <main id="coverage-ledger" class="coverage-page">
+      <header class="coverage-hero">
+        <div><p class="eyebrow">COVERAGE LEDGER / REVIEWED ${escapeHtml(registry.reviewedAt.slice(0, 10))}</p><h1>Everything mapped.<br><em>Nothing blended by accident.</em></h1></div>
+        <div><p>${escapeHtml(registry.scope)}</p><p>Coverage is not the same as analysis eligibility. Direct sources publish compatible public readings; upstream, research, private, paused, and delivery projects remain visible without becoming invented articles.</p><a href="${escapeHtml(registry.source.url)}">Open the exact family manifest ↗</a></div>
+      </header>
+      <section class="coverage-key" aria-label="Coverage definitions">
+        ${Object.entries(ANALYSIS_MODE_LABELS).map(([mode, label]) => `<div data-mode="${escapeHtml(mode)}"><b>${escapeHtml(label)}</b><span>${escapeHtml(mode.replaceAll('_', ' ').toLowerCase())}</span></div>`).join('')}
+      </section>
+      ${familyCards}
+      <section class="coverage-group" aria-labelledby="coverage-network"><header><p class="eyebrow">EVIDENCE NETWORK / ${registry.networkProjects.length} ROUTE</p><h2 id="coverage-network">Separate public-interest evidence</h2></header><div>${networkCards}</div></section>
+    </main>
+    <footer><p>General reporting and evidence routing—not personalised investment advice. A mapped project is not automatically an analysis source.</p><p><a href="/">Reading room</a> · <a href="/editorial">Editorial standards</a> · <a href="/corrections">Corrections</a></p></footer>
+  </body></html>`
+}
+
+function renderHome(stories, cache, consumerCopy, registry) {
   const lead = chooseLead(stories)
-  const leadTranslation = consumerCopy?.[lead?.id]?.inEnglish || lead?.dek
+  const leadTranslation = lead?.product === 'myquant'
+    ? lead.dek
+    : buildInterpretation(lead, consumerCopy?.[lead?.id])?.inEnglish || lead?.dek
   const counts = Object.fromEntries(['liquilens', 'seiche', 'liquilens-undertow', 'myquant'].map((product) => [product, stories.filter((story) => story.product === product).length]))
   const ordered = [...stories].sort((a, b) => Date.parse(b.published) - Date.parse(a.published))
   const pulse = buildSignalPulse(ordered, 28)
@@ -356,7 +459,7 @@ function renderHome(stories, cache, consumerCopy) {
         name: BRAND_NAME,
         url: `${SITE_ORIGIN}/`,
         inLanguage: 'en',
-        description: 'Plain-English interpretations of Seiche, LiquiLens, and Undertow articles, plus independent MyQuant analysis of important market news.',
+        description: 'Source-grounded interpretations of compatible Seiche, LiquiLens, and Undertow records, plus sourced MyQuant analysis and a complete fleet coverage ledger.',
         isPartOf: { '@id': WEBSITE_ID },
         publisher: { '@id': ORGANIZATION_ID },
         about: [
@@ -368,6 +471,7 @@ function renderHome(stories, cache, consumerCopy) {
           'https://seiche.info/',
           'https://liquilens.in/',
           'https://liquilens-undertow.com/',
+          `${SITE_ORIGIN}/coverage`,
         ],
         hasPart: ordered.map((story) => ({ '@type': 'Article', headline: story.title, url: publicStoryUrl(story), datePublished: isoDate(story.published) })),
       },
@@ -377,7 +481,7 @@ function renderHome(stories, cache, consumerCopy) {
   return `<!doctype html>
 <html lang="en"><head>${head({
     title: `${BRAND_NAME} — finance, with subtitles`,
-    description: 'Seiche, LiquiLens, and Undertow articles explained in plain English, plus sourced MyQuant analysis of important market news.',
+    description: 'Evidence-bounded readings from compatible Seiche, LiquiLens, and Undertow records, plus sourced MyQuant analysis and explicit whole-fleet coverage.',
     canonical: `${SITE_ORIGIN}/`,
   })}</head><body>
   <a class="skip" href="#wire">Skip to every article</a>
@@ -387,7 +491,7 @@ function renderHome(stories, cache, consumerCopy) {
       <div class="hero-copy">
         <p class="eyebrow">MARKET JARGON / TRANSLATED</p>
         <h1 id="hero-title">The numbers are fluent.<br><em>The headlines need subtitles.</em></h1>
-        <p class="hero-dek">Seiche, LiquiLens, and Undertow do the specialist work. MyQuant explains every published piece, then analyzes the important news that connects them. Serious evidence. Less-serious furniture.</p>
+        <p class="hero-dek">Seiche, LiquiLens, and Undertow publish compatible specialist records. MyQuant explains every eligible piece, shows what changed, why it matters, what to check next, and where the evidence stops. Serious receipts. Less-serious furniture.</p>
         <div class="hero-actions">
           <a class="hero-jump" href="#wire">Read the articles ↓</a>
           <a class="hero-jump hero-jump--follow" href="/follow">Follow the desks →</a>
@@ -423,40 +527,13 @@ function renderHome(stories, cache, consumerCopy) {
       ${lead ? `<a href="${escapeHtml(publicStoryUrl(lead))}">Open the explanation and its evidence →</a>` : ''}
     </section>
 
-    <section class="screening-room" aria-labelledby="screening-title">
-      <header>
-        <p class="eyebrow">FIELD TAPES / THE SCENES THE DESK QUOTES</p>
-        <h2 id="screening-title">The receipts,<br><em>projected silent.</em></h2>
-      </header>
-      <div class="screening-grid">
-        ${filmReel({
-          id: 'myQuantScene',
-          src: '/assets/media/field-tape-my-quant.mp4',
-          poster: '/assets/media/field-tape-my-quant-poster.jpg',
-          label: 'Field tape / the quant',
-          runtime: '00:35',
-          copy: 'COPY 02 / FIELD CUT',
-          caption: '“Look at him. That’s my quant.” The scene this desk is named after.',
-          transcript: 'A silent, subtitled excerpt from The Big Short. Jared Vennett introduces his quantitative analyst: “Look at him. That’s my quant.” Mark Baum asks “Your what?” and checks “You’re completely sure of the math?” Ted Jiang confirms the math and notes he came second in a national math competition. “Actually, my name’s Jiang… and I do speak English.”',
-        })}
-        ${filmReel({
-          id: 'vennettScene',
-          src: '/assets/media/field-tape-vennett.mp4',
-          poster: '/assets/media/field-tape-vennett-poster.jpg',
-          label: 'Field tape / the salesman',
-          runtime: '00:09',
-          copy: 'COPY 03 / FIELD CUT',
-          caption: '“I can’t hate him. He’s so transparent in his self-interest, that I kind of respect him.”',
-          transcript: 'A silent, subtitled excerpt from The Big Short. Mark Baum sizes up Jared Vennett: “I can’t hate him. He’s so transparent in his self-interest, that I kind of respect him. Would I buy a car from him? No.”',
-        })}
-      </div>
-    </section>
+    ${renderAnalysisStandard(ordered, consumerCopy)}
 
     <section class="archive-launch" aria-labelledby="archive-launch-title">
       <div>
         <p class="eyebrow">EDITORIAL NETWORK LIVE / APP RELEASE PAUSED</p>
-        <h2 id="archive-launch-title">Every specialist article.<br><em>One plain-English reading room.</em></h2>
-        <p>${ordered.length} published pieces are available here. Specialist work is labelled Interpreted and links to its original; MyQuant’s own sourced work is labelled MyQuant Analysis. The mobile app feed remains suspended.</p>
+        <h2 id="archive-launch-title">Every eligible direct-source reading.<br><em>One evidence-bounded room.</em></h2>
+        <p>${ordered.length} published pieces are available here. Specialist work is labelled Interpreted and links to its original; MyQuant’s own sourced work is labelled MyQuant Analysis. Research-only, private, paused, and delivery projects remain visible in coverage without becoming phantom articles.</p>
       </div>
       <a href="#wire">Open all ${ordered.length} articles <span aria-hidden="true">↓</span></a>
     </section>
@@ -491,13 +568,15 @@ function renderHome(stories, cache, consumerCopy) {
     </section>
 
     <section class="products" aria-labelledby="products-title">
-      <p class="eyebrow">SPECIALIST NEWSROOMS</p><h2 id="products-title">Three reporting desks. One interpreter.</h2>
+      <p class="eyebrow">DIRECT READING SOURCES</p><h2 id="products-title">Three reporting desks. One interpreter.</h2>
       <div>
         <a href="https://seiche.info"><span>01 / SYSTEM</span><h3>Seiche</h3><p>What changed in broad dollar-funding data?</p></a>
         <a href="https://liquilens.in"><span>02 / INSTITUTION</span><h3>LiquiLens</h3><p>What do the source records say about institutions?</p></a>
         <a href="https://liquilens-undertow.com"><span>03 / MARKET</span><h3>Undertow</h3><p>What changed across market-exit and liquidity measures?</p></a>
       </div>
     </section>
+
+    ${renderFleetSummary(registry, counts, cache)}
 
     <aside class="evidence-network" aria-labelledby="evidence-network-title">
       <div>
@@ -611,12 +690,14 @@ function renderInterpretation(interpretation) {
       </div>
       ${interpretation.keyNumber ? `<aside class="key-number"><span>${escapeHtml(interpretation.keyNumber.value)}</span><p>${escapeHtml(interpretation.keyNumber.label)}</p></aside>` : ''}
       ${caseFile}
-      <div class="article-body interpretation-body">
-        <section><h2>Why this matters</h2><p>${escapeHtml(interpretation.whyItMatters)}</p></section>
-        <section><h2>Picture it this way</h2><p>${escapeHtml(interpretation.mentalModel)}</p></section>
-        <section><h2>The catch</h2><p>${escapeHtml(interpretation.uncertainty)}</p></section>
+      <div class="analysis-grid" aria-label="Complete reading analysis">
+        <section><p class="eyebrow">01 / COMPARISON</p><h2>What changed</h2><p>${escapeHtml(interpretation.analysis.whatChanged)}</p></section>
+        <section><p class="eyebrow">02 / MECHANISM</p><h2>Why this matters</h2><p>${escapeHtml(interpretation.whyItMatters)}</p></section>
+        <section><p class="eyebrow">03 / NEXT TEST</p><h2>What to check next</h2><p>${escapeHtml(interpretation.analysis.nextCheck)}</p></section>
+        <section><p class="eyebrow">04 / BOUNDARY</p><h2>Where the reading stops</h2><p>${escapeHtml(interpretation.uncertainty)}</p></section>
       </div>
-      <aside class="article-boundary interpretation-clocks"><b>Evidence status</b><p>${escapeHtml(interpretation.evidence.status)}</p><b>Event clock</b><p>${escapeHtml(displayClock(interpretation.evidence.eventTime))}</p><b>Knowledge clock</b><p>${escapeHtml(displayClock(interpretation.evidence.knowledgeTime))}</p><b>What the source adds</b><p>${escapeHtml(interpretation.evidence.contribution)}</p></aside>
+      <aside class="mental-model"><p class="eyebrow">MENTAL MODEL / NOT A NEW CLAIM</p><h2>Picture it this way</h2><p>${escapeHtml(interpretation.mentalModel)}</p></aside>
+      <aside class="article-boundary interpretation-clocks"><b>Analysis gate</b><p>${escapeHtml(interpretation.analysis.qualityGate)}</p><b>Copy method</b><p>${escapeHtml(interpretation.analysis.copyMethod.replaceAll('_', ' ').toLowerCase())}</p><b>Evidence status</b><p>${escapeHtml(interpretation.evidence.status)}</p><b>Event clock</b><p>${escapeHtml(displayClock(interpretation.evidence.eventTime))}</p><b>Knowledge clock</b><p>${escapeHtml(displayClock(interpretation.evidence.knowledgeTime))}</p><b>What the source adds</b><p>${escapeHtml(interpretation.evidence.contribution)}</p></aside>
       <aside class="source-box"><p class="eyebrow">ORIGINAL REPORTING</p><h2>${escapeHtml(source.label)}</h2><p>This interpretation preserves source record <code>${escapeHtml(source.id)}</code> and its evidence boundary.</p><p><a href="${escapeHtml(source.url)}">Open the canonical specialist record ↗</a></p></aside>
     </main>
     <footer><p>Interpreted specialist reporting—not personalised investment advice or a transaction recommendation. The original claim and caveat remain linked.</p><p><a href="/">All articles</a> · <a href="/editorial">Editorial standards</a> · <a href="/corrections">Corrections</a> · <a href="/privacy">Privacy</a></p></footer>
@@ -707,7 +788,7 @@ function renderFollow() {
       <section class="follow-grid" aria-label="Follow individual desks">
         <article class="follow-card" data-product="myquant">
           <span>01 / PLAIN ENGLISH</span><h2>MyQuant</h2>
-          <p>Every published specialist interpretation and sourced house analysis, in an open feed you control.</p>
+          <p>Every eligible direct-source interpretation and sourced house analysis, in an open feed you control.</p>
           <div class="follow-actions"><a href="/feed.xml">Atom feed →</a><a href="/feed.json">JSON Feed →</a></div>
         </article>
         <article class="follow-card" data-product="liquilens">
@@ -738,7 +819,7 @@ function renderFollow() {
       </section>
 
       <aside class="follow-channel">
-        <div><p class="eyebrow">THE COMBINED WIRE</p><h2>One channel. Every desk.</h2></div>
+        <div><p class="eyebrow">THE SIX-DESK PUBLIC WIRE</p><h2>One channel. Six desks.</h2></div>
         <p>Use this when the network matters more than a single question. It is the broadest route, not the quietest one.</p>
         <a href="https://t.me/LiquidityLabDesk" target="_blank" rel="noopener noreferrer">Follow Liquidity Lab Desk ↗</a>
       </aside>
@@ -796,6 +877,13 @@ function renderEditorial() {
       ] },
       { heading: 'A translation is not a new market claim', paragraphs: [
         'Every consumer story must preserve the source claim, canonical source link, evidence status, publication clock, and stated limitation. Plain language may explain scope or mechanism; it may not manufacture certainty, personalise advice, recommend a transaction, or predict an issuer outcome.',
+      ] },
+      { heading: 'Every interpretation passes the same analysis gate', paragraphs: [
+        'A public interpretation must state what the source says, what changed or why no comparison is valid, why the mechanism matters, what to inspect next, and where the evidence stops. The build rejects thin labels, incomplete sentences, missing clocks, missing source identity, and known invalid comparison grammar.',
+        '<strong>Reviewed revision-bound</strong> copy is tied to an exact source fingerprint and human review receipt. <strong>Deterministic source-grounded</strong> copy uses only source fields and controlled explanations. The quality gate does not relabel deterministic copy as human-reviewed.',
+      ] },
+      { heading: 'Fleet coverage is not analysis eligibility', paragraphs: [
+        'The coverage ledger maps all registered core repositories, research modules, and adjacent surfaces to an exact family-manifest revision. Only projects with compatible public reading contracts enter the article archive. Research-only, upstream, private, paused, delivery, and separate-domain projects stay visible with their reason instead of being silently omitted or turned into invented articles.',
       ] },
       { heading: 'Website archive and app are separate channels', paragraphs: [
         'At the operator’s direction, the website creates a reading page for every normalized record that its source marks PUBLISHED, plus published house articles. An interpretation is a distinct explanatory work and always links to the canonical specialist record; this channel setting is not a representation that every record received legal or regulatory clearance.',
@@ -920,6 +1008,12 @@ function renderFeedJson(stories, consumerCopy) {
         inEnglish: interpretation?.inEnglish || story.dek,
         whyItMatters: interpretation?.whyItMatters || story.contribution,
         uncertainty: interpretation?.uncertainty || story.limitation,
+        ...(interpretation ? {
+          whatChanged: interpretation.analysis.whatChanged,
+          nextCheck: interpretation.analysis.nextCheck,
+          qualityGate: interpretation.analysis.qualityGate,
+          method: interpretation.analysis.copyMethod,
+        } : {}),
         ...(interpretation?.keyNumber ? { keyNumber: interpretation.keyNumber } : {}),
       }
       const sources = interpretation
@@ -1008,6 +1102,7 @@ MyQuant publishes two explicit lanes: Interpreted pages for source-published Sei
 - MCP: ${SITE_ORIGIN}/mcp
 - MCP discovery: ${SITE_ORIGIN}/.well-known/mcp.json
 - AI catalog: ${SITE_ORIGIN}/.well-known/ai-catalog.json
+- Fleet coverage ledger: ${SITE_ORIGIN}/coverage
 - Editorial standard: ${SITE_ORIGIN}/editorial
 - Corrections: ${SITE_ORIGIN}/corrections
 - Privacy: ${SITE_ORIGIN}/privacy
@@ -1034,6 +1129,7 @@ async function write(path, value) {
 
 async function build() {
   const cache = await syncFeeds()
+  const fleetRegistry = await loadFleetRegistry()
   const appCopy = await readJson(appCopyPath)
   const publicationHolds = await readJson(publicationHoldsPath)
   const publicationApprovals = await readJson(publicationApprovalsPath)
@@ -1076,15 +1172,28 @@ async function build() {
     if (!interpretation || interpretationSlugs.has(interpretation.slug)) {
       throw new Error(`invalid or duplicate interpretation slug: ${interpretation?.slug || '(empty)'}`)
     }
+    const qualityIssues = interpretationQualityIssues(interpretation)
+    if (qualityIssues.length || interpretation.analysis.qualityGate !== 'PASSED') {
+      throw new Error(`analysis quality failed for ${interpretation.id}: ${qualityIssues.join('; ')}`)
+    }
     interpretationSlugs.add(interpretation.slug)
   }
 
   await rm(dist, { recursive: true, force: true })
   await mkdir(dist, { recursive: true })
   await cp(join(root, 'assets'), join(dist, 'assets'), { recursive: true })
+  for (const name of [
+    'field-tape-my-quant.mp4',
+    'field-tape-my-quant-poster.jpg',
+    'field-tape-vennett.mp4',
+    'field-tape-vennett-poster.jpg',
+  ]) {
+    await rm(join(dist, 'assets', 'media', name), { force: true })
+  }
   await cp(join(root, 'public'), dist, { recursive: true })
   await cp(join(root, 'server.json'), join(dist, 'server.json'))
-  await write(join(dist, 'index.html'), renderHome(stories, cache, appCopy.stories))
+  await write(join(dist, 'index.html'), renderHome(stories, cache, appCopy.stories, fleetRegistry))
+  await write(join(dist, 'coverage', 'index.html'), renderCoverage(fleetRegistry, cache, stories))
   await write(join(dist, 'follow', 'index.html'), renderFollow())
   await write(join(dist, 'advertise', 'index.html'), renderAdvertise())
   await write(join(dist, 'privacy', 'index.html'), renderPrivacy())
@@ -1112,6 +1221,7 @@ async function build() {
   const newest = stories[0]?.published ? isoDate(stories[0].published).slice(0, 10) : null
   const urls = [
     { loc: `${SITE_ORIGIN}/`, lastmod: newest },
+    { loc: `${SITE_ORIGIN}/coverage`, lastmod: fleetRegistry.reviewedAt.slice(0, 10) },
     { loc: `${SITE_ORIGIN}/follow` },
     { loc: `${SITE_ORIGIN}/advertise` },
     { loc: `${SITE_ORIGIN}/privacy` },

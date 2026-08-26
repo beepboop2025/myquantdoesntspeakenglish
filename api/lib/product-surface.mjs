@@ -37,7 +37,10 @@ const EVIDENCE_KEYS = new Set([
   'status', 'eventTime', 'knowledgeTime', 'publicationStatus', 'contribution', 'limitation',
   'sourceFingerprint', 'corrections',
 ])
-const COPY_KEYS = new Set(['state', 'inEnglish', 'whyItMatters', 'uncertainty', 'keyNumber'])
+const COPY_KEYS = new Set([
+  'state', 'inEnglish', 'whyItMatters', 'uncertainty', 'whatChanged', 'nextCheck',
+  'qualityGate', 'method', 'keyNumber',
+])
 const KEY_NUMBER_KEYS = new Set(['value', 'label'])
 const SOURCE_KEYS = new Set(['id', 'label', 'url', 'fingerprint', 'type', 'release_id', 'event_time'])
 const CORRECTION_KEYS = new Set(['correctedAt', 'fields', 'note'])
@@ -145,6 +148,21 @@ function validateCopy(value, path) {
     inEnglish: requiredString(copy.inEnglish, `${path}.inEnglish`, 8_192),
     whyItMatters: requiredString(copy.whyItMatters, `${path}.whyItMatters`, 8_192),
     uncertainty: requiredString(copy.uncertainty, `${path}.uncertainty`, 8_192),
+    ...(copy.whatChanged === undefined ? {} : {
+      whatChanged: requiredString(copy.whatChanged, `${path}.whatChanged`, 8_192),
+    }),
+    ...(copy.nextCheck === undefined ? {} : {
+      nextCheck: requiredString(copy.nextCheck, `${path}.nextCheck`, 8_192),
+    }),
+    ...(copy.qualityGate === undefined ? {} : {
+      qualityGate: requiredString(copy.qualityGate, `${path}.qualityGate`, 64),
+    }),
+    ...(copy.method === undefined ? {} : {
+      method: requiredString(copy.method, `${path}.method`, 128),
+    }),
+  }
+  if (result.qualityGate !== undefined && result.qualityGate !== 'PASSED') {
+    throw new TypeError(`${path}.qualityGate must be PASSED when published`)
   }
   if (copy.keyNumber !== undefined) {
     const keyNumber = assertRecord(copy.keyNumber, `${path}.keyNumber`)
@@ -196,6 +214,12 @@ function validateStory(value, index) {
   if (!Array.isArray(meta.sources) || meta.sources.length === 0 || meta.sources.length > 12) {
     throw new RangeError(`${path}._mqdnse.sources must contain 1 to 12 sources`)
   }
+  const lane = requiredString(meta.lane, `${path}._mqdnse.lane`, 128)
+  const copy = validateCopy(meta.copy, `${path}._mqdnse.copy`)
+  if (lane === 'INTERPRETED'
+    && (!copy.whatChanged || !copy.nextCheck || copy.qualityGate !== 'PASSED' || !copy.method)) {
+    throw new TypeError(`${path} interpreted copy is missing its analysis-quality receipt`)
+  }
   return {
     id,
     url: httpsUrl(story.url, `${path}.url`),
@@ -206,7 +230,7 @@ function validateStory(value, index) {
     tags: story.tags.map((tag, tagIndex) => requiredString(tag, `${path}.tags[${tagIndex}]`, 128)),
     _mqdnse: {
       schema: meta.schema,
-      lane: requiredString(meta.lane, `${path}._mqdnse.lane`, 128),
+      lane,
       product: requiredString(meta.product, `${path}._mqdnse.product`, 128),
       beat: requiredString(meta.beat, `${path}._mqdnse.beat`, 256),
       editorialClass: requiredString(meta.editorialClass, `${path}._mqdnse.editorialClass`, 256),
@@ -214,7 +238,7 @@ function validateStory(value, index) {
       sourceRecordId,
       sourceUrl: httpsUrl(meta.sourceUrl, `${path}._mqdnse.sourceUrl`),
       evidence: validateEvidence(meta.evidence, `${path}._mqdnse.evidence`),
-      copy: validateCopy(meta.copy, `${path}._mqdnse.copy`),
+      copy,
       sources: meta.sources.map((source, sourceIndex) => validateSource(source, `${path}._mqdnse.sources[${sourceIndex}]`)),
       ...(meta.newsGate === undefined ? {} : { newsGate: validateNewsGate(meta.newsGate, `${path}._mqdnse.newsGate`) }),
     },

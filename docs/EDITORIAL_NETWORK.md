@@ -43,13 +43,14 @@ an interpretation page is written.
 
 ## MyQuant reading format
 
-Every specialist reading page answers five questions:
+Every specialist reading page answers six questions:
 
 1. What did the specialist actually say?
 2. What does that mean in ordinary language?
-3. Why might it matter?
-4. What is a useful mental model?
-5. Where does the evidence stop?
+3. What changed, or why is no like-for-like comparison valid?
+4. Why might it matter?
+5. What should a reader inspect next?
+6. Where does the evidence stop?
 
 Reviewed consumer copy is labelled `REVIEWED`. Deterministic copy that only
 rearranges source fields and controlled taxonomy is labelled `SOURCE_GROUNDED`.
@@ -58,9 +59,21 @@ Neither label represents legal or regulatory clearance.
 The public JSON Feed keeps the standard JSON Feed 1.1 fields and adds an
 `_mqdnse` extension to every item. That extension carries the source record ID,
 canonical source URL, fingerprint, event and knowledge clocks, evidence status,
-contribution, limitation, copy state, and source list. It is the bounded input
+contribution, limitation, copy state, change statement, next check, quality gate,
+analysis method, and source list. It is the bounded input
 for downstream corpus capture; the collector must reject the feed if the
 extension disappears or changes shape.
+
+## Fleet coverage
+
+The reading room and the project fleet are related but not interchangeable.
+`data/fleet-registry.json` is bound to an exact LiquiLens `family.toml` revision
+and accounts for every registered core repository, module, and adjacent surface.
+Only `DIRECT_READING_SOURCE` projects contribute article records. Upstream,
+research-only, delivery, private-authority, paused-client, and separate-evidence
+projects remain visible in the coverage ledger with the reason they are not
+ingested. Missing a publication contract never becomes a synthetic MyQuant
+article or a neutral reading.
 
 ## News analysis gate
 
