@@ -1,6 +1,6 @@
 {
   "schema": "mqdnse.feed-cache.v2",
-  "syncedAt": "2026-08-26T12:34:23.473Z",
+  "syncedAt": "2026-08-26T15:54:30.632Z",
   "channels": {
     "liquilens-desk": [
       {
@@ -2513,8 +2513,8 @@
       "detail": "30 records"
     },
     "undertow-investigations": {
-      "state": "live",
-      "detail": "1 records"
+      "state": "cached",
+      "detail": "1 records · refresh failed: HTTP 403"
     }
   },
   "feeds": {
@@ -5005,8 +5005,8 @@
       "detail": "52 records · all 2 channels connected"
     },
     "liquilens-undertow": {
-      "state": "live",
-      "detail": "31 records · all 2 channels connected"
+      "state": "cached",
+      "detail": "31 records · degraded channels: undertow-investigations"
     }
   }
 }
