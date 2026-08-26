@@ -14,8 +14,8 @@
         "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
         "name": "io.github.beepboop2025/myquant-editorial",
         "title": "my quant doesn’t speak english — editorial discovery",
-        "description": "Read-only discovery for a finite market briefing with explicit evidence boundaries.",
-        "version": "2.0.0",
+        "description": "Read-only discovery and bounded content access for a finite market briefing with explicit evidence boundaries.",
+        "version": "2.1.0",
         "repository": {
           "url": "https://github.com/beepboop2025/myquantdoesntspeakenglish",
           "source": "github"
@@ -28,21 +28,27 @@
           }
         ]
       },
-      "description": "Two anonymous read-only tools for product capability discovery and a non-sensitive compatibility heartbeat.",
+      "description": "Five anonymous read-only tools for product discovery, health, bounded latest stories, exact stable-ID retrieval, and evidence-aware search.",
       "tags": ["market editorial", "plain English", "evidence boundaries", "MCP"],
-      "capabilities": ["list_capabilities", "get_health"],
+      "capabilities": ["list_capabilities", "get_health", "latest_stories", "get_story", "search_stories"],
       "representativeQueries": [
         "What public MyQuant editorial and evidence surfaces are available?",
-        "Is the MyQuant public API and MCP surface healthy?"
+        "Is the MyQuant public API and MCP surface healthy?",
+        "What are the latest evidence-bounded market stories?",
+        "Find the published story for an exact source record ID.",
+        "Search the public archive by topic, source, evidence status, or release ID."
       ],
-      "version": "2.0.0",
-      "updatedAt": "2026-08-22T12:00:00Z",
+      "version": "2.1.0",
+      "updatedAt": "2026-08-26T00:00:00Z",
       "metadata": {
         "authentication": "none",
         "access": "public-read-only",
         "productVersion": "0.1.0",
         "apiVersion": "myquant.editorial/1.1",
-        "publicToolCount": 2
+        "publicToolCount": 5,
+        "releaseState": "candidate",
+        "maxResultsPerContentCall": 20,
+        "contentAuthority": "PUBLIC_EDITORIAL_ARCHIVE"
       }
     },
     {

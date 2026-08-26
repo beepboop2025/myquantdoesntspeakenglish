@@ -244,7 +244,7 @@ const [serverManifest, publicServerManifest, openapi, mcpDiscovery, aiCatalog] =
 ])
 if (JSON.stringify(publicServerManifest) !== JSON.stringify(serverManifest)
   || serverManifest.name !== 'io.github.beepboop2025/myquant-editorial'
-  || serverManifest.version !== '2.0.0'
+  || serverManifest.version !== '2.1.0'
   || serverManifest.remotes?.[0]?.url !== `${SITE_ORIGIN}/mcp`) {
   throw new Error('server.json does not describe the public editorial MCP endpoint')
 }
@@ -264,6 +264,9 @@ const mcpEntry = aiCatalog.entries?.find((entry) => entry.type === 'application/
 const openapiEntry = aiCatalog.entries?.find((entry) => entry.type === 'application/vnd.oai.openapi+json')
 if (aiCatalog.specVersion !== '1.0'
   || JSON.stringify(mcpEntry?.data) !== JSON.stringify(serverManifest)
+  || mcpEntry?.metadata?.releaseState !== 'candidate'
+  || mcpEntry?.metadata?.publicToolCount !== 5
+  || mcpEntry?.capabilities?.join(',') !== 'list_capabilities,get_health,latest_stories,get_story,search_stories'
   || openapiEntry?.url !== `${SITE_ORIGIN}/openapi.json`) {
   throw new Error('AI catalog is not bound to server.json and OpenAPI')
 }

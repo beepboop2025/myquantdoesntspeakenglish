@@ -6,12 +6,13 @@ export const server = createMcpServer({
     name: 'myquant-editorial',
     title: 'my quant doesn’t speak english',
     version: MCP_VERSION,
-    description: 'Read-only discovery for the finite, evidence-bounded market briefing.',
+    description: 'Read-only discovery and bounded editorial content for the finite, evidence-bounded market briefing.',
     websiteUrl: SITE_URL,
   },
-  instructions: 'Use this server to discover the current My Quant briefing and evidence surfaces. Treat every market statement as editorial analysis that must retain its sources, publication status, and evidence boundaries.',
+  instructions: 'Use this server to discover or read the current My Quant briefing. Address stories by their stable source IDs, keep every returned source, release ID, publication state, evidence clock, and limitation attached, and treat every market statement as editorial analysis rather than personalized advice.',
   tools: TOOLS,
   allowedOrigins: [SITE_URL],
+  maxBodyBytes: 16 * 1024,
 })
 
 export const dispatch = server.dispatch

@@ -41,15 +41,19 @@ The product exposes read-only discovery without accounts or user state:
 
 - `GET /api/v1/capabilities` describes the editorial, feed, and evidence surfaces;
 - `GET /api/v1/health` returns a non-sensitive compatibility heartbeat;
-- `POST /mcp` serves the stateless MCP discovery and health tools.
+- `POST /mcp` serves five stateless, read-only tools: discovery, health,
+  bounded latest stories, exact stable-ID retrieval, and evidence-aware search;
 - `GET /openapi.json` is the curated REST contract;
 - `GET /.well-known/ai-catalog.json` and `GET /.well-known/mcp.json` expose
   public AI/MCP discovery, with the Registry manifest at `GET /server.json`.
 
 The product version (`0.1.0`), REST contract (`myquant.editorial/1.1`), and
-MCP server (`2.0.0`) stay distinct. Public health also reports Vercel's exact
-deployed Git SHA when available, allowing scheduled smoke and Registry
-publication to bind the live endpoint to a reviewed commit.
+MCP server (`2.1.0` candidate) stay distinct. Content tools read the canonical
+public `/feed.json`, validate its full publication/evidence contract, retain
+source and release fields, and cap each list/search response at 20 records.
+Public health also reports Vercel's exact deployed Git SHA when available,
+allowing scheduled smoke and Registry publication to bind the live endpoint to
+a reviewed commit.
 
 Registry verification builds with `MYQUANT_USE_REVIEWED_CACHE=1`; this uses
 the committed evidence receipt instead of pulling a different editorial wire

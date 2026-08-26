@@ -2,8 +2,8 @@
   "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
   "name": "io.github.beepboop2025/myquant-editorial",
   "title": "my quant doesn’t speak english — editorial discovery",
-  "description": "Read-only discovery for a finite market briefing with explicit evidence boundaries.",
-  "version": "2.0.0",
+  "description": "Read-only discovery and bounded content access for a finite market briefing with explicit evidence boundaries.",
+  "version": "2.1.0",
   "repository": {
     "url": "https://github.com/beepboop2025/myquantdoesntspeakenglish",
     "source": "github"
