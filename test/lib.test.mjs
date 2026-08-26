@@ -18,6 +18,7 @@ import {
   buildSignalPulse,
   canonicalJsonSha256,
   chooseLead,
+  interpretationQualityIssues,
   mergeChannelFeeds,
   normalizePayload,
   normalizeHouseArticle,
@@ -412,14 +413,18 @@ test('unreviewed interpretation is explicitly source-grounded and never invents 
     beat: 'market-liquidity', editorialClass: 'watch_note', publicationStatus: 'PUBLISHED',
     published: '2026-08-13T03:45:22Z', eventTime: '2026-08-13', knowledgeTime: '2026-08-13T03:45:22Z',
     evidenceStatus: 'PARTIAL', contribution: 'bounded_no_change_record',
-    limitation: 'Unscored means still accruing, not calm.', fingerprint: 'source-hash',
+    limitation: 'Unscored means still accruing, not calm.', fingerprint: sourceFingerprint('5'),
   }
   const interpretation = buildInterpretation(story)
 
   assert.equal(interpretation.copyState, 'SOURCE_GROUNDED')
   assert.match(interpretation.inEnglish, /score 1 of 9 market segments/i)
   assert.match(interpretation.inEnglish, /gaps are not an all-clear/i)
-  assert.equal(interpretation.whyItMatters, 'It records that no qualifying change was observed within the stated boundary.')
+  assert.match(interpretation.whyItMatters, /Only 1 of 9 market segments support a public tier/i)
+  assert.match(interpretation.analysis.whatChanged, /no qualifying tier change/i)
+  assert.match(interpretation.analysis.nextCheck, /next source board/i)
+  assert.equal(interpretation.analysis.qualityGate, 'PASSED')
+  assert.deepEqual(interpretationQualityIssues(interpretation), [])
   assert.match(interpretation.mentalModel, /unscored market stays unknown/i)
 })
 
@@ -428,7 +433,7 @@ test('source-grounded translators retain Seiche values and LiquiLens denominator
     beat: 'wire', editorialClass: 'full_story', publicationStatus: 'PUBLISHED',
     published: '2026-08-13T10:00:00Z', eventTime: '2026-08-13', knowledgeTime: '2026-08-13T10:00:00Z',
     evidenceStatus: 'DERIVED', contribution: 'fresh_longitudinal_delta', limitation: 'A bounded source caveat.',
-    fingerprint: 'source-hash',
+    fingerprint: sourceFingerprint('6'),
   }
   const seiche = buildInterpretation({
     ...shared, id: 'seiche:daily', product: 'seiche', title: 'Daily funding letter', url: 'https://seiche.info/dispatches/daily.html',
@@ -440,10 +445,15 @@ test('source-grounded translators retain Seiche values and LiquiLens denominator
   })
 
   assert.match(seiche.inEnglish, /45 out of 100/)
+  assert.match(seiche.inEnglish, /unchanged from the previous letter/)
+  assert.doesNotMatch(seiche.inEnglish, /unchanged than/)
   assert.match(seiche.inEnglish, /29 percentile points/)
   assert.match(seiche.inEnglish, /five-business-day event reading is 6\.1%/)
+  assert.match(seiche.analysis.whatChanged, /held at 45/)
+  assert.equal(seiche.analysis.qualityGate, 'PASSED')
   assert.match(liquilens.inEnglish, /4 of the 19 covered Indian institutions/)
   assert.match(liquilens.inEnglish, /not a score for the whole financial system/)
+  assert.equal(liquilens.analysis.qualityGate, 'PASSED')
 })
 
 test('lead ranking prefers a fresh full story over an ordinary watch note', () => {

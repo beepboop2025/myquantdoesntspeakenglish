@@ -1,6 +1,6 @@
 {
   "schema": "mqdnse.feed-cache.v2",
-  "syncedAt": "2026-08-26T09:04:47.277Z",
+  "syncedAt": "2026-08-26T12:34:23.473Z",
   "channels": {
     "liquilens-desk": [
       {
@@ -559,6 +559,29 @@
       }
     ],
     "seiche-dispatches": [
+      {
+        "id": "seiche:2026-08-26-daily",
+        "product": "seiche",
+        "title": "2y Treasury constant maturity yield sits at 4.24 %, +2.8 sigma from its own median: a level, not a move",
+        "dek": "The board reads 45 out of 100, STRAIN; the dated reserve path contributes 11.0 points; the pooled five-business-day event read is 6.0%; plumbing leads market pricing by +30 percentile points. The index is +0.0 against the last published letter.",
+        "url": "https://seiche.info/dispatches/2026-08-26-daily",
+        "beat": "dollar-funding-plumbing",
+        "editorialClass": "full_story",
+        "publicationStatus": "PUBLISHED",
+        "published": "2026-08-26T11:21:42Z",
+        "eventTime": "2026-08-24T00:00:00Z",
+        "knowledgeTime": "2026-08-26T11:21:42Z",
+        "evidenceStatus": "DERIVED",
+        "contribution": "fresh_longitudinal_delta · cross_signal_divergence · dated_forward_test",
+        "limitation": "The composite is a Seiche derivation, not an observed market price.",
+        "newsworthiness": 70,
+        "articleType": "full_story",
+        "pointInTimeStatus": "",
+        "verdicts": null,
+        "outcomeWindow": null,
+        "fraudMasked": false,
+        "fingerprint": "f850a50da767d74a55cceb7436c0503f22e571dd3a80703adb9396f33c5a8ff8"
+      },
       {
         "id": "seiche:2026-08-25-daily",
         "product": "seiche",
@@ -2479,7 +2502,7 @@
     },
     "seiche-dispatches": {
       "state": "live",
-      "detail": "50 records"
+      "detail": "51 records"
     },
     "seiche-investigations": {
       "state": "live",
@@ -2490,8 +2513,8 @@
       "detail": "30 records"
     },
     "undertow-investigations": {
-      "state": "cached",
-      "detail": "1 records · refresh failed: HTTP 403"
+      "state": "live",
+      "detail": "1 records"
     }
   },
   "feeds": {
@@ -3048,6 +3071,29 @@
       }
     ],
     "seiche": [
+      {
+        "id": "seiche:2026-08-26-daily",
+        "product": "seiche",
+        "title": "2y Treasury constant maturity yield sits at 4.24 %, +2.8 sigma from its own median: a level, not a move",
+        "dek": "The board reads 45 out of 100, STRAIN; the dated reserve path contributes 11.0 points; the pooled five-business-day event read is 6.0%; plumbing leads market pricing by +30 percentile points. The index is +0.0 against the last published letter.",
+        "url": "https://seiche.info/dispatches/2026-08-26-daily",
+        "beat": "dollar-funding-plumbing",
+        "editorialClass": "full_story",
+        "publicationStatus": "PUBLISHED",
+        "published": "2026-08-26T11:21:42Z",
+        "eventTime": "2026-08-24T00:00:00Z",
+        "knowledgeTime": "2026-08-26T11:21:42Z",
+        "evidenceStatus": "DERIVED",
+        "contribution": "fresh_longitudinal_delta · cross_signal_divergence · dated_forward_test",
+        "limitation": "The composite is a Seiche derivation, not an observed market price.",
+        "newsworthiness": 70,
+        "articleType": "full_story",
+        "pointInTimeStatus": "",
+        "verdicts": null,
+        "outcomeWindow": null,
+        "fraudMasked": false,
+        "fingerprint": "f850a50da767d74a55cceb7436c0503f22e571dd3a80703adb9396f33c5a8ff8"
+      },
       {
         "id": "seiche:2026-08-25-daily",
         "product": "seiche",
@@ -4956,11 +5002,11 @@
     },
     "seiche": {
       "state": "live",
-      "detail": "51 records · all 2 channels connected"
+      "detail": "52 records · all 2 channels connected"
     },
     "liquilens-undertow": {
-      "state": "cached",
-      "detail": "31 records · degraded channels: undertow-investigations"
+      "state": "live",
+      "detail": "31 records · all 2 channels connected"
     }
   }
 }

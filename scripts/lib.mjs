@@ -2,6 +2,33 @@ import { createHash } from 'node:crypto'
 
 const ALLOWED_PRODUCTS = new Set(['liquilens', 'seiche', 'liquilens-undertow', 'myquant'])
 
+export const FLEET_REGISTRY_SCHEMA = 'mqdnse.fleet-registry.v1'
+export const REGISTERED_FLEET_IDS = Object.freeze([
+  'liquilens',
+  'liquilens-lab',
+  'liquilens-v5',
+  'seiche',
+  'riptide',
+  'undertow',
+  'undertow-mm',
+  'v5-backtest-harness',
+  'v5-case-study-2019-nbfc',
+  'v5-m1-ce-timing',
+  'v5-m2-velocity',
+  'v5-m3-graph-contagion',
+  'v5-m4-concentration',
+  'liquilens-cli',
+  'liquilens-mcp',
+  'undertow-mcp',
+  'myquantdoesntspeakenglish',
+  'myquant-intelligence',
+  'myquant-app',
+  'liquilens-site',
+  'palimpsest',
+  'scamshield',
+  'fleet-bots',
+])
+
 export const SITE_ORIGIN = 'https://myquantdoesntspeakenglish.com'
 export const APP_FEED_SCHEMA = 'mqdnse.app-feed.v1'
 export const APP_COPY_SCHEMA = 'mqdnse.app-copy.v2'
@@ -126,6 +153,88 @@ const SUPPORT_FIELDS = Object.freeze(['inEnglish', 'whyItMatters', 'uncertainty'
 const SUPPORT_PREFIXES = Object.freeze(['/evidence/', '/clocks/', '/lineage/', '/source/'])
 
 const object = (value) => Boolean(value && typeof value === 'object' && !Array.isArray(value))
+const sentence = (value, fallback = '') => {
+  const readable = string(value, fallback)
+  if (!readable || /[.!?]$/.test(readable)) return readable
+  return `${readable}.`
+}
+
+const FLEET_GROUPS = new Set(['core', 'module', 'adjacent'])
+const FLEET_ANALYSIS_MODES = new Set([
+  'DIRECT_READING_SOURCE',
+  'UPSTREAM_EVIDENCE',
+  'UPSTREAM_VIA_PRODUCT',
+  'RESEARCH_ONLY',
+  'DELIVERY_SURFACE',
+  'EDITORIAL_PUBLISHER',
+  'PRIVATE_AUTHORITY',
+  'PAUSED_CLIENT',
+  'ADJACENT_EVIDENCE',
+])
+
+/**
+ * Validate the reviewed fleet snapshot before the website can call its
+ * coverage complete. This registry describes coverage and routing only; it
+ * never makes a non-publishing project look like an editorial source.
+ */
+export function fleetRegistryIssues(value) {
+  const issues = []
+  if (!object(value) || value.schema !== FLEET_REGISTRY_SCHEMA) return ['invalid fleet-registry schema']
+  if (!validTimestamp(value.reviewedAt)) issues.push('fleet registry needs a timezone-qualified review clock')
+  if (!object(value.source)
+    || !/^[a-f0-9]{40}$/.test(string(value.source.revision))
+    || !validHttpsUrl(value.source.url, '')) {
+    issues.push('fleet registry needs an immutable HTTPS source revision')
+  }
+  if (!Array.isArray(value.projects)) return [...issues, 'fleet registry projects must be an array']
+
+  const ids = value.projects.map((project) => string(project?.id)).filter(Boolean)
+  if (ids.length !== value.projects.length || new Set(ids).size !== ids.length) {
+    issues.push('fleet registry project IDs must be present and unique')
+  }
+  const expected = new Set(REGISTERED_FLEET_IDS)
+  const missing = REGISTERED_FLEET_IDS.filter((id) => !ids.includes(id))
+  const unexpected = ids.filter((id) => !expected.has(id))
+  if (missing.length) issues.push(`fleet registry is missing: ${missing.join(', ')}`)
+  if (unexpected.length) issues.push(`fleet registry has unexpected family entries: ${unexpected.join(', ')}`)
+
+  for (const project of value.projects) {
+    if (!object(project)
+      || !string(project.id)
+      || !string(project.label)
+      || !FLEET_GROUPS.has(project.group)
+      || !string(project.kind)
+      || !string(project.role)) {
+      issues.push(`invalid fleet project: ${string(project?.id, '(unknown)')}`)
+      continue
+    }
+    const analysis = project.analysis
+    if (!object(analysis)
+      || !FLEET_ANALYSIS_MODES.has(analysis.mode)
+      || !string(analysis.reason)
+      || !/[.!?]$/.test(analysis.reason.trim())) {
+      issues.push(`invalid analysis route: ${project.id}`)
+    }
+    if (analysis?.mode === 'DIRECT_READING_SOURCE'
+      && !ALLOWED_PRODUCTS.has(string(analysis.product))) {
+      issues.push(`invalid direct reading product: ${project.id}`)
+    }
+    if (project.url && !validHttpsUrl(project.url, '')) issues.push(`invalid project URL: ${project.id}`)
+  }
+
+  if (!Array.isArray(value.networkProjects)
+    || value.networkProjects.some((project) => !object(project)
+      || !string(project.id)
+      || !string(project.label)
+      || !validHttpsUrl(project.url, '')
+      || project.analysis?.mode !== 'ADJACENT_EVIDENCE'
+      || !/[.!?]$/.test(string(project.analysis?.reason)))) {
+    issues.push('invalid evidence-network project registry')
+  }
+  return issues
+}
+
+export const validFleetRegistry = (value) => fleetRegistryIssues(value).length === 0
 export const canonicalValue = (value) => {
   if (Array.isArray(value)) return value.map(canonicalValue)
   if (!object(value)) return value
@@ -744,8 +853,12 @@ function contributionExplanation(value) {
     return parts.map((part) => CONTRIBUTION_TRANSLATIONS[part]
       || `It adds ${part.replaceAll(/[_-]+/g, ' ')}.`).join(' ')
   }
-  return contribution
+  return sentence(contribution)
 }
+
+const contributionKinds = (story) => String(story?.contribution || '')
+  .split(/\s*·\s*/)
+  .filter((part) => /^[a-z0-9_-]+$/.test(part))
 
 function keyNumber(value) {
   const summary = String(value || '').trim()
@@ -777,20 +890,45 @@ function signedWord(value) {
   return `${Math.abs(number)} point${Math.abs(number) === 1 ? '' : 's'} ${number > 0 ? 'higher' : 'lower'}`
 }
 
+function comparisonWithPrevious(value) {
+  const number = Number.parseFloat(value)
+  if (!Number.isFinite(number) || number === 0) return 'unchanged from the previous letter'
+  return `${signedWord(number)} than in the previous letter`
+}
+
+const SEICHE_CURRENT_RE = /^The board reads ([\d.]+) out of 100, ([A-Z_]+); the dated reserve path contributes ([+-]?[\d.]+) points; the pooled five-business-day event read is ([\d.]+)%; plumbing leads market pricing by ([+-]?[\d.]+) percentile points\. The index is ([+-]?[\d.]+) against the last published letter\.$/
+const SEICHE_LEGACY_RE = /^The composite reads ([\d.]+), regime ([A-Z_]+)\.(?: That is ([+-]?[\d.]+) on the day\.)? The Tell reads ([+-]?[\d.]+)\./
+const SEICHE_WEEK_AHEAD_RE = /^Issue (\d+) of the Monday letter\. The composite reads ([\d.]+), regime ([A-Z_]+)\. (\d+) pre-registered calls for the week and (\d+) dated items on the calendar\.(?: Last week's calls graded (\d+) of (\d+), misses first\.| The first issue, so there is nothing to grade yet\.)$/
+const UNDERTOW_COVERAGE_RE = /^(\d+) of (\d+) segments score today; (.+?) still accrue history\. The funding overlay reads ([A-Z_]+)\./
+const UNDERTOW_EXTREMES_RE = /The hottest qualifying measure is (.+?), at (.+?); the coolest is (.+?), at (.+?)\./
+
+const seicheCurrent = (story) => String(story?.dek || '').trim().match(SEICHE_CURRENT_RE)
+const seicheLegacy = (story) => String(story?.dek || '').trim().match(SEICHE_LEGACY_RE)
+const seicheWeekAhead = (story) => String(story?.dek || '').trim().match(SEICHE_WEEK_AHEAD_RE)
+const undertowCoverage = (story) => String(story?.dek || '').trim().match(UNDERTOW_COVERAGE_RE)
+const undertowExtremes = (story) => String(story?.dek || '').trim().match(UNDERTOW_EXTREMES_RE)
+
+function verdictSummary(story) {
+  if (!object(story?.verdicts)) return ''
+  return Object.entries(story.verdicts)
+    .map(([lens, verdict]) => `${presentationLabel(lens)} ${string(verdict)}`)
+    .join('; ')
+}
+
 function sourceGroundedPlainEnglish(story) {
   const dek = String(story.dek || '').trim()
   if (story.articleType === 'case_file') return dek
   if (story.product === 'seiche') {
-    const current = dek.match(/^The board reads ([\d.]+) out of 100, ([A-Z_]+); the dated reserve path contributes ([+-]?[\d.]+) points; the pooled five-business-day event read is ([\d.]+)%; plumbing leads market pricing by ([+-]?[\d.]+) percentile points\. The index is ([+-]?[\d.]+) against the last published letter\.$/)
+    const current = seicheCurrent(story)
     if (current) {
-      return `Seiche's funding score is ${current[1]} out of 100, in its ${current[2]} regime, and is ${signedWord(current[6])} than in the previous letter. Its plumbing measures lead its market-price screens by ${current[5]} percentile points. The dated reserve path adds ${current[3]} points, and the five-business-day event reading is ${current[4]}%.`
+      return `Seiche's funding score is ${current[1]} out of 100, in its ${current[2]} regime, and is ${comparisonWithPrevious(current[6])}. Its plumbing measures lead its market-price screens by ${current[5]} percentile points. The dated reserve path adds ${current[3]} points, and the five-business-day event reading is ${current[4]}%.`
     }
-    const legacy = dek.match(/^The composite reads ([\d.]+), regime ([A-Z_]+)\.(?: That is ([+-]?[\d.]+) on the day\.)? The Tell reads ([+-]?[\d.]+)\./)
+    const legacy = seicheLegacy(story)
     if (legacy) {
       const move = legacy[3] ? ` It is ${signedWord(legacy[3])} on the day.` : ''
       return `Seiche's funding composite is ${legacy[1]}, classified ${legacy[2]}.${move} Its internal plumbing-versus-price gap, called the Tell, is ${legacy[4]}.`
     }
-    const weekAhead = dek.match(/^Issue (\d+) of the Monday letter\. The composite reads ([\d.]+), regime ([A-Z_]+)\. (\d+) pre-registered calls for the week and (\d+) dated items on the calendar\.(?: Last week's calls graded (\d+) of (\d+), misses first\.| The first issue, so there is nothing to grade yet\.)$/)
+    const weekAhead = seicheWeekAhead(story)
     if (weekAhead) {
       const grade = weekAhead[6]
         ? ` The previous week's calls graded ${weekAhead[6]} out of ${weekAhead[7]}, with misses disclosed first.`
@@ -800,12 +938,16 @@ function sourceGroundedPlainEnglish(story) {
   }
 
   if (story.product === 'liquilens-undertow') {
-    const coverage = dek.match(/^(\d+) of (\d+) segments score today; (.+?) still accrue history\. The funding overlay reads ([A-Z_]+)\./)
+    const coverage = undertowCoverage(story)
     if (coverage) {
       const disagreement = /disagree inside at least one scored cell/i.test(dek)
         ? ' At least one scored segment contains measures pointing in different directions.'
         : ''
-      return `Undertow can score ${coverage[1]} of ${coverage[2]} market segments today. ${coverage[3]} still lack enough history, so those gaps are not an all-clear. Its separate funding overlay reads ${coverage[4]}.${disagreement}`
+      const extremes = undertowExtremes(story)
+      const crossSection = extremes
+        ? ` The source identifies ${extremes[1]} as hottest (${extremes[2]}) and ${extremes[3]} as coolest (${extremes[4]}) among qualifying measures.`
+        : ''
+      return `Undertow can score ${coverage[1]} of ${coverage[2]} market segments today. ${coverage[3]} still lack enough history, so those gaps are not an all-clear. Its separate funding overlay reads ${coverage[4]}.${crossSection}${disagreement}`
     }
   }
 
@@ -831,6 +973,134 @@ function sourceGroundedPlainEnglish(story) {
   return dek
 }
 
+function sourceGroundedWhyItMatters(story) {
+  const kinds = contributionKinds(story)
+  if (story.articleType === 'case_file') {
+    const verdicts = verdictSummary(story)
+    return verdicts
+      ? `The source grades ${verdicts}. Publishing the lenses separately tests what each method showed before the recorded event and keeps misses or voids visible instead of rewriting a flattering combined result.`
+      : 'Retrospective cases test whether each lens showed anything before the recorded event. Keeping misses and voids visible measures the method without rewriting the result after the fact.'
+  }
+  if (story.product === 'seiche') {
+    if (seicheWeekAhead(story)) {
+      return 'Pre-registering calls and dated events makes the next evaluation possible and keeps misses visible. The calendar is a test plan, not a promise that funding conditions will deteriorate.'
+    }
+    const current = seicheCurrent(story)
+    if (current) {
+      const movement = Number.parseFloat(current[6]) === 0
+        ? 'The headline composite did not move'
+        : `The headline composite moved ${signedWord(current[6])}`
+      return `${movement}, while the source reports a ${current[5]}-point plumbing-versus-price gap, a dated reserve contribution of ${current[3]} points, and a ${current[4]}% event reading. That combination shows whether the published regime is broad-price confirmation or a more bounded plumbing-and-calendar signal; it is not a market forecast.`
+    }
+    const legacy = seicheLegacy(story)
+    if (legacy) {
+      return `The source’s ${legacy[4]} Tell records its plumbing-versus-price gap alongside a ${legacy[1]} ${legacy[2]} composite. Reading both prevents the regime label from hiding internal disagreement; neither field is an observed market price or a transaction recommendation.`
+    }
+    const contribution = contributionExplanation(story.contribution)
+    return `${contribution} In a funding record, separating plumbing, market prices, and dated events prevents one headline from standing in for the whole system; the result remains context for investigation, not a market forecast.`
+  }
+  if (story.product === 'liquilens-undertow') {
+    const coverage = undertowCoverage(story)
+    if (coverage) {
+      const extremes = undertowExtremes(story)
+      const crossSection = extremes
+        ? ` The source’s hottest qualifying measure is ${extremes[1]}, while its coolest is ${extremes[3]}; those endpoints show why the measures matter alongside the tier.`
+        : ''
+      return `Only ${coverage[1]} of ${coverage[2]} market segments support a public tier in this record. That coverage boundary limits any cross-market conclusion, while the separate ${coverage[4]} funding overlay supplies context rather than a blended score.${crossSection}`
+    }
+    return 'Market-liquidity evidence matters when several holders may need the same exit, but a source tier is only as broad as its published coverage. Read the qualifying measures and missing segments before drawing a cross-market conclusion.'
+  }
+  if (story.product === 'liquilens') {
+    if (kinds.includes('cross_sectional_review_breadth')) {
+      return 'The count shows how broadly a review flag appears inside the covered set. It helps prioritise evidence review, but the denominator is not the full regulated system and the count is not a system-wide risk score.'
+    }
+    if (kinds.includes('cross_bank_private_credit_concentration')) {
+      return 'A concentration ratio can identify where one exposure is large relative to a bank capital measure. It is a prompt to inspect balance-sheet, liability, and vintage context—not a finding of loss, distress, or default.'
+    }
+    if (kinds.includes('within_quarter_cross_bank_ranking') || kinds.includes('peer_relative_change')) {
+      return 'A within-vintage ranking helps decide which public records to inspect first. Its meaning depends on the covered peers, data vintage, and evidence gate; it is not a credit rating or default forecast.'
+    }
+    return 'This record is useful for prioritising which public evidence to inspect. A review tier, rank, or research diagnostic remains a bounded screen and does not become a lending decision or failure prediction.'
+  }
+
+  const expanded = contributionExplanation(story.contribution)
+  return expanded.toLowerCase() === 'evidence-backed desk finding.'
+    ? 'This source-published finding adds a bounded record to the evidence trail. Its usefulness depends on the attached clock, source, and limitation rather than the label alone.'
+    : expanded
+}
+
+function sourceGroundedWhatChanged(story) {
+  const kinds = contributionKinds(story)
+  if (story.articleType === 'case_file') {
+    const verdicts = verdictSummary(story)
+    return verdicts
+      ? `This retrospective record grades ${verdicts}; it is not a new live movement. The relevant comparison is between those source-defined lenses and the recorded outcome window.`
+      : 'This is a retrospective evaluation record, not a new live movement. The relevant comparison is between the source-defined lenses and the recorded outcome window.'
+  }
+  if (story.product === 'seiche') {
+    const current = seicheCurrent(story)
+    if (current) {
+      const movement = Number.parseFloat(current[6]) === 0
+        ? `held at ${current[1]}`
+        : `moved to ${current[1]}, ${comparisonWithPrevious(current[6])}`
+      return `The published funding index ${movement}. The source still separates a ${current[5]}-point plumbing-versus-price gap, a dated reserve contribution of ${current[3]} points, and a ${current[4]}% five-day event reading.`
+    }
+    const legacy = seicheLegacy(story)
+    if (legacy) {
+      const movement = legacy[3]
+        ? `The composite is ${legacy[1]} and ${signedWord(legacy[3])} on the day.`
+        : `The composite is ${legacy[1]}; this record does not state a comparable daily move.`
+      return `${movement} The source reports a ${legacy[4]} plumbing-versus-price gap.`
+    }
+    const weekAhead = seicheWeekAhead(story)
+    if (weekAhead) {
+      return `This forward calendar registers ${weekAhead[4]} calls and ${weekAhead[5]} dated events before the week unfolds. It is a pre-committed evaluation record rather than an observed daily change.`
+    }
+  }
+  if (story.product === 'liquilens-undertow') {
+    const coverage = undertowCoverage(story)
+    const extremes = undertowExtremes(story)
+    const crossSection = extremes
+      ? ` Within the snapshot, ${extremes[1]} is the source’s hottest qualifying measure and ${extremes[3]} is its coolest.`
+      : ''
+    if (coverage && kinds.includes('bounded_no_change_record')) {
+      return `The source reports no qualifying tier change inside the covered board. ${coverage[1]} of ${coverage[2]} segments score, and the separate funding overlay remains ${coverage[4]}.${crossSection}`
+    }
+    if (coverage && kinds.includes('measurement_coverage_change')) {
+      return `The source marks a coverage change; ${coverage[1]} of ${coverage[2]} segments now score. The funding overlay is separately reported as ${coverage[4]}.${crossSection}`
+    }
+    if (coverage) {
+      return `This snapshot can score ${coverage[1]} of ${coverage[2]} segments and reports a separate ${coverage[4]} funding overlay.${crossSection} It does not provide a like-for-like prior value, so MyQuant does not infer a trend.`
+    }
+  }
+  if (kinds.includes('fresh_longitudinal_delta')) {
+    return 'The source classifies this as a fresh change-over-time record. The exact comparison remains in the canonical source; MyQuant does not manufacture a second delta from the headline.'
+  }
+  if (kinds.includes('measurement_coverage_change')) {
+    return 'The source records a change in measurement coverage. Coverage changes what can be concluded; they do not by themselves establish improving or deteriorating conditions.'
+  }
+  if (kinds.includes('bounded_no_change_record')) {
+    return 'The source reports no qualifying change inside its stated boundary. That is a bounded no-change observation, not evidence that the wider system is calm.'
+  }
+  return 'This source record does not publish a like-for-like prior observation, so MyQuant treats it as a cross-sectional snapshot and does not infer a trend.'
+}
+
+function sourceGroundedNextCheck(story) {
+  if (story.articleType === 'case_file') {
+    return 'Check the canonical outcome rule, point-in-time status, and lens verdicts. A corrected source record or changed grading rule should supersede this explanation.'
+  }
+  if (story.product === 'seiche') {
+    return 'Compare the next published letter’s composite, regime, plumbing-versus-price gap, dated reserve contribution, and event reading. A changed combination—not one isolated number—would alter this interpretation.'
+  }
+  if (story.product === 'liquilens-undertow') {
+    return 'Check the next source board for coverage, tier changes, internal measure disagreement, and a change in the separate funding overlay. Missing segments must remain unknown rather than turning green.'
+  }
+  if (story.product === 'liquilens') {
+    return 'Inspect the next source revision for changes to the denominator, peer set, reporting vintage, evidence status, or underlying public record before treating this screen as persistent.'
+  }
+  return 'Reopen the canonical source after its next publication or correction and compare its clock, evidence status, claim, and limitation before updating this reading.'
+}
+
 /**
  * Build an auditable plain-language wrapper around a specialist record. This
  * function never changes the source claim, source URL, fingerprint, or caveat.
@@ -845,6 +1115,11 @@ export function buildInterpretation(story, consumerCopy = {}) {
 
   const reviewed = reviewedConsumerCopy(story, consumerCopy)
   const inEnglish = reviewed ? consumerCopy.inEnglish.trim() : sourceGroundedPlainEnglish(story)
+  const whyItMatters = reviewed
+    ? sentence(consumerCopy.whyItMatters.trim())
+    : sourceGroundedWhyItMatters(story)
+  const whatChanged = sourceGroundedWhatChanged(story)
+  const nextCheck = sourceGroundedNextCheck(story)
   const number = (reviewed ? reviewedKeyNumber(consumerCopy) : null)
     || keyNumber(inEnglish)
     || keyNumber(story.dek)
@@ -860,7 +1135,7 @@ export function buildInterpretation(story, consumerCopy = {}) {
     quantSays: story.title,
     sourceSummary: story.dek,
     inEnglish,
-    whyItMatters: reviewed ? consumerCopy.whyItMatters.trim() : contributionExplanation(story.contribution),
+    whyItMatters,
     mentalModel: story.articleType === 'case_file'
       ? CASE_FILE_MENTAL_MODEL
       : MENTAL_MODELS[story.product],
@@ -885,6 +1160,13 @@ export function buildInterpretation(story, consumerCopy = {}) {
       editorialClass: story.editorialClass,
       articleType: story.articleType,
     },
+    analysis: {
+      qualityGate: 'PENDING',
+      copyMethod: reviewed ? 'REVIEWED_REVISION_BOUND' : 'DETERMINISTIC_SOURCE_GROUNDED',
+      contextMethod: 'DETERMINISTIC_SOURCE_GROUNDED',
+      whatChanged,
+      nextCheck,
+    },
     ...(story.pointInTimeStatus ? { pointInTimeStatus: story.pointInTimeStatus } : {}),
     ...(story.verdicts ? { verdicts: { ...story.verdicts } } : {}),
     ...(story.outcomeWindow ? { outcomeWindow: { ...story.outcomeWindow } } : {}),
@@ -892,8 +1174,60 @@ export function buildInterpretation(story, consumerCopy = {}) {
     ...(story.corrections?.length ? { corrections: story.corrections.map((correction) => ({ ...correction })) } : {}),
     ...(story.contentNotice ? { contentNotice: story.contentNotice } : {}),
   }
+  interpretation.analysis.qualityGate = interpretationQualityIssues(interpretation).length
+    ? 'FAILED'
+    : 'PASSED'
   interpretation.fingerprint = createHash('sha256').update(JSON.stringify(interpretation)).digest('hex')
   return interpretation
+}
+
+/**
+ * The production build applies this to every public specialist reading. It is
+ * intentionally structural: good editorial judgment still belongs in the
+ * revision-bound review lane, while the fallback must at least be grammatical,
+ * useful, source-linked, clocked, and explicit about comparison and limits.
+ */
+export function interpretationQualityIssues(value) {
+  const issues = []
+  if (!object(value) || value.schema !== INTERPRETATION_SCHEMA) return ['invalid interpretation schema']
+  const prose = [
+    ['plain English', value.inEnglish, 24],
+    ['why it matters', value.whyItMatters, 55],
+    ['what changed', value.analysis?.whatChanged, 55],
+    ['next check', value.analysis?.nextCheck, 55],
+    ['uncertainty', value.uncertainty, 20],
+  ]
+  for (const [label, copy, minimum] of prose) {
+    const readable = string(copy)
+    if (readable.length < minimum) issues.push(`${label} is too thin`)
+    if (readable && !/[.!?]$/.test(readable)) issues.push(`${label} is not a complete sentence`)
+  }
+  const combined = prose.map(([, copy]) => string(copy)).join(' ')
+  if (/\bunchanged than\b/i.test(combined)) issues.push('invalid unchanged comparison grammar')
+  if (/^evidence[- ]backed desk finding\.?$/i.test(string(value.whyItMatters))) {
+    issues.push('why it matters repeats an evidence label')
+  }
+  if (string(value.whyItMatters).toLowerCase() === string(value.evidence?.contribution).toLowerCase()) {
+    issues.push('why it matters repeats the source contribution')
+  }
+  if (!['REVIEWED', 'SOURCE_GROUNDED'].includes(value.copyState)) issues.push('copy state is not explicit')
+  if (!['REVIEWED_REVISION_BOUND', 'DETERMINISTIC_SOURCE_GROUNDED'].includes(value.analysis?.copyMethod)
+    || value.analysis?.contextMethod !== 'DETERMINISTIC_SOURCE_GROUNDED') {
+    issues.push('analysis method is not explicit')
+  }
+  if (!object(value.source)
+    || !ALLOWED_PRODUCTS.has(value.source.product)
+    || !SOURCE_FINGERPRINT.test(string(value.source.fingerprint))
+    || !validHttpsUrl(value.source.url, '')) {
+    issues.push('source identity is incomplete')
+  }
+  if (!object(value.evidence)
+    || !string(value.evidence.status)
+    || !validTimestamp(value.evidence.knowledgeTime)
+    || !Number.isFinite(Date.parse(value.evidence.eventTime))) {
+    issues.push('evidence status or clocks are incomplete')
+  }
+  return issues
 }
 
 function readingMinutes(story) {

@@ -1,6 +1,8 @@
 import { readFile, readdir } from 'node:fs/promises'
 import { join } from 'node:path'
 import {
+  REGISTERED_FLEET_IDS,
+  fleetRegistryIssues,
   publicStoryUrl,
   reviewedConsumerCopy,
   storySlug,
@@ -14,6 +16,7 @@ const read = (path) => readFile(join(dist, path), 'utf8')
 const readSourceJson = (path) => readFile(join(root, path), 'utf8').then(JSON.parse)
 const requiredPages = [
   'index.html',
+  'coverage/index.html',
   'follow/index.html',
   'privacy/index.html',
   'support/index.html',
@@ -27,16 +30,18 @@ const pages = await Promise.all(requiredPages.map(read))
 const appFeed = JSON.parse(await read('app-feed/v1.json'))
 const webFeed = JSON.parse(await read('feed.json'))
 const atomFeed = await read('feed.xml')
-const [cache, appCopy, contentStatus, releasePolicy] = await Promise.all([
+const [cache, appCopy, contentStatus, releasePolicy, fleetRegistry] = await Promise.all([
   readSourceJson('data/cache.json'),
   readSourceJson('data/app-copy.json'),
   readSourceJson('data/content-status.json'),
   readSourceJson('data/release-policy.json'),
+  readSourceJson('data/fleet-registry.json'),
 ])
 const houseNames = (await readdir(join(root, 'content'))).filter((name) => name.endsWith('.json'))
 const houseRecords = await Promise.all(houseNames.map((name) => readSourceJson(join('content', name))))
 const publicText = pages.join('\n').toLowerCase()
 const homepage = pages[0]
+const coveragePage = pages[requiredPages.indexOf('coverage/index.html')]
 const followPage = pages[requiredPages.indexOf('follow/index.html')]
 
 if (!/<meta name="google-site-verification" content="[A-Za-z0-9_-]+">/.test(homepage)) {
@@ -45,6 +50,11 @@ if (!/<meta name="google-site-verification" content="[A-Za-z0-9_-]+">/.test(home
 if (!homepage.includes('<a href="/follow">Follow</a>')
   || !homepage.includes('class="hero-jump hero-jump--follow" href="/follow"')) {
   throw new Error('homepage does not expose the follow hub in navigation and hero')
+}
+if (!homepage.includes('<a href="/coverage">Coverage</a>')
+  || !homepage.includes('ANALYSIS QUALITY / FAIL-CLOSED')
+  || !homepage.includes('WHOLE FLEET / NO PHANTOM COVERAGE')) {
+  throw new Error('homepage does not expose analysis quality and whole-fleet coverage')
 }
 for (const required of [
   'Close the tab.<br><em>Keep the signal.</em>',
@@ -86,6 +96,14 @@ const escapeHtml = (value = '') => String(value)
   .replaceAll('>', '&gt;')
   .replaceAll('"', '&quot;')
   .replaceAll("'", '&#39;')
+
+const fleetIssues = fleetRegistryIssues(fleetRegistry)
+if (fleetIssues.length) throw new Error(`fleet registry is invalid: ${fleetIssues.join('; ')}`)
+if (!REGISTERED_FLEET_IDS.every((id) => coveragePage.includes(`>${escapeHtml(fleetRegistry.projects.find((project) => project.id === id)?.label || '')}`))
+  || !coveragePage.includes(fleetRegistry.source.revision)
+  || !coveragePage.includes('Everything mapped.<br><em>Nothing blended by accident.</em>')) {
+  throw new Error('coverage page omits a registered project or immutable source receipt')
+}
 
 if (appFeed.schema !== 'mqdnse.app-feed.v1') throw new Error('unexpected app-feed schema')
 if (!validAppCopyDocument(appCopy)) {
@@ -139,6 +157,15 @@ for (const item of webFeed.items) {
   if (extension.lane === 'INTERPRETED' && item.external_url !== extension.sourceUrl) {
     throw new Error(`interpreted web feed item lost its canonical source: ${item.id}`)
   }
+  if (extension.lane === 'INTERPRETED'
+    && (!copy.whatChanged
+      || !copy.nextCheck
+      || copy.qualityGate !== 'PASSED'
+      || !['REVIEWED_REVISION_BOUND', 'DETERMINISTIC_SOURCE_GROUNDED'].includes(copy.method)
+      || /unchanged than/i.test(`${copy.inEnglish} ${copy.whatChanged}`)
+      || /^evidence[- ]backed desk finding\.?$/i.test(copy.whyItMatters))) {
+    throw new Error(`interpreted web feed item failed its analysis-quality contract: ${item.id}`)
+  }
 }
 if ((homepage.match(/data-story(?:\s|>)/g) || []).length !== expectedWebIds.length) {
   throw new Error('homepage does not render every website archive record')
@@ -165,6 +192,10 @@ for (const story of expectedSourceRecords) {
   }
   if (!page.includes(`href="${story.url.replaceAll('&', '&amp;')}"`)
     || !page.includes('INTERPRETED /')
+    || !page.includes('What changed')
+    || !page.includes('What to check next')
+    || !page.includes(escapeHtml(feedItem._mqdnse.copy.whatChanged))
+    || !page.includes(escapeHtml(feedItem._mqdnse.copy.nextCheck))
     || !page.includes(story.limitation.replaceAll('&', '&amp;').replaceAll('<', '&lt;').replaceAll('>', '&gt;').replaceAll('"', '&quot;').replaceAll("'", '&#39;'))) {
     throw new Error(`interpretation page lost source provenance or boundary for ${story.id}`)
   }
@@ -232,7 +263,7 @@ const llms = await read('llms.txt')
 for (const source of ['https://seiche.info/', 'https://liquilens.in/', 'https://liquilens-undertow.com/']) {
   if (!llms.includes(source)) throw new Error(`llms.txt omits specialist source ${source}`)
 }
-for (const route of ['/api/v1/capabilities', '/openapi.json', '/mcp', '/.well-known/mcp.json', '/.well-known/ai-catalog.json']) {
+for (const route of ['/coverage', '/api/v1/capabilities', '/openapi.json', '/mcp', '/.well-known/mcp.json', '/.well-known/ai-catalog.json']) {
   if (!llms.includes(`${SITE_ORIGIN}${route}`)) throw new Error(`llms.txt omits discovery route ${route}`)
 }
 const [serverManifest, publicServerManifest, openapi, mcpDiscovery, aiCatalog] = await Promise.all([
@@ -283,6 +314,12 @@ if (!homepage.includes('/assets/media/original-app-teaser-1080x1920.mp4')) {
 if (homepage.includes('myquant-app.vercel.app')) throw new Error('paused app preview is still promoted')
 const originalTeaser = await readFile(join(dist, 'assets', 'media', 'original-app-teaser-1080x1920.mp4'))
 if (originalTeaser.byteLength < 100_000) throw new Error('original website teaser is missing or truncated')
+const publishedMedia = await readdir(join(dist, 'assets', 'media'))
+if (publishedMedia.some((name) => name.startsWith('field-tape-'))
+  || publicText.includes('the big short')
+  || publicText.includes('field tape / the')) {
+  throw new Error('third-party field footage or copy leaked into the public build')
+}
 
 const caseFileCount = expectedSourceRecords.filter((story) => story.articleType === 'case_file').length
-process.stdout.write(`Verified ${expectedSourceRecords.length} specialist interpretations including ${caseFileCount} historical case files, ${webFeed.items.length} total web articles, suspended zero-story app feed, original teaser, ${appFeed.notices.length} notices, and ${requiredPages.length} required pages\n`)
+process.stdout.write(`Verified ${expectedSourceRecords.length} quality-gated specialist interpretations including ${caseFileCount} historical case files, ${webFeed.items.length} total web articles, ${fleetRegistry.projects.length} mapped family projects, suspended zero-story app feed, original-only media, ${appFeed.notices.length} notices, and ${requiredPages.length} required pages\n`)

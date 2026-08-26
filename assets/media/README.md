@@ -9,16 +9,9 @@ creative:
   30 fps. The vertical master is composited over a moving, desaturated version
   of itself to fit the widescreen director-monitor frame without cropping the UI.
 - `original-desk-tape-cinema-poster.jpg` — opening frame for the website cut.
-- `field-tape-my-quant.mp4` — 35-second silent H.264 field cut, 720×332. Screen
-  recording of the “Look at him. That’s my quant.” scene from The Big Short with
-  burned-in subtitles; the dialogue the homepage quotes.
-- `field-tape-my-quant-poster.jpg` — opening frame for the quant field cut.
-- `field-tape-vennett.mp4` — 9.4-second silent H.264 field cut, 720×332. Screen
-  recording of the “I can’t hate him…” scene from The Big Short with burned-in
-  subtitles; the ACT II blockquote.
-- `field-tape-vennett-poster.jpg` — opening frame for the Vennett field cut.
 
-Both MP4 files are silent, use `yuv420p` for broad browser support, and place the
-MP4 index before the media payload for fast startup. The source master and its
-integrity manifest also live under
+The published MP4 files are silent, use `yuv420p` for broad browser support,
+and place the MP4 index before the media payload for fast startup. The build
+explicitly excludes third-party field recordings; only these first-party assets
+may enter `dist/`. The source master and its integrity manifest also live under
 `/Users/mrinal/dev/myquant-app/growth/creative/`.

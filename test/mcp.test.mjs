@@ -82,6 +82,12 @@ function feedStory(index) {
         inEnglish: `Plain-English copy ${index}`,
         whyItMatters: `Why it matters ${index}`,
         uncertainty: `Uncertainty ${index}`,
+        ...(index === 0 ? {} : {
+          whatChanged: `What changed in the bounded source record ${index}.`,
+          nextCheck: `What to inspect in the next source record ${index}.`,
+          qualityGate: 'PASSED',
+          method: 'DETERMINISTIC_SOURCE_GROUNDED',
+        }),
       },
       sources: index === 0 ? [{
         label: 'Primary statistical release',
@@ -242,6 +248,9 @@ test('content tools read a bounded 105-record snapshot and preserve evidence and
   assert.equal(latest.stories[0].id, latest.stories[0]._mqdnse.sourceRecordId)
   assert.equal(latest.stories[0]._mqdnse.evidence.publicationStatus, 'PUBLISHED')
   assert.equal(latest.stories[0]._mqdnse.sources[0].release_id, 'USDL-26-0000')
+  assert.equal(latest.stories[1]._mqdnse.copy.qualityGate, 'PASSED')
+  assert.match(latest.stories[1]._mqdnse.copy.whatChanged, /bounded source record/)
+  assert.match(latest.stories[1]._mqdnse.copy.nextCheck, /next source record/)
 
   const exact = await reader.getStory({ id: 'myquant:test-release-story' })
   assert.equal(exact.story._mqdnse.sources[0].event_time, '2026-08-25T12:00:00.000Z')
@@ -281,6 +290,7 @@ test('content tools fail closed on identity, publication, ordering, and schema d
     ['duplicate ID', (feed) => { feed.items[1] = structuredClone(feed.items[0]) }, /duplicated/],
     ['non-public status', (feed) => { feed.items[0]._mqdnse.evidence.publicationStatus = 'DRAFT' }, /must be PUBLISHED/],
     ['newest-first order', (feed) => { feed.items[1].date_published = '2026-08-26T00:00:00.000Z' }, /newest-first/],
+    ['analysis-quality receipt', (feed) => { delete feed.items[1]._mqdnse.copy.whatChanged }, /analysis-quality receipt/],
     ['unknown item field', (feed) => { feed.items[0].privateDraft = true }, /unsupported field/],
   ]
   for (const [name, mutate, pattern] of cases) {

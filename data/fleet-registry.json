@@ -1,0 +1,318 @@
+{
+  "schema": "mqdnse.fleet-registry.v1",
+  "reviewedAt": "2026-08-26T12:30:00Z",
+  "scope": "The seven LiquiLens core repositories, six declared research modules, and ten registered adjacent surfaces. NarcoScope is listed separately as an evidence-network route.",
+  "source": {
+    "schema": "liquilens.family.toml.v1",
+    "revision": "ae80aaa7881273701a3f0bd0fb3cfb737d9c87dd",
+    "url": "https://github.com/beepboop2025/LiquiLens/blob/ae80aaa7881273701a3f0bd0fb3cfb737d9c87dd/governance/family.toml"
+  },
+  "projects": [
+    {
+      "id": "liquilens",
+      "label": "LiquiLens",
+      "group": "core",
+      "kind": "product",
+      "role": "Reviewer-facing, jurisdiction-specific financial evidence application and supported API composition.",
+      "maturity": "preproduction",
+      "url": "https://liquilens.in/",
+      "analysis": {
+        "mode": "DIRECT_READING_SOURCE",
+        "product": "liquilens",
+        "reason": "Desk bits, investigations, and historical case files are normalized into public MyQuant readings."
+      }
+    },
+    {
+      "id": "liquilens-lab",
+      "label": "LiquiLens Lab",
+      "group": "core",
+      "kind": "evidence-contracts",
+      "role": "Shared temporal, evidence, evaluation, and decision contracts.",
+      "maturity": "research",
+      "url": "https://github.com/beepboop2025/liquilens-lab",
+      "analysis": {
+        "mode": "UPSTREAM_EVIDENCE",
+        "reason": "It defines evidence contracts used upstream; it does not publish a separate editorial reading feed."
+      }
+    },
+    {
+      "id": "liquilens-v5",
+      "label": "LiquiLens v5 research",
+      "group": "core",
+      "kind": "research-workspace",
+      "role": "Declared MFI research-module workspace.",
+      "maturity": "research",
+      "url": "https://github.com/beepboop2025/liquilens-v5",
+      "analysis": {
+        "mode": "UPSTREAM_EVIDENCE",
+        "reason": "Research results require their own evidence and publication gate before becoming a public reading."
+      }
+    },
+    {
+      "id": "seiche",
+      "label": "Seiche",
+      "group": "core",
+      "kind": "product",
+      "role": "Dollar-funding collection, history, research, and publication.",
+      "maturity": "preproduction",
+      "url": "https://seiche.info/",
+      "analysis": {
+        "mode": "DIRECT_READING_SOURCE",
+        "product": "seiche",
+        "reason": "Dispatches and investigations are normalized into public MyQuant readings."
+      }
+    },
+    {
+      "id": "riptide",
+      "label": "Riptide",
+      "group": "core",
+      "kind": "scenario-research",
+      "role": "Scenario propagation, risk constraints, and decision simulation.",
+      "maturity": "research",
+      "url": "https://github.com/beepboop2025/riptide",
+      "analysis": {
+        "mode": "UPSTREAM_EVIDENCE",
+        "reason": "Riptide emits bounded scenario artifacts; it has no approved public article feed and cannot authorize publication."
+      }
+    },
+    {
+      "id": "undertow",
+      "label": "Undertow US evidence provider",
+      "group": "core",
+      "kind": "private-evidence-provider",
+      "role": "Reviewed point-in-time US bank evidence collection, replay, features, and historical diagnostics.",
+      "maturity": "research",
+      "analysis": {
+        "mode": "UPSTREAM_VIA_PRODUCT",
+        "via": "liquilens",
+        "reason": "Approved public outputs arrive through LiquiLens desk and case-file records, not a second public Undertow feed."
+      }
+    },
+    {
+      "id": "undertow-mm",
+      "label": "Undertow market liquidity",
+      "group": "core",
+      "kind": "product",
+      "role": "Commodity, market-making, exit-liquidity, and funding-transmission research.",
+      "maturity": "research",
+      "url": "https://liquilens-undertow.com/",
+      "analysis": {
+        "mode": "DIRECT_READING_SOURCE",
+        "product": "liquilens-undertow",
+        "reason": "Dispatches and eligible investigations are normalized into public MyQuant readings."
+      }
+    },
+    {
+      "id": "v5-backtest-harness",
+      "label": "v5 Backtest Harness",
+      "group": "module",
+      "kind": "research-module",
+      "role": "Declared evaluation harness for the v5 MFI research workspace.",
+      "maturity": "research",
+      "url": "https://github.com/beepboop2025/liquilens-v5-backtest-harness",
+      "analysis": {
+        "mode": "RESEARCH_ONLY",
+        "reason": "A harness evaluates research; it is not itself a current market reading."
+      }
+    },
+    {
+      "id": "v5-case-study-2019-nbfc",
+      "label": "v5 2019 NBFC Case Study",
+      "group": "module",
+      "kind": "research-module",
+      "role": "Historical NBFC case-study module.",
+      "maturity": "research",
+      "url": "https://github.com/beepboop2025/liquilens-v5-case-2019-nbfc",
+      "analysis": {
+        "mode": "RESEARCH_ONLY",
+        "reason": "Retrospective research must not be presented as a live or independently validated reading."
+      }
+    },
+    {
+      "id": "v5-m1-ce-timing",
+      "label": "v5 M1 CE Timing",
+      "group": "module",
+      "kind": "research-module",
+      "role": "MFI timing research module.",
+      "maturity": "research",
+      "url": "https://github.com/beepboop2025/liquilens-v5-m1-ce-timing",
+      "analysis": {
+        "mode": "RESEARCH_ONLY",
+        "reason": "The module has no separately approved public reading contract."
+      }
+    },
+    {
+      "id": "v5-m2-velocity",
+      "label": "v5 M2 Velocity",
+      "group": "module",
+      "kind": "research-module",
+      "role": "MFI velocity research module.",
+      "maturity": "research",
+      "url": "https://github.com/beepboop2025/liquilens-v5-m2-velocity",
+      "analysis": {
+        "mode": "RESEARCH_ONLY",
+        "reason": "The module has no separately approved public reading contract."
+      }
+    },
+    {
+      "id": "v5-m3-graph-contagion",
+      "label": "v5 M3 Graph Contagion",
+      "group": "module",
+      "kind": "research-module",
+      "role": "MFI graph-contagion research module.",
+      "maturity": "research",
+      "url": "https://github.com/beepboop2025/liquilens-v5-m3-graph-contagion",
+      "analysis": {
+        "mode": "RESEARCH_ONLY",
+        "reason": "The module has no separately approved public reading contract."
+      }
+    },
+    {
+      "id": "v5-m4-concentration",
+      "label": "v5 M4 Concentration",
+      "group": "module",
+      "kind": "research-module",
+      "role": "MFI concentration research module.",
+      "maturity": "research",
+      "url": "https://github.com/beepboop2025/liquilens-v5-m4-concentration",
+      "analysis": {
+        "mode": "RESEARCH_ONLY",
+        "reason": "The module has no separately approved public reading contract."
+      }
+    },
+    {
+      "id": "liquilens-cli",
+      "label": "LiquiLens CLI",
+      "group": "adjacent",
+      "kind": "runtime-client",
+      "role": "Terminal client for the public Failure Radar and evidence ledger.",
+      "url": "https://github.com/beepboop2025/liquilens-cli",
+      "analysis": {
+        "mode": "DELIVERY_SURFACE",
+        "via": "liquilens",
+        "reason": "It delivers LiquiLens evidence and must not be counted as a second reading source."
+      }
+    },
+    {
+      "id": "liquilens-mcp",
+      "label": "LiquiLens MCP listing",
+      "group": "adjacent",
+      "kind": "listing",
+      "role": "Registry metadata for the hosted LiquiLens MCP server.",
+      "url": "https://github.com/beepboop2025/liquilens-mcp",
+      "analysis": {
+        "mode": "DELIVERY_SURFACE",
+        "via": "liquilens",
+        "reason": "The listing publishes no facts and must not duplicate the LiquiLens source record."
+      }
+    },
+    {
+      "id": "undertow-mcp",
+      "label": "Undertow MCP listing",
+      "group": "adjacent",
+      "kind": "listing",
+      "role": "Registry metadata for the hosted Undertow MCP server.",
+      "url": "https://github.com/beepboop2025/undertow-mcp",
+      "analysis": {
+        "mode": "DELIVERY_SURFACE",
+        "via": "undertow-mm",
+        "reason": "The listing publishes no facts and must not duplicate the Undertow source record."
+      }
+    },
+    {
+      "id": "myquantdoesntspeakenglish",
+      "label": "My Quant Doesn't Speak English",
+      "group": "adjacent",
+      "kind": "editorial-consumer",
+      "role": "Public reading layer for compatible, source-published evidence records.",
+      "url": "https://myquantdoesntspeakenglish.com/",
+      "analysis": {
+        "mode": "EDITORIAL_PUBLISHER",
+        "reason": "This site publishes explanations and house articles; it does not originate the specialist facts it interprets."
+      }
+    },
+    {
+      "id": "myquant-intelligence",
+      "label": "MyQuant Intelligence",
+      "group": "adjacent",
+      "kind": "private-editorial-authority",
+      "role": "Private provenance, review, evaluation, and training-eligibility authority.",
+      "analysis": {
+        "mode": "PRIVATE_AUTHORITY",
+        "reason": "It can issue revision-bound review receipts but is not a source of current facts or automatic publication authority."
+      }
+    },
+    {
+      "id": "myquant-app",
+      "label": "MyQuant App",
+      "group": "adjacent",
+      "kind": "runtime-client",
+      "role": "Read-only client for the bounded MyQuant app feed.",
+      "analysis": {
+        "mode": "PAUSED_CLIENT",
+        "reason": "The public app feed and production distribution remain suspended, so it contributes no separate readings."
+      }
+    },
+    {
+      "id": "liquilens-site",
+      "label": "LiquiLens public site",
+      "group": "adjacent",
+      "kind": "public-site",
+      "role": "Public evidence and documentation site for LiquiLens.",
+      "url": "https://liquilens.in/",
+      "analysis": {
+        "mode": "DELIVERY_SURFACE",
+        "via": "liquilens",
+        "reason": "The public site serves LiquiLens records; it is not a second scoring or reading engine."
+      }
+    },
+    {
+      "id": "palimpsest",
+      "label": "Palimpsest",
+      "group": "adjacent",
+      "kind": "public-evidence-desk",
+      "role": "Public information-control, censorship-measurement, and sealed AI-evaluation desk.",
+      "url": "https://palimpsest.info/",
+      "analysis": {
+        "mode": "ADJACENT_EVIDENCE",
+        "reason": "It publishes a separate evidence domain. MyQuant links it but does not blend its measurements into a financial reading."
+      }
+    },
+    {
+      "id": "scamshield",
+      "label": "ScamShield",
+      "group": "adjacent",
+      "kind": "public-bot",
+      "role": "Evidence-bounded triage of submitted or authorized Telegram messages.",
+      "url": "https://palimpsest.info/scamshield/",
+      "analysis": {
+        "mode": "ADJACENT_EVIDENCE",
+        "reason": "Private submitted messages and scam-typology evidence are outside the public financial-reading feed and are never auto-published here."
+      }
+    },
+    {
+      "id": "fleet-bots",
+      "label": "Fleet Bots",
+      "group": "adjacent",
+      "kind": "deployment-composition",
+      "role": "Private packaging and routing for six public Telegram bots and bounded news fan-out.",
+      "analysis": {
+        "mode": "DELIVERY_SURFACE",
+        "reason": "Bot transport owns no editorial facts and must not be counted as a separate reading source."
+      }
+    }
+  ],
+  "networkProjects": [
+    {
+      "id": "narcoscope",
+      "label": "NarcoScope",
+      "kind": "public-evidence-desk",
+      "role": "Official-record evidence on illicit-market infrastructure.",
+      "url": "https://narcoscope.com/",
+      "analysis": {
+        "mode": "ADJACENT_EVIDENCE",
+        "reason": "It shares evidence standards but remains a separate subject and is not blended into financial readings."
+      }
+    }
+  ]
+}
