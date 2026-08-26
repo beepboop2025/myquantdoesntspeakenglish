@@ -449,13 +449,13 @@ export const CAPABILITIES = Object.freeze({
     updated_at: '2026-08-26',
     compatibility: 'additive',
     existing_routes_unchanged: true,
-    state: 'candidate',
+    state: 'available',
   },
   features: [
     { id: 'finite-briefing', title: 'Finite briefing', status: 'available', description: 'Publishes up to five ranked market stories instead of an infinite feed.' },
     { id: 'evidence-network', title: 'Evidence network', status: 'available', description: 'Carries provenance, editorial status, publication gates, and correction propagation.' },
     { id: 'app-feed', title: 'Versioned app feed', status: 'available', description: 'Serves a validated, correction-aware feed for the mobile and web app.' },
-    { id: 'editorial-content-mcp', title: 'Editorial content MCP', status: 'candidate', description: 'Adds bounded latest, exact-ID, and search reads over the public editorial archive.' },
+    { id: 'editorial-content-mcp', title: 'Editorial content MCP', status: 'available', description: 'Adds bounded latest, exact-ID, and search reads over the public editorial archive.' },
   ],
   surfaces: {
     web: SITE_URL,

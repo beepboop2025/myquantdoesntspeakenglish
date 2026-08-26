@@ -46,7 +46,7 @@
         "productVersion": "0.1.0",
         "apiVersion": "myquant.editorial/1.1",
         "publicToolCount": 5,
-        "releaseState": "candidate",
+        "releaseState": "available",
         "maxResultsPerContentCall": 20,
         "contentAuthority": "PUBLIC_EDITORIAL_ARCHIVE"
       }

@@ -264,7 +264,7 @@ const mcpEntry = aiCatalog.entries?.find((entry) => entry.type === 'application/
 const openapiEntry = aiCatalog.entries?.find((entry) => entry.type === 'application/vnd.oai.openapi+json')
 if (aiCatalog.specVersion !== '1.0'
   || JSON.stringify(mcpEntry?.data) !== JSON.stringify(serverManifest)
-  || mcpEntry?.metadata?.releaseState !== 'candidate'
+  || mcpEntry?.metadata?.releaseState !== 'available'
   || mcpEntry?.metadata?.publicToolCount !== 5
   || mcpEntry?.capabilities?.join(',') !== 'list_capabilities,get_health,latest_stories,get_story,search_stories'
   || openapiEntry?.url !== `${SITE_ORIGIN}/openapi.json`) {

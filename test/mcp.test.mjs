@@ -323,7 +323,7 @@ test('product, REST, MCP, and deployed-source versions remain explicit', () => {
   assert.equal(CAPABILITIES.product.version, '0.1.0')
   assert.equal(CAPABILITIES.release.api_version, 'myquant.editorial/1.1')
   assert.equal(CAPABILITIES.release.mcp_version, '2.1.0')
-  assert.equal(CAPABILITIES.release.state, 'candidate')
+  assert.equal(CAPABILITIES.release.state, 'available')
   assert.equal(CAPABILITIES.release.source_sha, null)
   assert.deepEqual(CAPABILITIES.surfaces.discovery, {
     openapi: 'https://myquantdoesntspeakenglish.com/openapi.json',

@@ -28,7 +28,7 @@ test('Registry, AI catalog, and well-known discovery share one MCP identity', as
   assert.deepEqual(mcpEntry.data, server)
   assert.equal(mcpEntry.metadata.productVersion, '0.1.0')
   assert.equal(mcpEntry.metadata.apiVersion, 'myquant.editorial/1.1')
-  assert.equal(mcpEntry.metadata.releaseState, 'candidate')
+  assert.equal(mcpEntry.metadata.releaseState, 'available')
   assert.equal(mcpEntry.metadata.publicToolCount, 5)
   assert.deepEqual(mcpEntry.capabilities, [
     'list_capabilities', 'get_health', 'latest_stories', 'get_story', 'search_stories',

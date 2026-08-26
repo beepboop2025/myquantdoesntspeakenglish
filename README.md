@@ -48,7 +48,7 @@ The product exposes read-only discovery without accounts or user state:
   public AI/MCP discovery, with the Registry manifest at `GET /server.json`.
 
 The product version (`0.1.0`), REST contract (`myquant.editorial/1.1`), and
-MCP server (`2.1.0` candidate) stay distinct. Content tools read the canonical
+MCP server (`2.1.0` available) stay distinct. Content tools read the canonical
 public `/feed.json`, validate its full publication/evidence contract, retain
 source and release fields, and cap each list/search response at 20 records.
 Public health also reports Vercel's exact deployed Git SHA when available,
