@@ -1,6 +1,6 @@
 {
   "schema": "mqdnse.feed-cache.v2",
-  "syncedAt": "2026-08-27T12:50:31.795Z",
+  "syncedAt": "2026-08-27T23:48:31.259Z",
   "channels": {
     "liquilens-desk": [
       {
@@ -559,6 +559,29 @@
       }
     ],
     "seiche-dispatches": [
+      {
+        "id": "seiche:2026-08-27-daily",
+        "product": "seiche",
+        "title": "SRF accepted wakes to 0.10 $B overnight: 67.5 sigma on a near-zero base, not a large flow",
+        "dek": "The board reads 45 out of 100, EROSION; the dated reserve path contributes 11.0 points; the pooled five-business-day event read is 6.4%; plumbing leads market pricing by +32 percentile points. The index is -0.3 against the last published letter.",
+        "url": "https://seiche.info/dispatches/2026-08-27-daily",
+        "beat": "dollar-funding-plumbing",
+        "editorialClass": "full_story",
+        "publicationStatus": "PUBLISHED",
+        "published": "2026-08-27T20:59:33Z",
+        "eventTime": "2026-08-27T00:00:00Z",
+        "knowledgeTime": "2026-08-27T20:59:33Z",
+        "evidenceStatus": "DERIVED",
+        "contribution": "fresh_longitudinal_delta · regime_transition · cross_signal_divergence · dated_forward_test",
+        "limitation": "The composite is a Seiche derivation, not an observed market price.",
+        "newsworthiness": 90,
+        "articleType": "full_story",
+        "pointInTimeStatus": "",
+        "verdicts": null,
+        "outcomeWindow": null,
+        "fraudMasked": false,
+        "fingerprint": "eb886e1f1354de0995a420b44bea7d22ee66e57739a62f267f22dc49a836af2a"
+      },
       {
         "id": "seiche:2026-08-26-daily",
         "product": "seiche",
@@ -2502,7 +2525,7 @@
     },
     "seiche-dispatches": {
       "state": "live",
-      "detail": "51 records"
+      "detail": "52 records"
     },
     "seiche-investigations": {
       "state": "live",
@@ -3071,6 +3094,29 @@
       }
     ],
     "seiche": [
+      {
+        "id": "seiche:2026-08-27-daily",
+        "product": "seiche",
+        "title": "SRF accepted wakes to 0.10 $B overnight: 67.5 sigma on a near-zero base, not a large flow",
+        "dek": "The board reads 45 out of 100, EROSION; the dated reserve path contributes 11.0 points; the pooled five-business-day event read is 6.4%; plumbing leads market pricing by +32 percentile points. The index is -0.3 against the last published letter.",
+        "url": "https://seiche.info/dispatches/2026-08-27-daily",
+        "beat": "dollar-funding-plumbing",
+        "editorialClass": "full_story",
+        "publicationStatus": "PUBLISHED",
+        "published": "2026-08-27T20:59:33Z",
+        "eventTime": "2026-08-27T00:00:00Z",
+        "knowledgeTime": "2026-08-27T20:59:33Z",
+        "evidenceStatus": "DERIVED",
+        "contribution": "fresh_longitudinal_delta · regime_transition · cross_signal_divergence · dated_forward_test",
+        "limitation": "The composite is a Seiche derivation, not an observed market price.",
+        "newsworthiness": 90,
+        "articleType": "full_story",
+        "pointInTimeStatus": "",
+        "verdicts": null,
+        "outcomeWindow": null,
+        "fraudMasked": false,
+        "fingerprint": "eb886e1f1354de0995a420b44bea7d22ee66e57739a62f267f22dc49a836af2a"
+      },
       {
         "id": "seiche:2026-08-26-daily",
         "product": "seiche",
@@ -5002,7 +5048,7 @@
     },
     "seiche": {
       "state": "live",
-      "detail": "52 records · all 2 channels connected"
+      "detail": "53 records · all 2 channels connected"
     },
     "liquilens-undertow": {
       "state": "cached",
