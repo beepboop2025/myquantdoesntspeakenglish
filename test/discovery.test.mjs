@@ -15,6 +15,7 @@ const readJson = (path) => readFile(
 test('fleet coverage is complete, immutable-source-bound, and honest about direct readings', async () => {
   const registry = await readJson('data/fleet-registry.json')
   const direct = registry.projects.filter((project) => project.analysis.mode === 'DIRECT_READING_SOURCE')
+  const scamshield = registry.projects.find((project) => project.id === 'scamshield')
 
   assert.deepEqual(fleetRegistryIssues(registry), [])
   assert.deepEqual(registry.projects.map(({ id }) => id).sort(), [...REGISTERED_FLEET_IDS].sort())
@@ -24,6 +25,10 @@ test('fleet coverage is complete, immutable-source-bound, and honest about direc
   assert.equal(registry.projects.filter((project) => project.group === 'core').length, 7)
   assert.equal(registry.projects.filter((project) => project.group === 'module').length, 6)
   assert.equal(registry.projects.filter((project) => project.group === 'adjacent').length, 10)
+  assert.equal(
+    scamshield?.url,
+    'https://palimpsest.info/guides/telegram-scam-message-checker/',
+  )
 })
 
 test('Registry, AI catalog, and well-known discovery share one MCP identity', async () => {
