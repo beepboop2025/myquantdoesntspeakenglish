@@ -1,6 +1,6 @@
 {
   "schema": "mqdnse.fleet-registry.v1",
-  "reviewedAt": "2026-08-26T12:30:00Z",
+  "reviewedAt": "2026-08-28T11:19:12Z",
   "scope": "The seven LiquiLens core repositories, six declared research modules, and ten registered adjacent surfaces. NarcoScope is listed separately as an evidence-network route.",
   "source": {
     "schema": "liquilens.family.toml.v1",
@@ -284,7 +284,7 @@
       "group": "adjacent",
       "kind": "public-bot",
       "role": "Evidence-bounded triage of submitted or authorized Telegram messages.",
-      "url": "https://palimpsest.info/scamshield/",
+      "url": "https://palimpsest.info/guides/telegram-scam-message-checker/",
       "analysis": {
         "mode": "ADJACENT_EVIDENCE",
         "reason": "Private submitted messages and scam-typology evidence are outside the public financial-reading feed and are never auto-published here."
