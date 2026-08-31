@@ -89,6 +89,7 @@ test('Vercel routes and caches every public discovery surface', async () => {
   )
   const headerRoutes = new Set(vercel.headers.map(({ source }) => source))
 
+  assert.equal(vercel.buildCommand, 'MYQUANT_USE_REVIEWED_CACHE=1 npm run build')
   assert.equal(rewrites.get('/mcp'), '/api/mcp')
   assert.equal(rewrites.get('/api/openapi.json'), '/openapi.json')
   assert.ok(headerRoutes.has('/openapi.json'))
