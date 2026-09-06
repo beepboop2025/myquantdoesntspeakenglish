@@ -58,7 +58,7 @@ jobs:
           import { readFile } from 'node:fs/promises'
           const server = JSON.parse(await readFile('server.json', 'utf8'))
           if (server.name !== 'io.github.beepboop2025/myquant-editorial'
-            || server.version !== '2.1.0'
+            || server.version !== '2.1.1'
             || server.remotes?.[0]?.url !== 'https://myquantdoesntspeakenglish.com/mcp') {
             throw new Error('unexpected Registry identity')
           }

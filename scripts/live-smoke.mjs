@@ -20,10 +20,10 @@ const [capabilities, health, openapi, catalog, discovery, publicManifest, editor
 
 if (capabilities.data?.product?.id !== 'myquant-editorial'
   || capabilities.data?.release?.api_version !== 'myquant.editorial/1.1'
-  || capabilities.data?.release?.mcp_version !== '2.1.0') {
+  || capabilities.data?.release?.mcp_version !== '2.1.1') {
   throw new Error('live capabilities have incompatible product/API/MCP versions')
 }
-if (health.data?.ok !== true || health.data?.mcp_version !== '2.1.0') {
+if (health.data?.ok !== true || health.data?.mcp_version !== '2.1.1') {
   throw new Error('live health is incompatible')
 }
 if (expectedSha && health.data?.source_sha !== expectedSha) {
@@ -61,10 +61,10 @@ const latest = await mcp(4, 'tools/call', { name: 'latest_stories', arguments: {
 const firstId = editorialFeed.items[0].id
 const exact = await mcp(5, 'tools/call', { name: 'get_story', arguments: { id: firstId } })
 const searched = await mcp(6, 'tools/call', { name: 'search_stories', arguments: { query: firstId, limit: 1 } })
-if (initialized.result?.serverInfo?.version !== '2.1.0'
+if (initialized.result?.serverInfo?.version !== '2.1.1'
   || listed.result?.tools?.map(({ name }) => name).join(',') !== 'list_capabilities,get_health,latest_stories,get_story,search_stories'
   || called.result?.isError !== false
-  || called.result?.structuredContent?.mcp_version !== '2.1.0'
+  || called.result?.structuredContent?.mcp_version !== '2.1.1'
   || latest.result?.structuredContent?.feed?.item_count !== editorialFeed.items.length
   || latest.result?.structuredContent?.stories?.[0]?.id !== firstId
   || latest.result?.structuredContent?.stories?.[0]?._mqdnse?.evidence?.publicationStatus !== 'PUBLISHED'
