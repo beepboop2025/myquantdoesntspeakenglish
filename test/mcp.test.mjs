@@ -162,7 +162,7 @@ test('current protocol publishes per-request discovery metadata and read-only an
   assert.equal(response.statusCode, 200)
   assert.equal(response.headers['Access-Control-Allow-Origin'], 'https://myquantdoesntspeakenglish.com')
   assert.equal(body.result.resultType, 'complete')
-  assert.equal(body.result._meta['io.modelcontextprotocol/serverInfo'].version, '2.1.0')
+  assert.equal(body.result._meta['io.modelcontextprotocol/serverInfo'].version, '2.1.1')
   assert.ok(body.result.supportedVersions.includes('2025-06-18'))
 
   const list = await dispatch({ jsonrpc: '2.0', id: 4, method: 'tools/list' })
@@ -284,6 +284,52 @@ test('content tools enforce argument, result, and upstream body limits before re
   await assert.rejects(oversized.latestStories({}), /exceeds its response-body limit/)
 })
 
+test('documented search uses Unicode-normalized AND substrings and newest-first limits', async () => {
+  const reader = createEditorialFeedReader({
+    fetchImpl: async () => feedResponse(feedDocument(4)),
+  })
+  const normalized = await reader.searchStories({ query: '  ＰＲＩＭＡＲＹ\tＲＥＬＥＡＳＥ  ' })
+  assert.equal(normalized.query, 'PRIMARY RELEASE')
+  assert.deepEqual(normalized.stories.map(({ id }) => id), ['myquant:test-release-story'])
+
+  const acrossFields = await reader.searchStories({ query: 'usdl-26-0000 declared' })
+  assert.deepEqual(acrossFields.stories.map(({ id }) => id), ['myquant:test-release-story'])
+  const substring = await reader.searchStories({ query: 'UND', limit: 2 })
+  assert.deepEqual(substring.stories.map(({ id }) => id), [
+    'myquant:test-release-story', 'seiche:test-story-1',
+  ])
+  assert.equal(substring.count, 2)
+  assert.equal(substring.feed.item_count, 4)
+
+  for (const query of ['primary absentword', 'primary OR absentword', '"Primary release"', 'Primary.*release']) {
+    const result = await reader.searchStories({ query })
+    assert.deepEqual(result.stories, [], query)
+    assert.equal(result.count, 0, query)
+  }
+  await assert.rejects(reader.getStory({ id: 'MYQUANT:TEST-RELEASE-STORY' }), /No published story matches/)
+  await assert.rejects(reader.getStory({ id: ' myquant:test-release-story ' }), /trimmed string/)
+})
+
+test('documented 60-second feed cache expires without serving invalid replacement content', async () => {
+  let clock = Date.UTC(2026, 7, 26)
+  let fetches = 0
+  const reader = createEditorialFeedReader({
+    now: () => clock,
+    fetchImpl: async () => {
+      fetches += 1
+      return feedResponse(fetches === 1 ? feedDocument(2) : { invalid: true })
+    },
+  })
+  const first = await reader.latestStories({ limit: 1 })
+  clock += 59_999
+  const cached = await reader.searchStories({ query: first.stories[0].id })
+  assert.equal(cached.feed.fetched_at, first.feed.fetched_at)
+  assert.equal(fetches, 1)
+  clock += 1
+  await assert.rejects(reader.latestStories({ limit: 1 }))
+  assert.equal(fetches, 2)
+})
+
 test('content tools fail closed on identity, publication, ordering, and schema drift', async () => {
   const cases = [
     ['stable sourceRecordId', (feed) => { feed.items[0]._mqdnse.sourceRecordId = 'different-id' }, /stable sourceRecordId/],
@@ -332,7 +378,7 @@ test('REST discovery supports GET, HEAD, CORS preflight, and explicit errors', a
 test('product, REST, MCP, and deployed-source versions remain explicit', () => {
   assert.equal(CAPABILITIES.product.version, '0.1.0')
   assert.equal(CAPABILITIES.release.api_version, 'myquant.editorial/1.1')
-  assert.equal(CAPABILITIES.release.mcp_version, '2.1.0')
+  assert.equal(CAPABILITIES.release.mcp_version, '2.1.1')
   assert.equal(CAPABILITIES.release.state, 'available')
   assert.equal(CAPABILITIES.release.source_sha, null)
   assert.deepEqual(CAPABILITIES.surfaces.discovery, {
@@ -341,6 +387,6 @@ test('product, REST, MCP, and deployed-source versions remain explicit', () => {
     mcp: 'https://myquantdoesntspeakenglish.com/.well-known/mcp.json',
     registry_manifest: 'https://myquantdoesntspeakenglish.com/server.json',
   })
-  assert.equal(getHealth().mcp_version, '2.1.0')
+  assert.equal(getHealth().mcp_version, '2.1.1')
   assert.equal(getHealth().source_sha, null)
 })

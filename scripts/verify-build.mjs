@@ -275,7 +275,7 @@ const [serverManifest, publicServerManifest, openapi, mcpDiscovery, aiCatalog] =
 ])
 if (JSON.stringify(publicServerManifest) !== JSON.stringify(serverManifest)
   || serverManifest.name !== 'io.github.beepboop2025/myquant-editorial'
-  || serverManifest.version !== '2.1.0'
+  || serverManifest.version !== '2.1.1'
   || serverManifest.remotes?.[0]?.url !== `${SITE_ORIGIN}/mcp`) {
   throw new Error('server.json does not describe the public editorial MCP endpoint')
 }

@@ -44,7 +44,7 @@ test('Registry, AI catalog, and well-known discovery share one MCP identity', as
     'https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json',
   )
   assert.equal(server.name, 'io.github.beepboop2025/myquant-editorial')
-  assert.equal(server.version, '2.1.0')
+  assert.equal(server.version, '2.1.1')
   assert.ok(server.description.length <= 100, 'Registry description must fit the 100-character limit')
   assert.deepEqual(server.remotes, [{
     type: 'streamable-http',
@@ -74,7 +74,7 @@ test('curated OpenAPI describes only the two public REST reads', async () => {
   assert.equal(openapi.info.version, '1.1.0')
   assert.equal(openapi.info['x-product-version'], '0.1.0')
   assert.equal(openapi.info['x-api-version'], 'myquant.editorial/1.1')
-  assert.equal(openapi.info['x-mcp-version'], '2.1.0')
+  assert.equal(openapi.info['x-mcp-version'], '2.1.1')
   assert.deepEqual(Object.keys(openapi.paths).sort(), [
     '/api/v1/capabilities',
     '/api/v1/health',
@@ -103,7 +103,7 @@ test('Registry publication is exact-main, deployed-live, and canonically verifie
     'utf8',
   )
 
-  assert.match(workflow, /server\.version !== '2\.1\.0'/)
+  assert.match(workflow, /server\.version !== '2\.1\.1'/)
   assert.match(workflow, /npm run smoke:live/)
   assert.equal(workflow.match(/main:refs\/remotes\/origin\/main/g)?.length, 2)
   assert.match(workflow, /publish server\.json/)

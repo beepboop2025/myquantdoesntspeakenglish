@@ -63,9 +63,16 @@ The product exposes read-only discovery without accounts or user state:
   public AI/MCP discovery, with the Registry manifest at `GET /server.json`.
 
 The product version (`0.1.0`), REST contract (`myquant.editorial/1.1`), and
-MCP server (`2.1.0` available) stay distinct. Content tools read the canonical
+MCP server (`2.1.1` available) stay distinct. Content tools read the canonical
 public `/feed.json`, validate its full publication/evidence contract, retain
 source and release fields, and cap each list/search response at 20 records.
+Use `latest_stories` for a chronological overview, `search_stories` to find
+records by text, and `get_story` with a stable ID returned by either list tool.
+Search normalizes Unicode and whitespace, matches every space-separated term
+as a case-insensitive substring, and returns matches newest first. It does not
+perform semantic search or interpret quotation marks and Boolean operators.
+The tools return the archive's evidence clocks and limitations; a successful
+health check does not establish that its market evidence is current.
 Public health also reports Vercel's exact deployed Git SHA when available,
 allowing scheduled smoke and Registry publication to bind the live endpoint to
 a reviewed commit.
@@ -79,6 +86,23 @@ the listed legacy protocol handshakes. Legacy `Mcp-Session-Id` headers are
 accepted for compatibility but never create server-side sessions. Cross-origin
 MCP requests are limited to the configured MyQuant site origin; the REST
 metadata remains public and cacheable.
+
+The deployed Streamable HTTP endpoint is
+[`https://myquantdoesntspeakenglish.com/mcp`](https://myquantdoesntspeakenglish.com/mcp).
+No API key is required for these public read-only tools. Connect through the
+[Glama remote connector](https://glama.ai/mcp/connectors/io.github.beepboop2025/myquant-editorial)
+or a compatible MCP client. The separate
+[Glama repository listing](https://glama.ai/mcp/servers/beepboop2025/myquantdoesntspeakenglish)
+tracks source licensing and optional Glama-hosted releases; a repository scan
+is distinct from inspection of the deployed remote connector.
+
+## Software license and content rights
+
+First-party software is available under the [MIT license](LICENSE). The license
+does not cover editorial articles, collected data, third-party content, media,
+or branding. Fonts retain their existing SIL Open Font License notices.
+[RIGHTS.md](RIGHTS.md) describes these boundaries. Installing the software or
+reading the MCP does not grant additional rights to its underlying sources.
 
 ## Reviewed shadow copy
 

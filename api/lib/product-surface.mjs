@@ -7,7 +7,7 @@ import {
 
 export const SITE_URL = (process.env.MYQUANT_SITE_URL || 'https://myquantdoesntspeakenglish.com').replace(/\/$/, '')
 export const API_VERSION = 'myquant.editorial/1.1'
-export const MCP_VERSION = '2.1.0'
+export const MCP_VERSION = '2.1.1'
 
 export const EDITORIAL_FEED_LIMITS = Object.freeze({
   cacheTtlMs: 60_000,
@@ -470,7 +470,7 @@ export const CAPABILITIES = Object.freeze({
     api_version: API_VERSION,
     mcp_version: MCP_VERSION,
     source_sha: deployedSourceSha(),
-    updated_at: '2026-08-26',
+    updated_at: '2026-09-06',
     compatibility: 'additive',
     existing_routes_unchanged: true,
     state: 'available',
@@ -537,47 +537,49 @@ export function getHealth() {
 
 const resultListSchema = {
   type: 'object',
+  description: 'Published archive records with a feed receipt and deployed MCP release identity. Evidence dates describe the source record; fetched_at describes retrieval, not market freshness.',
   required: ['schema', 'release', 'feed', 'count', 'stories'],
   properties: {
     schema: { const: 'myquant.editorial-content.v1' },
-    release: { type: 'object' },
-    feed: { type: 'object' },
-    count: { type: 'integer', minimum: 0, maximum: EDITORIAL_FEED_LIMITS.maxResultLimit },
-    stories: { type: 'array', maxItems: EDITORIAL_FEED_LIMITS.maxResultLimit, items: { type: 'object' } },
+    release: { type: 'object', description: 'MCP version and deployed source SHA, when available.' },
+    feed: { type: 'object', description: 'Canonical feed URL, content hash, item count, publication authority, and retrieval timestamp.' },
+    count: { type: 'integer', description: 'Number of records returned, not the total number of matches.', minimum: 0, maximum: EDITORIAL_FEED_LIMITS.maxResultLimit },
+    stories: { type: 'array', description: 'Newest-first published records retaining stable IDs, source links, evidence clocks, publication state, release IDs, and limitations.', maxItems: EDITORIAL_FEED_LIMITS.maxResultLimit, items: { type: 'object' } },
   },
 }
 
 export const TOOLS = Object.freeze({
   list_capabilities: {
     title: 'Discover the My Quant editorial product',
-    description: 'List the current briefing, evidence-network, app-feed, API, MCP, content limits, and interpretation boundaries.',
+    description: 'Discover available product features, API/MCP URLs, versions, content limits, and interpretation boundaries before choosing a content tool. Returns product.capabilities.v1 metadata, without fetching stories or checking upstream freshness. Public and read-only; no credentials or arguments. Use latest_stories for recent records or get_health for endpoint compatibility. The mobile app distribution channel remains separately suspended.',
     inputSchema: { type: 'object', additionalProperties: false },
     call: async () => CAPABILITIES,
   },
   get_health: {
     title: 'Check the My Quant public surfaces',
-    description: 'Return a non-sensitive API and MCP compatibility heartbeat without reading or changing user state.',
+    description: 'Check that this endpoint responds with product.health.v1 metadata: product, API/MCP versions, deployed source SHA when available, and checked_at. Use for connection and version diagnosis; it does not fetch the editorial feed or prove source freshness. Public and read-only; no credentials or arguments. Use list_capabilities for supported surfaces and content limits.',
     inputSchema: { type: 'object', additionalProperties: false },
     call: async () => getHealth(),
   },
   latest_stories: {
     title: 'Read the latest evidence-bounded stories',
-    description: 'Return a bounded newest-first slice of the validated public editorial feed, retaining source, evidence, publication, and release fields.',
+    description: 'Read recent published archive records when you want a chronological overview without a search term. Returns count, stories, the feed receipt, and release identity; each story retains sources, evidence clocks, publication state, release IDs, and limitations. Public and read-only; no credentials. Lists default to 10 records, at most 20, without pagination. The canonical feed is cached for up to 60 seconds; unavailable or invalid feeds return a tool error. Use search_stories for text matching or get_story for an exact returned ID.',
     inputSchema: {
       type: 'object',
-      properties: { limit: { type: 'integer', minimum: 1, maximum: EDITORIAL_FEED_LIMITS.maxResultLimit, default: EDITORIAL_FEED_LIMITS.defaultResultLimit } },
+      properties: { limit: { type: 'integer', description: 'Maximum records to return, newest first; 1–20, default 10. There is no pagination parameter.', minimum: 1, maximum: EDITORIAL_FEED_LIMITS.maxResultLimit, default: EDITORIAL_FEED_LIMITS.defaultResultLimit } },
       additionalProperties: false,
     },
     outputSchema: resultListSchema,
+    annotations: { openWorldHint: true },
     call: (args) => editorialFeed.latestStories(args),
   },
   get_story: {
     title: 'Read one story by stable source ID',
-    description: 'Return one validated public story by its exact stable ID, including its canonical sources, evidence clocks, publication state, and release IDs.',
+    description: 'Retrieve one published story using its exact stable ID from latest_stories or search_stories. Returns story, feed receipt, and release identity while retaining canonical sources, evidence clocks, publication state, release IDs, and limitations. Matching is exact and case-sensitive; an unknown ID returns a tool error. Public and read-only; no credentials. The canonical feed is cached for up to 60 seconds; unavailable or invalid feeds return a tool error. Use search_stories first when you only know a title or topic.',
     inputSchema: {
       type: 'object',
       required: ['id'],
-      properties: { id: { type: 'string', minLength: 1, maxLength: EDITORIAL_FEED_LIMITS.maxIdCharacters } },
+      properties: { id: { type: 'string', description: 'Exact stable story id copied from a list/search result, including its prefix; not a title or URL. Case-sensitive, nonblank, without surrounding whitespace, at most 256 characters.', minLength: 1, maxLength: EDITORIAL_FEED_LIMITS.maxIdCharacters } },
       additionalProperties: false,
     },
     outputSchema: {
@@ -590,25 +592,27 @@ export const TOOLS = Object.freeze({
         story: { type: 'object' },
       },
     },
+    annotations: { openWorldHint: true },
     call: (args) => editorialFeed.getStory(args),
   },
   search_stories: {
     title: 'Search evidence-bounded stories',
-    description: 'Search title, summary, tags, product, beat, evidence status, contribution, source labels, and source release IDs without expanding the result limit.',
+    description: 'Find published archive records by text when you do not know an exact story ID. All space-separated terms must match as case-insensitive substrings across IDs, titles, summaries, tags, products, beats, evidence status, contributions, or source labels/release IDs. Returns newest-first stories, normalized query, count, feed receipt, and release identity, preserving evidence clocks and limitations. No relevance ranking or pagination; zero matches returns an empty list. Public and read-only; no credentials. The feed is cached for up to 60 seconds; invalid queries or unavailable/invalid feeds return a tool error. Use get_story for an exact ID or latest_stories for an unfiltered overview.',
     inputSchema: {
       type: 'object',
       required: ['query'],
       properties: {
-        query: { type: 'string', minLength: 1, maxLength: EDITORIAL_FEED_LIMITS.maxQueryCharacters },
-        limit: { type: 'integer', minimum: 1, maximum: EDITORIAL_FEED_LIMITS.maxResultLimit, default: EDITORIAL_FEED_LIMITS.defaultResultLimit },
+        query: { type: 'string', description: 'Plain text, for example "dollar funding" or a source release ID. Unicode NFKC-normalized, trimmed, and whitespace-collapsed; every term must match. At most 12 terms, 160 characters, and 512 UTF-8 bytes after normalization. No quote, Boolean, regex, or semantic-search syntax.', minLength: 1, maxLength: EDITORIAL_FEED_LIMITS.maxQueryCharacters },
+        limit: { type: 'integer', description: 'Maximum matching records to return, newest first; 1–20, default 10. Does not change which terms must match.', minimum: 1, maximum: EDITORIAL_FEED_LIMITS.maxResultLimit, default: EDITORIAL_FEED_LIMITS.defaultResultLimit },
       },
       additionalProperties: false,
     },
     outputSchema: {
       ...resultListSchema,
       required: [...resultListSchema.required, 'query'],
-      properties: { ...resultListSchema.properties, query: { type: 'string' } },
+      properties: { ...resultListSchema.properties, query: { type: 'string', description: 'The Unicode-normalized query with leading/trailing whitespace removed and internal whitespace collapsed.' } },
     },
+    annotations: { openWorldHint: true },
     call: (args) => editorialFeed.searchStories(args),
   },
 })
