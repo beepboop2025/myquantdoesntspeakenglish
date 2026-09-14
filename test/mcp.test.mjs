@@ -228,6 +228,38 @@ test('MCP transport rejects foreign origins and oversized or unsupported request
   assert.equal(terminated.body, '')
 })
 
+test('only explicitly registered tools can be dispatched, in both protocol modes', async () => {
+  for (const name of ['constructor', 'toString', '__proto__', 'hasOwnProperty']) {
+    for (const modern of [false, true]) {
+      const response = await dispatch({ jsonrpc: '2.0', id: 21, method: 'tools/call',
+        params: { name, arguments: {} } }, { modern })
+      assert.equal(response.error.code, -32602)
+      assert.match(response.error.message, /Unknown tool/)
+      assert.equal(response.result, undefined)
+    }
+  }
+})
+
+test('explicit malformed arguments cannot silently become a default tool call', async () => {
+  for (const args of [null, false, 0, '', [], ['ignored']]) {
+    const response = await dispatch({ jsonrpc: '2.0', id: 22, method: 'tools/call',
+      params: { name: 'get_health', arguments: args } })
+    assert.equal(response.error.code, -32602)
+  }
+  const omitted = await dispatch({ jsonrpc: '2.0', id: 23, method: 'tools/call',
+    params: { name: 'get_health' } })
+  assert.equal(omitted.result.isError, false)
+})
+
+test('metadata tools enforce their advertised no-argument contract', async () => {
+  for (const name of ['get_health', 'list_capabilities']) {
+    const response = await dispatch({ jsonrpc: '2.0', id: 24, method: 'tools/call',
+      params: { name, arguments: { limit: 10 } } })
+    assert.equal(response.error.code, -32602)
+    assert.match(response.error.message, /Unsupported tool argument/)
+  }
+})
+
 test('content tools read a bounded 105-record snapshot and preserve evidence and release fields', async () => {
   let fetches = 0
   const reader = createEditorialFeedReader({
