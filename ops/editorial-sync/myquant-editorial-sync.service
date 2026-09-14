@@ -1,0 +1,39 @@
+[Unit]
+Description=Refresh and verify the MyQuant public editorial cache
+Wants=network-online.target
+After=network-online.target
+ConditionPathExists=/etc/myquant-editorial-sync/config.json
+
+[Service]
+Type=oneshot
+User=myquant-editorial-sync
+Group=myquant-editorial-sync
+StateDirectory=myquant-editorial-sync
+StateDirectoryMode=0700
+WorkingDirectory=/var/lib/myquant-editorial-sync
+ExecStart=/usr/bin/python3 /usr/local/libexec/myquant-editorial-sync/current/editorial_sync.py --config /etc/myquant-editorial-sync/config.json --publish
+TimeoutStartSec=30min
+KillMode=control-group
+UMask=0077
+Nice=10
+CPUQuota=100%
+MemoryMax=1G
+TasksMax=128
+NoNewPrivileges=true
+CapabilityBoundingSet=
+PrivateTmp=true
+PrivateDevices=true
+ProtectSystem=strict
+ProtectHome=true
+ProtectKernelTunables=true
+ProtectKernelModules=true
+ProtectKernelLogs=true
+ProtectControlGroups=true
+ProtectClock=true
+ProtectHostname=true
+RestrictSUIDSGID=true
+RestrictRealtime=true
+LockPersonality=true
+RestrictAddressFamilies=AF_UNIX AF_INET AF_INET6
+ReadWritePaths=/var/lib/myquant-editorial-sync
+
