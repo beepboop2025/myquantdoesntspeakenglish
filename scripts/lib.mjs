@@ -93,7 +93,8 @@ export const SOURCES = [
     product: 'liquilens-undertow',
     label: 'Undertow investigations',
     channel: 'article-index',
-    url: 'https://liquilens-undertow.com/investigations/index.json',
+    // Existing public alias of the same Worker; article canonicals remain below.
+    url: 'https://undertow.liquilens.in/investigations/index.json',
     home: 'https://liquilens-undertow.com/investigations/',
   },
 ]
