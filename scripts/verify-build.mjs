@@ -1,5 +1,6 @@
 import { readFile, readdir } from 'node:fs/promises'
 import { join } from 'node:path'
+import { createEditorialFeedReader } from '../api/lib/product-surface.mjs'
 import {
   REGISTERED_FLEET_IDS,
   fleetRegistryIssues,
@@ -29,6 +30,13 @@ const requiredPages = [
 const pages = await Promise.all(requiredPages.map(read))
 const appFeed = JSON.parse(await read('app-feed/v1.json'))
 const webFeed = JSON.parse(await read('feed.json'))
+// Exercise the same body, schema and result limits as the deployed content tools.
+const editorialReader = createEditorialFeedReader({
+  fetchImpl: async () => new Response(await read('feed.json'), {
+    headers: { 'Content-Type': 'application/feed+json' },
+  }),
+})
+await editorialReader.latestStories({ limit: 20 })
 const atomFeed = await read('feed.xml')
 const [cache, appCopy, contentStatus, releasePolicy, fleetRegistry] = await Promise.all([
   readSourceJson('data/cache.json'),

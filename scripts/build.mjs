@@ -305,7 +305,7 @@ function signalCockpit(pulse) {
     <header class="cockpit-head"><div><p class="eyebrow">THE DIRECT READING NETWORK, MAPPED</p><h2 id="signals-title">Three compatible desks.<br><em>A translator at the end.</em></h2></div><p>Every mark below comes from a source-published article. The wider fleet remains visible in the coverage ledger without being blended into these readings.</p></header>
     <div class="cockpit-grid">
       <article class="flow-panel"><header><span>A / SIGNAL ROUTE</span><p>System pressure becomes institution context, market-exit context, then an explanation you can inspect.</p></header>${signalMap()}</article>
-      <article class="cadence-panel"><header><div><span>B / ARTICLE CADENCE</span><p>Published output, stacked by the desk that produced it.</p></div><div class="range-buttons" role="group" aria-label="Article cadence range"><button type="button" data-window="7">7D</button><button type="button" data-window="14" class="active">14D</button><button type="button" data-window="28">28D</button></div></header>${cadenceSvg(pulse)}</article>
+      <article class="cadence-panel"><header><div><span>B / ARTICLE CADENCE</span><p>Published output, stacked by the desk that produced it.</p></div><div class="range-buttons" role="group" aria-label="Article cadence range"><button type="button" data-window="7" aria-pressed="false">7D</button><button type="button" data-window="14" class="active" aria-pressed="true">14D</button><button type="button" data-window="28" aria-pressed="false">28D</button></div></header>${cadenceSvg(pulse)}</article>
       <article class="mix-panel"><header><span>C / SOURCE MIX</span><p>What this reading room is actually made of.</p></header>${mixGraphic(pulse)}</article>
     </div>
     <script id="signalPulseData" type="application/json">${JSON.stringify(pulse).replaceAll('<', '\\u003c')}</script>
@@ -553,7 +553,7 @@ function renderHome(stories, cache, consumerCopy, registry) {
     <section class="wire" id="wire" aria-labelledby="wire-title">
       <header class="wire-head">
         <div><p class="eyebrow">THE WHOLE ARGUMENT</p><h2 id="wire-title">Every article. No mystery pagination.</h2></div>
-        <p><strong id="visibleCount">${ordered.length}</strong> of ${ordered.length} articles visible</p>
+        <p role="status" aria-live="polite" aria-atomic="true"><strong id="visibleCount">${ordered.length}</strong> of ${ordered.length} articles visible</p>
       </header>
       <div class="filters" role="group" aria-label="Filter the article reading room">
         <button type="button" class="active" data-filter="all">All <span>${ordered.length}</span></button>

@@ -236,13 +236,20 @@ export function createMcpServer({
       }, serverInfo, modern)
     }
     if (method === 'tools/call') {
-      if (!isRecord(params) || typeof params.name !== 'string' || !isRecord(params.arguments ?? {})) {
+      if (!isRecord(params) || typeof params.name !== 'string'
+        || (Object.hasOwn(params, 'arguments') && !isRecord(params.arguments))) {
         return failure(id, -32602, 'tools/call requires a tool name and object arguments.')
       }
-      const tool = tools[params.name]
+      const tool = Object.hasOwn(tools, params.name) ? tools[params.name] : null
       if (!tool) return failure(id, -32602, `Unknown tool: ${params.name}`)
+      const args = params.arguments ?? {}
+      if (tool.inputSchema?.additionalProperties === false) {
+        const properties = tool.inputSchema.properties ?? {}
+        const unknown = Object.keys(args).find(key => !Object.hasOwn(properties, key))
+        if (unknown !== undefined) return failure(id, -32602, `Unsupported tool argument: ${unknown}`)
+      }
       try {
-        const data = await tool.call(params.arguments ?? {})
+        const data = await tool.call(args)
         return result(id, {
           content: [{ type: 'text', text: JSON.stringify(data) }],
           structuredContent: data,

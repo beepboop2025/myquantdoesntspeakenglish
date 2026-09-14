@@ -1,0 +1,8 @@
+{
+  "state": "/var/lib/myquant-editorial-sync",
+  "ssh_key": "/etc/myquant-editorial-sync/deploy-key",
+  "known_hosts": "/etc/myquant-editorial-sync/known_hosts",
+  "node": "/usr/bin/node",
+  "npm": "/usr/bin/npm"
+}
+
