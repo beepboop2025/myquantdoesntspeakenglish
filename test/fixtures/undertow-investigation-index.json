@@ -1,0 +1,35 @@
+{
+  "schema": "undertow.investigation-index.v1",
+  "publication_policy": "reviewed_longform",
+  "articles": [
+    {
+      "id": "liquilens-undertow:investigation:eight-blanks-are-not-eight-green-lights",
+      "slug": "eight-blanks-are-not-eight-green-lights",
+      "article_type": "investigation",
+      "headline": "Eight blanks are not eight green lights",
+      "dek": "Undertow has 112 published measures across nine market segments. Only investment-grade credit currently earns a public tier. The other eight say PARTIAL because history or replay evidence is incomplete, not because those markets are calm.",
+      "beat": "market-exit-liquidity",
+      "editorial_class": "investigation",
+      "publication_status": "PUBLISHED",
+      "published_at": "2026-08-12T12:00:00+05:30",
+      "modified_at": "2026-08-12T12:00:00+05:30",
+      "editorial_status": "reviewed",
+      "clocks": {
+        "event_time": "2026-08-12T00:00:00Z",
+        "knowledge_time": "2026-08-12T12:00:00+05:30"
+      },
+      "evidence_status": "CONSTRUCTION_PIT_REVIEWED_ANALYSIS",
+      "original_contribution": {
+        "kinds": ["measurement_coverage_change", "coverage_gate_explanation"],
+        "statement": "An evidence-gate audit showing why measure count alone cannot authorize a market-liquidity tier."
+      },
+      "limitations": [
+        "Undertow replays use truncated current-vintage observations restricted by dated knowability, not publication-vintage validated backtests. PARTIAL does not imply illiquidity, and NORMAL does not guarantee executable depth."
+      ],
+      "canonical_url": "https://liquilens-undertow.com/investigations/eight-blanks-are-not-eight-green-lights/",
+      "chart": "/investigations/eight-blanks-are-not-eight-green-lights/coverage-gates.png",
+      "evidence_as_of": "2026-08-12",
+      "related_products": ["seiche", "liquilens"]
+    }
+  ]
+}

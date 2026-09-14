@@ -37,7 +37,7 @@ SOURCES = {
     "seiche-dispatches": "https://seiche.info/dispatches/news.json",
     "seiche-investigations": "https://seiche.info/investigations/index.json",
     "undertow-dispatches": "https://api.seiche.info/undertow/dispatch.json",
-    "undertow-investigations": "https://liquilens-undertow.com/investigations/index.json",
+    "undertow-investigations": "https://undertow.liquilens.in/investigations/index.json",
 }
 MAX_FILE = 16 * 1024 * 1024
 
