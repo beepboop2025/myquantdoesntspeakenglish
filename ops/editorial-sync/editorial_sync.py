@@ -464,7 +464,7 @@ def main() -> int:
         return 1
     print(json.dumps({k: receipt.get(k) for k in (
         "run_id", "status", "input_head", "target_head", "changed", "item_count", "degraded")}))
-    return 1 if receipt.get("status") == "degraded" else 0
+    return 1 if receipt.get("degraded") else 0
 
 
 if __name__ == "__main__":

@@ -8,6 +8,7 @@ import subprocess
 import sys
 import tempfile
 import unittest
+from unittest.mock import patch
 
 SPEC = importlib.util.spec_from_file_location("editorial_sync", Path(__file__).with_name("editorial_sync.py"))
 sync = importlib.util.module_from_spec(SPEC)
@@ -290,6 +291,18 @@ class PublicProof(unittest.TestCase):
                 return self.fetch(url)
             with self.subTest(mode=mode), self.assertRaises(sync.Refused):
                 sync.publication_proof(self.cfg, self.sha, {"feed_sha256": sync.digest(self.body)}, fetch=fetch)
+
+
+class CommandStatus(unittest.TestCase):
+    def test_degraded_dry_run_fails_the_same_cli_gate_as_publication(self):
+        for flag, status in (("--dry-run", "dry-run"), ("--publish", "degraded")):
+            for degraded in (False, True):
+                with self.subTest(flag=flag, degraded=degraded), \
+                     patch.object(sys, "argv", ["editorial_sync.py", "--config", "/fixture/config.json", flag]), \
+                     patch.object(sync, "load_config", return_value=object()), \
+                     patch.object(sync, "execute", return_value={"status": status, "degraded": degraded}), \
+                     patch("builtins.print"):
+                    self.assertEqual(sync.main(), 1 if degraded else 0)
 
 
 if __name__ == "__main__":
