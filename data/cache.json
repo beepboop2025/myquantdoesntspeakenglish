@@ -1,6 +1,6 @@
 {
   "schema": "mqdnse.feed-cache.v2",
-  "syncedAt": "2026-09-15T08:18:05.636Z",
+  "syncedAt": "2026-09-15T20:18:00.221Z",
   "channels": {
     "liquilens-desk": [
       {
@@ -27,17 +27,17 @@
         "fingerprint": "e72e80a4ee6fd11fb940da5d11e4789e4f765f0db9812b064a68151597f2769e"
       },
       {
-        "id": "liquilens-india-breadth-2026-09-15",
+        "id": "liquilens-india-breadth-2026-09-16",
         "product": "liquilens",
         "title": "4 of 19 covered Indian institutions sit above green",
         "dek": "This is the breadth of the vetted live board, not the breadth of the entire Indian financial system; stale and uncovered names remain outside the denominator.",
-        "url": "https://liquilens.in/desk/#liquilens-india-breadth-2026-09-15",
+        "url": "https://liquilens.in/desk/#liquilens-india-breadth-2026-09-16",
         "beat": "institution-risk",
         "editorialClass": "desk_brief",
         "publicationStatus": "PUBLISHED",
-        "published": "2026-09-14T20:17:28Z",
+        "published": "2026-09-15T20:17:58Z",
         "eventTime": "2026-05-30",
-        "knowledgeTime": "2026-09-14T20:17:28Z",
+        "knowledgeTime": "2026-09-15T20:17:58Z",
         "evidenceStatus": "DERIVED",
         "contribution": "cross_sectional_review_breadth",
         "limitation": "The denominator is the fresh-vetted board, not all regulated institutions.",
@@ -47,7 +47,7 @@
         "verdicts": null,
         "outcomeWindow": null,
         "fraudMasked": false,
-        "fingerprint": "6ef78a28f5edcdb935e5b36a4d6b134ceccacf80d8982e75a8ebe1e6bde3856f"
+        "fingerprint": "a8d91034720e6ac18a86d30e0d706f38c065a6d741f56236092d28119534134d"
       },
       {
         "id": "liquilens-us-ndfi-34953-2026-03-31",
@@ -559,6 +559,29 @@
       }
     ],
     "seiche-dispatches": [
+      {
+        "id": "seiche:2026-09-15-daily",
+        "product": "seiche",
+        "title": "ON RRP take-up wakes to 1.42 $B overnight: 2.9 sigma on a near-zero base, not a large flow",
+        "dek": "The board reads 44 out of 100, EROSION; the dated reserve path contributes 11.0 points; the pooled five-business-day event read is 5.7%; plumbing leads market pricing by +19 percentile points. The index is +1.8 against the last published letter.",
+        "url": "https://seiche.info/dispatches/2026-09-15-daily",
+        "beat": "dollar-funding-plumbing",
+        "editorialClass": "full_story",
+        "publicationStatus": "PUBLISHED",
+        "published": "2026-09-15T15:31:24Z",
+        "eventTime": "2026-09-15T00:00:00Z",
+        "knowledgeTime": "2026-09-15T15:31:24Z",
+        "evidenceStatus": "DERIVED",
+        "contribution": "fresh_longitudinal_delta · dated_forward_test",
+        "limitation": "The composite is a Seiche derivation, not an observed market price.",
+        "newsworthiness": 55,
+        "articleType": "full_story",
+        "pointInTimeStatus": "",
+        "verdicts": null,
+        "outcomeWindow": null,
+        "fraudMasked": false,
+        "fingerprint": "d7f01129b20be93201930e3c93a888b9c023f9ea17f1de11c29ec0d0e4bdb11d"
+      },
       {
         "id": "seiche:2026-09-13-daily",
         "product": "seiche",
@@ -2824,7 +2847,7 @@
     },
     "seiche-dispatches": {
       "state": "live",
-      "detail": "65 records"
+      "detail": "66 records"
     },
     "seiche-investigations": {
       "state": "live",
@@ -2842,17 +2865,17 @@
   "feeds": {
     "liquilens": [
       {
-        "id": "liquilens-india-breadth-2026-09-15",
+        "id": "liquilens-india-breadth-2026-09-16",
         "product": "liquilens",
         "title": "4 of 19 covered Indian institutions sit above green",
         "dek": "This is the breadth of the vetted live board, not the breadth of the entire Indian financial system; stale and uncovered names remain outside the denominator.",
-        "url": "https://liquilens.in/desk/#liquilens-india-breadth-2026-09-15",
+        "url": "https://liquilens.in/desk/#liquilens-india-breadth-2026-09-16",
         "beat": "institution-risk",
         "editorialClass": "desk_brief",
         "publicationStatus": "PUBLISHED",
-        "published": "2026-09-14T20:17:28Z",
+        "published": "2026-09-15T20:17:58Z",
         "eventTime": "2026-05-30",
-        "knowledgeTime": "2026-09-14T20:17:28Z",
+        "knowledgeTime": "2026-09-15T20:17:58Z",
         "evidenceStatus": "DERIVED",
         "contribution": "cross_sectional_review_breadth",
         "limitation": "The denominator is the fresh-vetted board, not all regulated institutions.",
@@ -2862,7 +2885,7 @@
         "verdicts": null,
         "outcomeWindow": null,
         "fraudMasked": false,
-        "fingerprint": "6ef78a28f5edcdb935e5b36a4d6b134ceccacf80d8982e75a8ebe1e6bde3856f"
+        "fingerprint": "a8d91034720e6ac18a86d30e0d706f38c065a6d741f56236092d28119534134d"
       },
       {
         "id": "liquilens-india-utkarsh-sfb-2025-2025-03-31",
@@ -3393,6 +3416,29 @@
       }
     ],
     "seiche": [
+      {
+        "id": "seiche:2026-09-15-daily",
+        "product": "seiche",
+        "title": "ON RRP take-up wakes to 1.42 $B overnight: 2.9 sigma on a near-zero base, not a large flow",
+        "dek": "The board reads 44 out of 100, EROSION; the dated reserve path contributes 11.0 points; the pooled five-business-day event read is 5.7%; plumbing leads market pricing by +19 percentile points. The index is +1.8 against the last published letter.",
+        "url": "https://seiche.info/dispatches/2026-09-15-daily",
+        "beat": "dollar-funding-plumbing",
+        "editorialClass": "full_story",
+        "publicationStatus": "PUBLISHED",
+        "published": "2026-09-15T15:31:24Z",
+        "eventTime": "2026-09-15T00:00:00Z",
+        "knowledgeTime": "2026-09-15T15:31:24Z",
+        "evidenceStatus": "DERIVED",
+        "contribution": "fresh_longitudinal_delta · dated_forward_test",
+        "limitation": "The composite is a Seiche derivation, not an observed market price.",
+        "newsworthiness": 55,
+        "articleType": "full_story",
+        "pointInTimeStatus": "",
+        "verdicts": null,
+        "outcomeWindow": null,
+        "fraudMasked": false,
+        "fingerprint": "d7f01129b20be93201930e3c93a888b9c023f9ea17f1de11c29ec0d0e4bdb11d"
+      },
       {
         "id": "seiche:2026-09-13-daily",
         "product": "seiche",
@@ -5646,7 +5692,7 @@
     },
     "seiche": {
       "state": "live",
-      "detail": "66 records · all 2 channels connected"
+      "detail": "67 records · all 2 channels connected"
     },
     "liquilens-undertow": {
       "state": "live",
