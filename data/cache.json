@@ -1,6 +1,6 @@
 {
   "schema": "mqdnse.feed-cache.v2",
-  "syncedAt": "2026-09-22T08:18:07.497Z",
+  "syncedAt": "2026-09-22T20:18:11.515Z",
   "channels": {
     "liquilens-desk": [
       {
@@ -27,17 +27,17 @@
         "fingerprint": "e72e80a4ee6fd11fb940da5d11e4789e4f765f0db9812b064a68151597f2769e"
       },
       {
-        "id": "liquilens-india-breadth-2026-09-22",
+        "id": "liquilens-india-breadth-2026-09-23",
         "product": "liquilens",
         "title": "4 of 19 covered Indian institutions sit above green",
         "dek": "This is the breadth of the vetted live board, not the breadth of the entire Indian financial system; stale and uncovered names remain outside the denominator.",
-        "url": "https://liquilens.in/desk/#liquilens-india-breadth-2026-09-22",
+        "url": "https://liquilens.in/desk/#liquilens-india-breadth-2026-09-23",
         "beat": "institution-risk",
         "editorialClass": "desk_brief",
         "publicationStatus": "PUBLISHED",
-        "published": "2026-09-21T20:17:42Z",
+        "published": "2026-09-22T20:18:10Z",
         "eventTime": "2026-05-30",
-        "knowledgeTime": "2026-09-21T20:17:42Z",
+        "knowledgeTime": "2026-09-22T20:18:10Z",
         "evidenceStatus": "DERIVED",
         "contribution": "cross_sectional_review_breadth",
         "limitation": "The denominator is the fresh-vetted board, not all regulated institutions.",
@@ -47,7 +47,7 @@
         "verdicts": null,
         "outcomeWindow": null,
         "fraudMasked": false,
-        "fingerprint": "b250c84ce18f4e49c3990bf4eb4b62e7756ecc33c202224251004bfebfc539ed"
+        "fingerprint": "f00cee5a4b8b8ba9854d94e38cfcf6cc3a3f1bc9d43b5024ea090a7e7a1fc0ff"
       },
       {
         "id": "liquilens-us-ndfi-34953-2026-03-31",
@@ -2865,17 +2865,17 @@
   "feeds": {
     "liquilens": [
       {
-        "id": "liquilens-india-breadth-2026-09-22",
+        "id": "liquilens-india-breadth-2026-09-23",
         "product": "liquilens",
         "title": "4 of 19 covered Indian institutions sit above green",
         "dek": "This is the breadth of the vetted live board, not the breadth of the entire Indian financial system; stale and uncovered names remain outside the denominator.",
-        "url": "https://liquilens.in/desk/#liquilens-india-breadth-2026-09-22",
+        "url": "https://liquilens.in/desk/#liquilens-india-breadth-2026-09-23",
         "beat": "institution-risk",
         "editorialClass": "desk_brief",
         "publicationStatus": "PUBLISHED",
-        "published": "2026-09-21T20:17:42Z",
+        "published": "2026-09-22T20:18:10Z",
         "eventTime": "2026-05-30",
-        "knowledgeTime": "2026-09-21T20:17:42Z",
+        "knowledgeTime": "2026-09-22T20:18:10Z",
         "evidenceStatus": "DERIVED",
         "contribution": "cross_sectional_review_breadth",
         "limitation": "The denominator is the fresh-vetted board, not all regulated institutions.",
@@ -2885,7 +2885,7 @@
         "verdicts": null,
         "outcomeWindow": null,
         "fraudMasked": false,
-        "fingerprint": "b250c84ce18f4e49c3990bf4eb4b62e7756ecc33c202224251004bfebfc539ed"
+        "fingerprint": "f00cee5a4b8b8ba9854d94e38cfcf6cc3a3f1bc9d43b5024ea090a7e7a1fc0ff"
       },
       {
         "id": "liquilens-india-utkarsh-sfb-2025-2025-03-31",
