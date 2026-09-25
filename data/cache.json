@@ -1,6 +1,6 @@
 {
   "schema": "mqdnse.feed-cache.v2",
-  "syncedAt": "2026-09-25T08:18:52.661Z",
+  "syncedAt": "2026-09-25T14:19:06.590Z",
   "channels": {
     "liquilens-desk": [
       {
@@ -559,6 +559,29 @@
       }
     ],
     "seiche-dispatches": [
+      {
+        "id": "seiche:2026-09-24-daily",
+        "product": "seiche",
+        "title": "The plumbing looks tighter than markets price, but divergence is a warning to investigate, not proof of a squeeze",
+        "dek": "The board reads 44 out of 100, EROSION; the dated reserve path contributes 9.2 points; the pooled five-business-day event read is 6.6%; plumbing leads market pricing by +52 percentile points. The index is +1.7 against the last published letter.",
+        "url": "https://seiche.info/dispatches/2026-09-24-daily",
+        "beat": "dollar-funding-plumbing",
+        "editorialClass": "full_story",
+        "publicationStatus": "PUBLISHED",
+        "published": "2026-09-24T15:47:53Z",
+        "eventTime": "2026-09-23T00:00:00Z",
+        "knowledgeTime": "2026-09-24T15:47:53Z",
+        "evidenceStatus": "DERIVED",
+        "contribution": "fresh_longitudinal_delta · cross_signal_divergence · dated_forward_test",
+        "limitation": "The composite is a Seiche derivation, not an observed market price.",
+        "newsworthiness": 70,
+        "articleType": "full_story",
+        "pointInTimeStatus": "",
+        "verdicts": null,
+        "outcomeWindow": null,
+        "fraudMasked": false,
+        "fingerprint": "f08dd9ef8581d7aed77370402a40441d239aec7133c8e41118b1c14cff7376d4"
+      },
       {
         "id": "seiche:2026-09-15-daily",
         "product": "seiche",
@@ -2847,7 +2870,7 @@
     },
     "seiche-dispatches": {
       "state": "live",
-      "detail": "66 records"
+      "detail": "67 records"
     },
     "seiche-investigations": {
       "state": "live",
@@ -3416,6 +3439,29 @@
       }
     ],
     "seiche": [
+      {
+        "id": "seiche:2026-09-24-daily",
+        "product": "seiche",
+        "title": "The plumbing looks tighter than markets price, but divergence is a warning to investigate, not proof of a squeeze",
+        "dek": "The board reads 44 out of 100, EROSION; the dated reserve path contributes 9.2 points; the pooled five-business-day event read is 6.6%; plumbing leads market pricing by +52 percentile points. The index is +1.7 against the last published letter.",
+        "url": "https://seiche.info/dispatches/2026-09-24-daily",
+        "beat": "dollar-funding-plumbing",
+        "editorialClass": "full_story",
+        "publicationStatus": "PUBLISHED",
+        "published": "2026-09-24T15:47:53Z",
+        "eventTime": "2026-09-23T00:00:00Z",
+        "knowledgeTime": "2026-09-24T15:47:53Z",
+        "evidenceStatus": "DERIVED",
+        "contribution": "fresh_longitudinal_delta · cross_signal_divergence · dated_forward_test",
+        "limitation": "The composite is a Seiche derivation, not an observed market price.",
+        "newsworthiness": 70,
+        "articleType": "full_story",
+        "pointInTimeStatus": "",
+        "verdicts": null,
+        "outcomeWindow": null,
+        "fraudMasked": false,
+        "fingerprint": "f08dd9ef8581d7aed77370402a40441d239aec7133c8e41118b1c14cff7376d4"
+      },
       {
         "id": "seiche:2026-09-15-daily",
         "product": "seiche",
@@ -5692,7 +5738,7 @@
     },
     "seiche": {
       "state": "live",
-      "detail": "67 records · all 2 channels connected"
+      "detail": "68 records · all 2 channels connected"
     },
     "liquilens-undertow": {
       "state": "live",
