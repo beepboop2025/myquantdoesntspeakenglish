@@ -1,6 +1,6 @@
 {
   "schema": "mqdnse.feed-cache.v2",
-  "syncedAt": "2026-10-01T02:19:03.192Z",
+  "syncedAt": "2026-10-01T08:17:50.699Z",
   "channels": {
     "liquilens-desk": [
       {
@@ -2141,15 +2141,15 @@
       {
         "id": "liquilens-undertow:2026-10-01",
         "product": "liquilens-undertow",
-        "title": "CRYPTO measure rises 51.5 percentile points; segment tiers hold.",
-        "dek": "4 of 9 segments score today; EQUITY, ETF, FX, CN, BSTOCK publish observations with their composites withheld. The funding overlay reads EROSION. The hottest qualifying measure is binance_btc_basis_bp, at percentile 94.2 of its own history; the coolest is HY Corporate Bond Market Distress Index (NY Fed CMDI), at 16.1. Inside HY the qualifying measures span 0.16 to 0.53; the tier is their mean. Read the measures, not just the tier. binance_btc_basis_bp moved from 42.7 to 94.2 of its own history between 2026-09-30 and 2026-10-01. This is a change in a published measure, not a validated composite or forecast.",
+        "title": "BSTOCK measure rises 47.9 percentile points; segment tiers hold.",
+        "dek": "4 of 9 segments score today; EQUITY, ETF, FX, CN, BSTOCK publish observations with their composites withheld. The funding overlay reads EROSION. The hottest qualifying measure is binance_btc_basis_bp, at percentile 90.4 of its own history; the coolest is HY Corporate Bond Market Distress Index (NY Fed CMDI), at 16.1. Inside HY the qualifying measures span 0.16 to 0.53; the tier is their mean. Read the measures, not just the tier. crclbusdt_peg_deviation moved from 11.9 to 59.8 of its own history between 2026-09-30 and 2026-10-01. This is a change in a published measure, not a validated composite or forecast.",
         "url": "https://liquilens-undertow.com/dispatch/2026-10-01.json",
         "beat": "cross-market-liquidity",
         "editorialClass": "full_story",
         "publicationStatus": "PUBLISHED",
-        "published": "2026-10-01T02:05:37+00:00",
+        "published": "2026-10-01T07:05:55+00:00",
         "eventTime": "2026-10-01T00:00:00Z",
-        "knowledgeTime": "2026-10-01T02:05:37+00:00",
+        "knowledgeTime": "2026-10-01T07:05:55+00:00",
         "evidenceStatus": "DERIVED",
         "contribution": "published_measure_delta",
         "limitation": "PARTIAL means a composite is withheld: a scored tier needs at least 2 measures with 60+ eligible observations and a 21-day span each, plus a passing registered replay and no failed negative control. Dated measure reports remain available; validation failures do not clear merely by accruing more history. Research and market data, not investment advice.",
@@ -2159,7 +2159,7 @@
         "verdicts": null,
         "outcomeWindow": null,
         "fraudMasked": false,
-        "fingerprint": "d4e2892a15043346c23e2217657581c647ed472e3817dbf049288ba63e25f7d8"
+        "fingerprint": "4334f715d1037282b07113bb868a7f086ad0be1b0f291679437e4986c47389ad"
       },
       {
         "id": "liquilens-undertow:2026-09-30",
@@ -5019,15 +5019,15 @@
       {
         "id": "liquilens-undertow:2026-10-01",
         "product": "liquilens-undertow",
-        "title": "CRYPTO measure rises 51.5 percentile points; segment tiers hold.",
-        "dek": "4 of 9 segments score today; EQUITY, ETF, FX, CN, BSTOCK publish observations with their composites withheld. The funding overlay reads EROSION. The hottest qualifying measure is binance_btc_basis_bp, at percentile 94.2 of its own history; the coolest is HY Corporate Bond Market Distress Index (NY Fed CMDI), at 16.1. Inside HY the qualifying measures span 0.16 to 0.53; the tier is their mean. Read the measures, not just the tier. binance_btc_basis_bp moved from 42.7 to 94.2 of its own history between 2026-09-30 and 2026-10-01. This is a change in a published measure, not a validated composite or forecast.",
+        "title": "BSTOCK measure rises 47.9 percentile points; segment tiers hold.",
+        "dek": "4 of 9 segments score today; EQUITY, ETF, FX, CN, BSTOCK publish observations with their composites withheld. The funding overlay reads EROSION. The hottest qualifying measure is binance_btc_basis_bp, at percentile 90.4 of its own history; the coolest is HY Corporate Bond Market Distress Index (NY Fed CMDI), at 16.1. Inside HY the qualifying measures span 0.16 to 0.53; the tier is their mean. Read the measures, not just the tier. crclbusdt_peg_deviation moved from 11.9 to 59.8 of its own history between 2026-09-30 and 2026-10-01. This is a change in a published measure, not a validated composite or forecast.",
         "url": "https://liquilens-undertow.com/dispatch/2026-10-01.json",
         "beat": "cross-market-liquidity",
         "editorialClass": "full_story",
         "publicationStatus": "PUBLISHED",
-        "published": "2026-10-01T02:05:37+00:00",
+        "published": "2026-10-01T07:05:55+00:00",
         "eventTime": "2026-10-01T00:00:00Z",
-        "knowledgeTime": "2026-10-01T02:05:37+00:00",
+        "knowledgeTime": "2026-10-01T07:05:55+00:00",
         "evidenceStatus": "DERIVED",
         "contribution": "published_measure_delta",
         "limitation": "PARTIAL means a composite is withheld: a scored tier needs at least 2 measures with 60+ eligible observations and a 21-day span each, plus a passing registered replay and no failed negative control. Dated measure reports remain available; validation failures do not clear merely by accruing more history. Research and market data, not investment advice.",
@@ -5037,7 +5037,7 @@
         "verdicts": null,
         "outcomeWindow": null,
         "fraudMasked": false,
-        "fingerprint": "d4e2892a15043346c23e2217657581c647ed472e3817dbf049288ba63e25f7d8"
+        "fingerprint": "4334f715d1037282b07113bb868a7f086ad0be1b0f291679437e4986c47389ad"
       },
       {
         "id": "liquilens-undertow:2026-09-30",
