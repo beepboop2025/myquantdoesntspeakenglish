@@ -1,6 +1,6 @@
 {
   "schema": "mqdnse.feed-cache.v2",
-  "syncedAt": "2026-10-03T08:19:03.870Z",
+  "syncedAt": "2026-10-03T14:17:12.036Z",
   "channels": {
     "liquilens-desk": [
       {
@@ -2141,15 +2141,15 @@
       {
         "id": "liquilens-undertow:2026-10-03",
         "product": "liquilens-undertow",
-        "title": "CRYPTO moves easier by 0.11 inside NORMAL; funding reads STRAIN.",
-        "dek": "4 of 9 segments score today; EQUITY, ETF, FX, CN, BSTOCK publish observations with their composites withheld. The funding overlay reads STRAIN. The hottest qualifying measure is HY OAS (BAMLH0A0HYM2), at percentile 74.8 of its own history; the coolest is binance_btc_funding_24h, at 7.4. Inside HY the qualifying measures span 0.16 to 0.75; the tier is their mean. Read the measures, not just the tier.",
+        "title": "CRYPTO moves easier by 0.09 inside NORMAL; funding reads STRAIN.",
+        "dek": "4 of 9 segments score today; EQUITY, ETF, FX, CN, BSTOCK publish observations with their composites withheld. The funding overlay reads STRAIN. The hottest qualifying measure is HY OAS (BAMLH0A0HYM2), at percentile 74.8 of its own history; the coolest is binance_btc_funding_24h, at 7.6. Inside HY the qualifying measures span 0.16 to 0.75; the tier is their mean. Read the measures, not just the tier.",
         "url": "https://liquilens-undertow.com/dispatch/2026-10-03.json",
         "beat": "cross-market-liquidity",
         "editorialClass": "full_story",
         "publicationStatus": "PUBLISHED",
-        "published": "2026-10-03T08:04:24+00:00",
+        "published": "2026-10-03T13:04:52+00:00",
         "eventTime": "2026-10-03T00:00:00Z",
-        "knowledgeTime": "2026-10-03T08:04:24+00:00",
+        "knowledgeTime": "2026-10-03T13:04:52+00:00",
         "evidenceStatus": "DERIVED",
         "contribution": "within_tier_score_delta",
         "limitation": "PARTIAL means a composite is withheld: a scored tier needs at least 2 measures with 60+ eligible observations and a 21-day span each, plus a passing registered replay and no failed negative control. Dated measure reports remain available; validation failures do not clear merely by accruing more history. Research and market data, not investment advice.",
@@ -2159,7 +2159,7 @@
         "verdicts": null,
         "outcomeWindow": null,
         "fraudMasked": false,
-        "fingerprint": "3e292debe19f919f452420acb278a0fa8885315ddadac74cf42008f730e001db"
+        "fingerprint": "346d0ae48ed19b0f897bbf504d442973a17b924e11b40571d4f02b4271c4fa58"
       },
       {
         "id": "liquilens-undertow:2026-10-02",
@@ -2857,8 +2857,8 @@
   },
   "channelStatuses": {
     "liquilens-desk": {
-      "state": "cached",
-      "detail": "4 records · refresh failed: The operation was aborted due to timeout"
+      "state": "live",
+      "detail": "4 records"
     },
     "liquilens-investigations": {
       "state": "live",
@@ -5019,15 +5019,15 @@
       {
         "id": "liquilens-undertow:2026-10-03",
         "product": "liquilens-undertow",
-        "title": "CRYPTO moves easier by 0.11 inside NORMAL; funding reads STRAIN.",
-        "dek": "4 of 9 segments score today; EQUITY, ETF, FX, CN, BSTOCK publish observations with their composites withheld. The funding overlay reads STRAIN. The hottest qualifying measure is HY OAS (BAMLH0A0HYM2), at percentile 74.8 of its own history; the coolest is binance_btc_funding_24h, at 7.4. Inside HY the qualifying measures span 0.16 to 0.75; the tier is their mean. Read the measures, not just the tier.",
+        "title": "CRYPTO moves easier by 0.09 inside NORMAL; funding reads STRAIN.",
+        "dek": "4 of 9 segments score today; EQUITY, ETF, FX, CN, BSTOCK publish observations with their composites withheld. The funding overlay reads STRAIN. The hottest qualifying measure is HY OAS (BAMLH0A0HYM2), at percentile 74.8 of its own history; the coolest is binance_btc_funding_24h, at 7.6. Inside HY the qualifying measures span 0.16 to 0.75; the tier is their mean. Read the measures, not just the tier.",
         "url": "https://liquilens-undertow.com/dispatch/2026-10-03.json",
         "beat": "cross-market-liquidity",
         "editorialClass": "full_story",
         "publicationStatus": "PUBLISHED",
-        "published": "2026-10-03T08:04:24+00:00",
+        "published": "2026-10-03T13:04:52+00:00",
         "eventTime": "2026-10-03T00:00:00Z",
-        "knowledgeTime": "2026-10-03T08:04:24+00:00",
+        "knowledgeTime": "2026-10-03T13:04:52+00:00",
         "evidenceStatus": "DERIVED",
         "contribution": "within_tier_score_delta",
         "limitation": "PARTIAL means a composite is withheld: a scored tier needs at least 2 measures with 60+ eligible observations and a 21-day span each, plus a passing registered replay and no failed negative control. Dated measure reports remain available; validation failures do not clear merely by accruing more history. Research and market data, not investment advice.",
@@ -5037,7 +5037,7 @@
         "verdicts": null,
         "outcomeWindow": null,
         "fraudMasked": false,
-        "fingerprint": "3e292debe19f919f452420acb278a0fa8885315ddadac74cf42008f730e001db"
+        "fingerprint": "346d0ae48ed19b0f897bbf504d442973a17b924e11b40571d4f02b4271c4fa58"
       },
       {
         "id": "liquilens-undertow:2026-10-02",
@@ -5733,8 +5733,8 @@
   },
   "statuses": {
     "liquilens": {
-      "state": "cached",
-      "detail": "20 records · degraded channels: liquilens-desk"
+      "state": "live",
+      "detail": "20 records · all 3 channels connected"
     },
     "seiche": {
       "state": "live",
