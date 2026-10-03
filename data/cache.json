@@ -1,6 +1,6 @@
 {
   "schema": "mqdnse.feed-cache.v2",
-  "syncedAt": "2026-10-03T14:17:12.036Z",
+  "syncedAt": "2026-10-03T20:17:35.348Z",
   "channels": {
     "liquilens-desk": [
       {
@@ -27,17 +27,17 @@
         "fingerprint": "23d3ccdc020971f39587ee56d76d5875b2f6643187853f9a3d41f5356c8ed92a"
       },
       {
-        "id": "liquilens-india-breadth-2026-10-03",
+        "id": "liquilens-india-breadth-2026-10-04",
         "product": "liquilens",
         "title": "1 of 3 covered Indian institutions sit above green",
         "dek": "This is the breadth of the vetted live board, not the breadth of the entire Indian financial system; stale and uncovered names remain outside the denominator.",
-        "url": "https://liquilens.in/desk/#liquilens-india-breadth-2026-10-03",
+        "url": "https://liquilens.in/desk/#liquilens-india-breadth-2026-10-04",
         "beat": "institution-risk",
         "editorialClass": "desk_brief",
         "publicationStatus": "PUBLISHED",
-        "published": "2026-10-02T20:18:11Z",
+        "published": "2026-10-03T20:17:34Z",
         "eventTime": "2026-05-30",
-        "knowledgeTime": "2026-10-02T20:18:11Z",
+        "knowledgeTime": "2026-10-03T20:17:34Z",
         "evidenceStatus": "DERIVED",
         "contribution": "cross_sectional_review_breadth",
         "limitation": "The denominator is the fresh-vetted board, not all regulated institutions.",
@@ -47,7 +47,7 @@
         "verdicts": null,
         "outcomeWindow": null,
         "fraudMasked": false,
-        "fingerprint": "7541114ee4fc698f4d01ca967cce9e564d16fcbe72905f2e4b57ace90d40ea30"
+        "fingerprint": "ad400610aedd7dae1defb63d5e7580a3602c017a263d1238ba19b27ca69d5745"
       },
       {
         "id": "liquilens-us-ndfi-34953-2026-06-30",
@@ -2141,15 +2141,15 @@
       {
         "id": "liquilens-undertow:2026-10-03",
         "product": "liquilens-undertow",
-        "title": "CRYPTO moves easier by 0.09 inside NORMAL; funding reads STRAIN.",
-        "dek": "4 of 9 segments score today; EQUITY, ETF, FX, CN, BSTOCK publish observations with their composites withheld. The funding overlay reads STRAIN. The hottest qualifying measure is HY OAS (BAMLH0A0HYM2), at percentile 74.8 of its own history; the coolest is binance_btc_funding_24h, at 7.6. Inside HY the qualifying measures span 0.16 to 0.75; the tier is their mean. Read the measures, not just the tier.",
+        "title": "CRYPTO moves easier by 0.10 inside NORMAL; funding reads STRAIN.",
+        "dek": "4 of 9 segments score today; EQUITY, ETF, FX, CN, BSTOCK publish observations with their composites withheld. The funding overlay reads STRAIN. The hottest qualifying measure is binance_btc_basis_bp, at percentile 83.3 of its own history; the coolest is HY Corporate Bond Market Distress Index (NY Fed CMDI), at 16.1. Inside HY the qualifying measures span 0.16 to 0.75; the tier is their mean. Read the measures, not just the tier.",
         "url": "https://liquilens-undertow.com/dispatch/2026-10-03.json",
         "beat": "cross-market-liquidity",
         "editorialClass": "full_story",
         "publicationStatus": "PUBLISHED",
-        "published": "2026-10-03T13:04:52+00:00",
+        "published": "2026-10-03T19:04:38+00:00",
         "eventTime": "2026-10-03T00:00:00Z",
-        "knowledgeTime": "2026-10-03T13:04:52+00:00",
+        "knowledgeTime": "2026-10-03T19:04:38+00:00",
         "evidenceStatus": "DERIVED",
         "contribution": "within_tier_score_delta",
         "limitation": "PARTIAL means a composite is withheld: a scored tier needs at least 2 measures with 60+ eligible observations and a 21-day span each, plus a passing registered replay and no failed negative control. Dated measure reports remain available; validation failures do not clear merely by accruing more history. Research and market data, not investment advice.",
@@ -2159,7 +2159,7 @@
         "verdicts": null,
         "outcomeWindow": null,
         "fraudMasked": false,
-        "fingerprint": "346d0ae48ed19b0f897bbf504d442973a17b924e11b40571d4f02b4271c4fa58"
+        "fingerprint": "6f7037a3e6e6662f0811ff857ac765c32c35aed61340daac2ae9756d2871e002"
       },
       {
         "id": "liquilens-undertow:2026-10-02",
@@ -2888,17 +2888,17 @@
   "feeds": {
     "liquilens": [
       {
-        "id": "liquilens-india-breadth-2026-10-03",
+        "id": "liquilens-india-breadth-2026-10-04",
         "product": "liquilens",
         "title": "1 of 3 covered Indian institutions sit above green",
         "dek": "This is the breadth of the vetted live board, not the breadth of the entire Indian financial system; stale and uncovered names remain outside the denominator.",
-        "url": "https://liquilens.in/desk/#liquilens-india-breadth-2026-10-03",
+        "url": "https://liquilens.in/desk/#liquilens-india-breadth-2026-10-04",
         "beat": "institution-risk",
         "editorialClass": "desk_brief",
         "publicationStatus": "PUBLISHED",
-        "published": "2026-10-02T20:18:11Z",
+        "published": "2026-10-03T20:17:34Z",
         "eventTime": "2026-05-30",
-        "knowledgeTime": "2026-10-02T20:18:11Z",
+        "knowledgeTime": "2026-10-03T20:17:34Z",
         "evidenceStatus": "DERIVED",
         "contribution": "cross_sectional_review_breadth",
         "limitation": "The denominator is the fresh-vetted board, not all regulated institutions.",
@@ -2908,7 +2908,7 @@
         "verdicts": null,
         "outcomeWindow": null,
         "fraudMasked": false,
-        "fingerprint": "7541114ee4fc698f4d01ca967cce9e564d16fcbe72905f2e4b57ace90d40ea30"
+        "fingerprint": "ad400610aedd7dae1defb63d5e7580a3602c017a263d1238ba19b27ca69d5745"
       },
       {
         "id": "liquilens-india-belstar-microfinance-2026-03-31",
@@ -5019,15 +5019,15 @@
       {
         "id": "liquilens-undertow:2026-10-03",
         "product": "liquilens-undertow",
-        "title": "CRYPTO moves easier by 0.09 inside NORMAL; funding reads STRAIN.",
-        "dek": "4 of 9 segments score today; EQUITY, ETF, FX, CN, BSTOCK publish observations with their composites withheld. The funding overlay reads STRAIN. The hottest qualifying measure is HY OAS (BAMLH0A0HYM2), at percentile 74.8 of its own history; the coolest is binance_btc_funding_24h, at 7.6. Inside HY the qualifying measures span 0.16 to 0.75; the tier is their mean. Read the measures, not just the tier.",
+        "title": "CRYPTO moves easier by 0.10 inside NORMAL; funding reads STRAIN.",
+        "dek": "4 of 9 segments score today; EQUITY, ETF, FX, CN, BSTOCK publish observations with their composites withheld. The funding overlay reads STRAIN. The hottest qualifying measure is binance_btc_basis_bp, at percentile 83.3 of its own history; the coolest is HY Corporate Bond Market Distress Index (NY Fed CMDI), at 16.1. Inside HY the qualifying measures span 0.16 to 0.75; the tier is their mean. Read the measures, not just the tier.",
         "url": "https://liquilens-undertow.com/dispatch/2026-10-03.json",
         "beat": "cross-market-liquidity",
         "editorialClass": "full_story",
         "publicationStatus": "PUBLISHED",
-        "published": "2026-10-03T13:04:52+00:00",
+        "published": "2026-10-03T19:04:38+00:00",
         "eventTime": "2026-10-03T00:00:00Z",
-        "knowledgeTime": "2026-10-03T13:04:52+00:00",
+        "knowledgeTime": "2026-10-03T19:04:38+00:00",
         "evidenceStatus": "DERIVED",
         "contribution": "within_tier_score_delta",
         "limitation": "PARTIAL means a composite is withheld: a scored tier needs at least 2 measures with 60+ eligible observations and a 21-day span each, plus a passing registered replay and no failed negative control. Dated measure reports remain available; validation failures do not clear merely by accruing more history. Research and market data, not investment advice.",
@@ -5037,7 +5037,7 @@
         "verdicts": null,
         "outcomeWindow": null,
         "fraudMasked": false,
-        "fingerprint": "346d0ae48ed19b0f897bbf504d442973a17b924e11b40571d4f02b4271c4fa58"
+        "fingerprint": "6f7037a3e6e6662f0811ff857ac765c32c35aed61340daac2ae9756d2871e002"
       },
       {
         "id": "liquilens-undertow:2026-10-02",
