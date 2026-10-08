@@ -1,6 +1,6 @@
 {
   "schema": "mqdnse.feed-cache.v2",
-  "syncedAt": "2026-10-08T02:18:32.077Z",
+  "syncedAt": "2026-10-08T08:17:41.092Z",
   "channels": {
     "liquilens-desk": [
       {
@@ -2141,15 +2141,15 @@
       {
         "id": "liquilens-undertow:2026-10-08",
         "product": "liquilens-undertow",
-        "title": "CRYPTO moves easier by 0.05 inside NORMAL; funding reads EROSION.",
-        "dek": "4 of 9 segments score today; EQUITY, ETF, FX, CN, BSTOCK publish observations with their composites withheld. The funding overlay reads EROSION. The hottest qualifying measure is binance_btc_basis_bp, at percentile 84.4 of its own history; the coolest is binance_btc_funding_24h, at 0.5. Inside HY the qualifying measures span 0.16 to 0.50; the tier is their mean. Read the measures, not just the tier.",
+        "title": "CRYPTO moves easier by 0.03 inside NORMAL; funding reads EROSION.",
+        "dek": "4 of 9 segments score today; EQUITY, ETF, FX, CN, BSTOCK publish observations with their composites withheld. The funding overlay reads EROSION. The hottest qualifying measure is binance_btc_basis_bp, at percentile 87.2 of its own history; the coolest is binance_btc_funding_24h, at 0.6. Inside HY the qualifying measures span 0.16 to 0.50; the tier is their mean. Read the measures, not just the tier.",
         "url": "https://liquilens-undertow.com/dispatch/2026-10-08.json",
         "beat": "cross-market-liquidity",
         "editorialClass": "full_story",
         "publicationStatus": "PUBLISHED",
-        "published": "2026-10-08T02:05:48+00:00",
+        "published": "2026-10-08T07:04:56+00:00",
         "eventTime": "2026-10-08T00:00:00Z",
-        "knowledgeTime": "2026-10-08T02:05:48+00:00",
+        "knowledgeTime": "2026-10-08T07:04:56+00:00",
         "evidenceStatus": "DERIVED",
         "contribution": "within_tier_score_delta",
         "limitation": "PARTIAL means a composite is withheld: a scored tier needs at least 2 measures with 60+ eligible observations and a 21-day span each, plus a passing registered replay and no failed negative control. Dated measure reports remain available; validation failures do not clear merely by accruing more history. Research and market data, not investment advice.",
@@ -2159,7 +2159,7 @@
         "verdicts": null,
         "outcomeWindow": null,
         "fraudMasked": false,
-        "fingerprint": "c32787c777da7ad394e3fd68693aa2694380cff2fadb4805be748cfa0a7e3366"
+        "fingerprint": "4b1725cf32f2887cad5a4673d7b1747512689083ca7260251ea720902f0f63b6"
       },
       {
         "id": "liquilens-undertow:2026-10-07",
@@ -5019,15 +5019,15 @@
       {
         "id": "liquilens-undertow:2026-10-08",
         "product": "liquilens-undertow",
-        "title": "CRYPTO moves easier by 0.05 inside NORMAL; funding reads EROSION.",
-        "dek": "4 of 9 segments score today; EQUITY, ETF, FX, CN, BSTOCK publish observations with their composites withheld. The funding overlay reads EROSION. The hottest qualifying measure is binance_btc_basis_bp, at percentile 84.4 of its own history; the coolest is binance_btc_funding_24h, at 0.5. Inside HY the qualifying measures span 0.16 to 0.50; the tier is their mean. Read the measures, not just the tier.",
+        "title": "CRYPTO moves easier by 0.03 inside NORMAL; funding reads EROSION.",
+        "dek": "4 of 9 segments score today; EQUITY, ETF, FX, CN, BSTOCK publish observations with their composites withheld. The funding overlay reads EROSION. The hottest qualifying measure is binance_btc_basis_bp, at percentile 87.2 of its own history; the coolest is binance_btc_funding_24h, at 0.6. Inside HY the qualifying measures span 0.16 to 0.50; the tier is their mean. Read the measures, not just the tier.",
         "url": "https://liquilens-undertow.com/dispatch/2026-10-08.json",
         "beat": "cross-market-liquidity",
         "editorialClass": "full_story",
         "publicationStatus": "PUBLISHED",
-        "published": "2026-10-08T02:05:48+00:00",
+        "published": "2026-10-08T07:04:56+00:00",
         "eventTime": "2026-10-08T00:00:00Z",
-        "knowledgeTime": "2026-10-08T02:05:48+00:00",
+        "knowledgeTime": "2026-10-08T07:04:56+00:00",
         "evidenceStatus": "DERIVED",
         "contribution": "within_tier_score_delta",
         "limitation": "PARTIAL means a composite is withheld: a scored tier needs at least 2 measures with 60+ eligible observations and a 21-day span each, plus a passing registered replay and no failed negative control. Dated measure reports remain available; validation failures do not clear merely by accruing more history. Research and market data, not investment advice.",
@@ -5037,7 +5037,7 @@
         "verdicts": null,
         "outcomeWindow": null,
         "fraudMasked": false,
-        "fingerprint": "c32787c777da7ad394e3fd68693aa2694380cff2fadb4805be748cfa0a7e3366"
+        "fingerprint": "4b1725cf32f2887cad5a4673d7b1747512689083ca7260251ea720902f0f63b6"
       },
       {
         "id": "liquilens-undertow:2026-10-07",
