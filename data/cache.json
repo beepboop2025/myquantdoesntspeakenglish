@@ -1,6 +1,6 @@
 {
   "schema": "mqdnse.feed-cache.v2",
-  "syncedAt": "2026-10-08T14:17:57.152Z",
+  "syncedAt": "2026-10-08T20:18:22.619Z",
   "channels": {
     "liquilens-desk": [
       {
@@ -27,17 +27,17 @@
         "fingerprint": "23d3ccdc020971f39587ee56d76d5875b2f6643187853f9a3d41f5356c8ed92a"
       },
       {
-        "id": "liquilens-india-breadth-2026-10-08",
+        "id": "liquilens-india-breadth-2026-10-09",
         "product": "liquilens",
         "title": "1 of 3 covered Indian institutions sit above green",
         "dek": "This is the breadth of the vetted live board, not the breadth of the entire Indian financial system; stale and uncovered names remain outside the denominator.",
-        "url": "https://liquilens.in/desk/#liquilens-india-breadth-2026-10-08",
+        "url": "https://liquilens.in/desk/#liquilens-india-breadth-2026-10-09",
         "beat": "institution-risk",
         "editorialClass": "desk_brief",
         "publicationStatus": "PUBLISHED",
-        "published": "2026-10-07T20:19:04Z",
+        "published": "2026-10-08T20:18:18Z",
         "eventTime": "2026-05-30",
-        "knowledgeTime": "2026-10-07T20:19:04Z",
+        "knowledgeTime": "2026-10-08T20:18:18Z",
         "evidenceStatus": "DERIVED",
         "contribution": "cross_sectional_review_breadth",
         "limitation": "The denominator is the fresh-vetted board, not all regulated institutions.",
@@ -47,7 +47,7 @@
         "verdicts": null,
         "outcomeWindow": null,
         "fraudMasked": false,
-        "fingerprint": "19fb17c0019c98bf4f3b8309f7d4f9e5d6019ef277255f00e2db331329ef9795"
+        "fingerprint": "0757c5cd7163c8ced2173f6155e667d9a7e2f44a5774fdce4b27124437fa13fd"
       },
       {
         "id": "liquilens-us-ndfi-34953-2026-06-30",
@@ -2141,15 +2141,15 @@
       {
         "id": "liquilens-undertow:2026-10-08",
         "product": "liquilens-undertow",
-        "title": "BSTOCK measure rises 38.9 percentile points; segment tiers hold.",
-        "dek": "4 of 9 segments score today; EQUITY, ETF, FX, CN, BSTOCK publish observations with their composites withheld. The funding overlay reads EROSION. The hottest qualifying measure is binance_btc_basis_bp, at percentile 80.8 of its own history; the coolest is binance_btc_funding_24h, at 2.3. Inside HY the qualifying measures span 0.16 to 0.50; the tier is their mean. Read the measures, not just the tier. crclbusdt_peg_deviation moved from 22.2 to 61.1 of its own history between 2026-10-07 and 2026-10-08. This is a change in a published measure, not a validated composite or forecast.",
+        "title": "BSTOCK measure rises 30.9 percentile points; segment tiers hold.",
+        "dek": "4 of 9 segments score today; EQUITY, ETF, FX, CN, BSTOCK publish observations with their composites withheld. The funding overlay reads EROSION. The hottest qualifying measure is binance_btc_basis_bp, at percentile 96.6 of its own history; the coolest is binance_btc_funding_24h, at 3.9. Inside HY the qualifying measures span 0.16 to 0.50; the tier is their mean. Read the measures, not just the tier. crclbusdt_depth_1pct_quote moved from 19.7 to 50.6 of its own history between 2026-10-07 and 2026-10-08. This is a change in a published measure, not a validated composite or forecast.",
         "url": "https://liquilens-undertow.com/dispatch/2026-10-08.json",
         "beat": "cross-market-liquidity",
         "editorialClass": "full_story",
         "publicationStatus": "PUBLISHED",
-        "published": "2026-10-08T13:07:16+00:00",
+        "published": "2026-10-08T20:09:13+00:00",
         "eventTime": "2026-10-08T00:00:00Z",
-        "knowledgeTime": "2026-10-08T13:07:16+00:00",
+        "knowledgeTime": "2026-10-08T20:09:13+00:00",
         "evidenceStatus": "DERIVED",
         "contribution": "published_measure_delta",
         "limitation": "PARTIAL means a composite is withheld: a scored tier needs at least 2 measures with 60+ eligible observations and a 21-day span each, plus a passing registered replay and no failed negative control. Dated measure reports remain available; validation failures do not clear merely by accruing more history. Research and market data, not investment advice.",
@@ -2159,7 +2159,7 @@
         "verdicts": null,
         "outcomeWindow": null,
         "fraudMasked": false,
-        "fingerprint": "5b5463fb78dc6c9eecbe89e2d828de5bebd9034b8b6c7c9e738e3991b3433cc9"
+        "fingerprint": "3eafbbf7d8a999f84e9205d8ea0c92a1954b2fba36b1243b5eacab0326fdc646"
       },
       {
         "id": "liquilens-undertow:2026-10-07",
@@ -2888,17 +2888,17 @@
   "feeds": {
     "liquilens": [
       {
-        "id": "liquilens-india-breadth-2026-10-08",
+        "id": "liquilens-india-breadth-2026-10-09",
         "product": "liquilens",
         "title": "1 of 3 covered Indian institutions sit above green",
         "dek": "This is the breadth of the vetted live board, not the breadth of the entire Indian financial system; stale and uncovered names remain outside the denominator.",
-        "url": "https://liquilens.in/desk/#liquilens-india-breadth-2026-10-08",
+        "url": "https://liquilens.in/desk/#liquilens-india-breadth-2026-10-09",
         "beat": "institution-risk",
         "editorialClass": "desk_brief",
         "publicationStatus": "PUBLISHED",
-        "published": "2026-10-07T20:19:04Z",
+        "published": "2026-10-08T20:18:18Z",
         "eventTime": "2026-05-30",
-        "knowledgeTime": "2026-10-07T20:19:04Z",
+        "knowledgeTime": "2026-10-08T20:18:18Z",
         "evidenceStatus": "DERIVED",
         "contribution": "cross_sectional_review_breadth",
         "limitation": "The denominator is the fresh-vetted board, not all regulated institutions.",
@@ -2908,7 +2908,7 @@
         "verdicts": null,
         "outcomeWindow": null,
         "fraudMasked": false,
-        "fingerprint": "19fb17c0019c98bf4f3b8309f7d4f9e5d6019ef277255f00e2db331329ef9795"
+        "fingerprint": "0757c5cd7163c8ced2173f6155e667d9a7e2f44a5774fdce4b27124437fa13fd"
       },
       {
         "id": "liquilens-india-belstar-microfinance-2026-03-31",
@@ -5019,15 +5019,15 @@
       {
         "id": "liquilens-undertow:2026-10-08",
         "product": "liquilens-undertow",
-        "title": "BSTOCK measure rises 38.9 percentile points; segment tiers hold.",
-        "dek": "4 of 9 segments score today; EQUITY, ETF, FX, CN, BSTOCK publish observations with their composites withheld. The funding overlay reads EROSION. The hottest qualifying measure is binance_btc_basis_bp, at percentile 80.8 of its own history; the coolest is binance_btc_funding_24h, at 2.3. Inside HY the qualifying measures span 0.16 to 0.50; the tier is their mean. Read the measures, not just the tier. crclbusdt_peg_deviation moved from 22.2 to 61.1 of its own history between 2026-10-07 and 2026-10-08. This is a change in a published measure, not a validated composite or forecast.",
+        "title": "BSTOCK measure rises 30.9 percentile points; segment tiers hold.",
+        "dek": "4 of 9 segments score today; EQUITY, ETF, FX, CN, BSTOCK publish observations with their composites withheld. The funding overlay reads EROSION. The hottest qualifying measure is binance_btc_basis_bp, at percentile 96.6 of its own history; the coolest is binance_btc_funding_24h, at 3.9. Inside HY the qualifying measures span 0.16 to 0.50; the tier is their mean. Read the measures, not just the tier. crclbusdt_depth_1pct_quote moved from 19.7 to 50.6 of its own history between 2026-10-07 and 2026-10-08. This is a change in a published measure, not a validated composite or forecast.",
         "url": "https://liquilens-undertow.com/dispatch/2026-10-08.json",
         "beat": "cross-market-liquidity",
         "editorialClass": "full_story",
         "publicationStatus": "PUBLISHED",
-        "published": "2026-10-08T13:07:16+00:00",
+        "published": "2026-10-08T20:09:13+00:00",
         "eventTime": "2026-10-08T00:00:00Z",
-        "knowledgeTime": "2026-10-08T13:07:16+00:00",
+        "knowledgeTime": "2026-10-08T20:09:13+00:00",
         "evidenceStatus": "DERIVED",
         "contribution": "published_measure_delta",
         "limitation": "PARTIAL means a composite is withheld: a scored tier needs at least 2 measures with 60+ eligible observations and a 21-day span each, plus a passing registered replay and no failed negative control. Dated measure reports remain available; validation failures do not clear merely by accruing more history. Research and market data, not investment advice.",
@@ -5037,7 +5037,7 @@
         "verdicts": null,
         "outcomeWindow": null,
         "fraudMasked": false,
-        "fingerprint": "5b5463fb78dc6c9eecbe89e2d828de5bebd9034b8b6c7c9e738e3991b3433cc9"
+        "fingerprint": "3eafbbf7d8a999f84e9205d8ea0c92a1954b2fba36b1243b5eacab0326fdc646"
       },
       {
         "id": "liquilens-undertow:2026-10-07",
