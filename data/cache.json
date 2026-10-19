@@ -1,6 +1,6 @@
 {
   "schema": "mqdnse.feed-cache.v2",
-  "syncedAt": "2026-10-19T14:18:52.349Z",
+  "syncedAt": "2026-10-19T20:18:54.528Z",
   "channels": {
     "liquilens-desk": [
       {
@@ -27,17 +27,17 @@
         "fingerprint": "23d3ccdc020971f39587ee56d76d5875b2f6643187853f9a3d41f5356c8ed92a"
       },
       {
-        "id": "liquilens-india-breadth-2026-10-19",
+        "id": "liquilens-india-breadth-2026-10-20",
         "product": "liquilens",
         "title": "1 of 3 covered Indian institutions sit above green",
         "dek": "This is the breadth of the vetted live board, not the breadth of the entire Indian financial system; stale and uncovered names remain outside the denominator.",
-        "url": "https://liquilens.in/desk/#liquilens-india-breadth-2026-10-19",
+        "url": "https://liquilens.in/desk/#liquilens-india-breadth-2026-10-20",
         "beat": "institution-risk",
         "editorialClass": "desk_brief",
         "publicationStatus": "PUBLISHED",
-        "published": "2026-10-18T20:17:53Z",
+        "published": "2026-10-19T20:18:53Z",
         "eventTime": "2026-05-30",
-        "knowledgeTime": "2026-10-18T20:17:53Z",
+        "knowledgeTime": "2026-10-19T20:18:53Z",
         "evidenceStatus": "DERIVED",
         "contribution": "cross_sectional_review_breadth",
         "limitation": "The denominator is the fresh-vetted board, not all regulated institutions.",
@@ -47,7 +47,7 @@
         "verdicts": null,
         "outcomeWindow": null,
         "fraudMasked": false,
-        "fingerprint": "54903f2f8127d9cf0fa22dc52f487d1ea808fe1e7492dabc20164824985541bb"
+        "fingerprint": "916ae67511d22010ca239b0bc3dd359daed0330487e99f8c696504b5fed8fc68"
       },
       {
         "id": "liquilens-us-ndfi-34953-2026-06-30",
@@ -2142,14 +2142,14 @@
         "id": "liquilens-undertow:2026-10-19",
         "product": "liquilens-undertow",
         "title": "CRYPTO moves easier by 0.06 inside NORMAL; funding reads EROSION.",
-        "dek": "4 of 9 segments score today; EQUITY, ETF, FX, CN, BSTOCK publish observations with their composites withheld. The funding overlay reads EROSION. The hottest qualifying measure is HY OAS (BAMLH0A0HYM2), at percentile 74.8 of its own history; the coolest is binance_btc_basis_bp, at 8.7. Inside HY the qualifying measures span 0.16 to 0.75; the tier is their mean. Read the measures, not just the tier.",
+        "dek": "4 of 9 segments score today; EQUITY, ETF, FX, CN, BSTOCK publish observations with their composites withheld. The funding overlay reads EROSION. The hottest qualifying measure is binance_btc_funding_24h, at percentile 81.2 of its own history; the coolest is binance_btc_basis_bp, at 12.1. Inside HY the qualifying measures span 0.16 to 0.75; the tier is their mean. Read the measures, not just the tier.",
         "url": "https://liquilens-undertow.com/dispatch/2026-10-19.json",
         "beat": "cross-market-liquidity",
         "editorialClass": "full_story",
         "publicationStatus": "PUBLISHED",
-        "published": "2026-10-19T14:07:10+00:00",
+        "published": "2026-10-19T20:06:41+00:00",
         "eventTime": "2026-10-19T00:00:00Z",
-        "knowledgeTime": "2026-10-19T14:07:10+00:00",
+        "knowledgeTime": "2026-10-19T20:06:41+00:00",
         "evidenceStatus": "DERIVED",
         "contribution": "within_tier_score_delta",
         "limitation": "PARTIAL means a composite is withheld: a scored tier needs at least 2 measures with 60+ eligible observations and a 21-day span each, plus a passing registered replay and no failed negative control. Dated measure reports remain available; validation failures do not clear merely by accruing more history. Research and market data, not investment advice.",
@@ -2159,7 +2159,7 @@
         "verdicts": null,
         "outcomeWindow": null,
         "fraudMasked": false,
-        "fingerprint": "46a1f18e5db6f35382127632d204a0d34ef39885eda087f033be632f00a3509c"
+        "fingerprint": "e7284f6d9f3a834caaa05617b9f57c757906a944f448c5aa96490f503c3152c9"
       },
       {
         "id": "liquilens-undertow:2026-10-18",
@@ -2888,17 +2888,17 @@
   "feeds": {
     "liquilens": [
       {
-        "id": "liquilens-india-breadth-2026-10-19",
+        "id": "liquilens-india-breadth-2026-10-20",
         "product": "liquilens",
         "title": "1 of 3 covered Indian institutions sit above green",
         "dek": "This is the breadth of the vetted live board, not the breadth of the entire Indian financial system; stale and uncovered names remain outside the denominator.",
-        "url": "https://liquilens.in/desk/#liquilens-india-breadth-2026-10-19",
+        "url": "https://liquilens.in/desk/#liquilens-india-breadth-2026-10-20",
         "beat": "institution-risk",
         "editorialClass": "desk_brief",
         "publicationStatus": "PUBLISHED",
-        "published": "2026-10-18T20:17:53Z",
+        "published": "2026-10-19T20:18:53Z",
         "eventTime": "2026-05-30",
-        "knowledgeTime": "2026-10-18T20:17:53Z",
+        "knowledgeTime": "2026-10-19T20:18:53Z",
         "evidenceStatus": "DERIVED",
         "contribution": "cross_sectional_review_breadth",
         "limitation": "The denominator is the fresh-vetted board, not all regulated institutions.",
@@ -2908,7 +2908,7 @@
         "verdicts": null,
         "outcomeWindow": null,
         "fraudMasked": false,
-        "fingerprint": "54903f2f8127d9cf0fa22dc52f487d1ea808fe1e7492dabc20164824985541bb"
+        "fingerprint": "916ae67511d22010ca239b0bc3dd359daed0330487e99f8c696504b5fed8fc68"
       },
       {
         "id": "liquilens-india-belstar-microfinance-2026-03-31",
@@ -5020,14 +5020,14 @@
         "id": "liquilens-undertow:2026-10-19",
         "product": "liquilens-undertow",
         "title": "CRYPTO moves easier by 0.06 inside NORMAL; funding reads EROSION.",
-        "dek": "4 of 9 segments score today; EQUITY, ETF, FX, CN, BSTOCK publish observations with their composites withheld. The funding overlay reads EROSION. The hottest qualifying measure is HY OAS (BAMLH0A0HYM2), at percentile 74.8 of its own history; the coolest is binance_btc_basis_bp, at 8.7. Inside HY the qualifying measures span 0.16 to 0.75; the tier is their mean. Read the measures, not just the tier.",
+        "dek": "4 of 9 segments score today; EQUITY, ETF, FX, CN, BSTOCK publish observations with their composites withheld. The funding overlay reads EROSION. The hottest qualifying measure is binance_btc_funding_24h, at percentile 81.2 of its own history; the coolest is binance_btc_basis_bp, at 12.1. Inside HY the qualifying measures span 0.16 to 0.75; the tier is their mean. Read the measures, not just the tier.",
         "url": "https://liquilens-undertow.com/dispatch/2026-10-19.json",
         "beat": "cross-market-liquidity",
         "editorialClass": "full_story",
         "publicationStatus": "PUBLISHED",
-        "published": "2026-10-19T14:07:10+00:00",
+        "published": "2026-10-19T20:06:41+00:00",
         "eventTime": "2026-10-19T00:00:00Z",
-        "knowledgeTime": "2026-10-19T14:07:10+00:00",
+        "knowledgeTime": "2026-10-19T20:06:41+00:00",
         "evidenceStatus": "DERIVED",
         "contribution": "within_tier_score_delta",
         "limitation": "PARTIAL means a composite is withheld: a scored tier needs at least 2 measures with 60+ eligible observations and a 21-day span each, plus a passing registered replay and no failed negative control. Dated measure reports remain available; validation failures do not clear merely by accruing more history. Research and market data, not investment advice.",
@@ -5037,7 +5037,7 @@
         "verdicts": null,
         "outcomeWindow": null,
         "fraudMasked": false,
-        "fingerprint": "46a1f18e5db6f35382127632d204a0d34ef39885eda087f033be632f00a3509c"
+        "fingerprint": "e7284f6d9f3a834caaa05617b9f57c757906a944f448c5aa96490f503c3152c9"
       },
       {
         "id": "liquilens-undertow:2026-10-18",
