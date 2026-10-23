@@ -1,6 +1,6 @@
 {
   "schema": "mqdnse.feed-cache.v2",
-  "syncedAt": "2026-10-23T02:17:09.252Z",
+  "syncedAt": "2026-10-23T08:19:04.851Z",
   "channels": {
     "liquilens-desk": [
       {
@@ -2141,15 +2141,15 @@
       {
         "id": "liquilens-undertow:2026-10-23",
         "product": "liquilens-undertow",
-        "title": "BSTOCK measure falls 57.2 percentile points; segment tiers hold.",
-        "dek": "4 of 9 segments score today; EQUITY, ETF, FX, CN, BSTOCK publish observations with their composites withheld. The funding overlay reads STRAIN. The hottest qualifying measure is HY OAS (BAMLH0A0HYM2), at percentile 78.7 of its own history; the coolest is binance_btc_funding_24h, at 12.8. Inside HY the qualifying measures span 0.16 to 0.79; the tier is their mean. Read the measures, not just the tier. crclbusdt_peg_deviation moved from 61.9 to 4.8 of its own history between 2026-10-22 and 2026-10-23. This is a change in a published measure, not a validated composite or forecast.",
+        "title": "BSTOCK measure falls 40.4 percentile points; segment tiers hold.",
+        "dek": "4 of 9 segments score today; EQUITY, ETF, FX, CN, BSTOCK publish observations with their composites withheld. The funding overlay reads STRAIN. The hottest qualifying measure is HY OAS (BAMLH0A0HYM2), at percentile 78.7 of its own history; the coolest is binance_btc_funding_24h, at 12.9. Inside HY the qualifying measures span 0.16 to 0.79; the tier is their mean. Read the measures, not just the tier. crclbusdt_peg_deviation moved from 61.9 to 21.6 of its own history between 2026-10-22 and 2026-10-23. This is a change in a published measure, not a validated composite or forecast.",
         "url": "https://liquilens-undertow.com/dispatch/2026-10-23.json",
         "beat": "cross-market-liquidity",
         "editorialClass": "full_story",
         "publicationStatus": "PUBLISHED",
-        "published": "2026-10-23T01:06:55+00:00",
+        "published": "2026-10-23T04:18:54+00:00",
         "eventTime": "2026-10-23T00:00:00Z",
-        "knowledgeTime": "2026-10-23T01:06:55+00:00",
+        "knowledgeTime": "2026-10-23T04:18:54+00:00",
         "evidenceStatus": "DERIVED",
         "contribution": "published_measure_delta",
         "limitation": "PARTIAL means a composite is withheld: a scored tier needs at least 2 measures with 60+ eligible observations and a 21-day span each, plus a passing registered replay and no failed negative control. Dated measure reports remain available; validation failures do not clear merely by accruing more history. Research and market data, not investment advice.",
@@ -2159,7 +2159,7 @@
         "verdicts": null,
         "outcomeWindow": null,
         "fraudMasked": false,
-        "fingerprint": "fbb713305abbbd26d7e0d7533188ce9a2149eac5f5f08fb1f9b2327d9b4f317b"
+        "fingerprint": "9c8f4014f67115b7fb94ba558a7b69a5c350122e58c972f3f93649827ae51012"
       },
       {
         "id": "liquilens-undertow:2026-10-22",
@@ -5019,15 +5019,15 @@
       {
         "id": "liquilens-undertow:2026-10-23",
         "product": "liquilens-undertow",
-        "title": "BSTOCK measure falls 57.2 percentile points; segment tiers hold.",
-        "dek": "4 of 9 segments score today; EQUITY, ETF, FX, CN, BSTOCK publish observations with their composites withheld. The funding overlay reads STRAIN. The hottest qualifying measure is HY OAS (BAMLH0A0HYM2), at percentile 78.7 of its own history; the coolest is binance_btc_funding_24h, at 12.8. Inside HY the qualifying measures span 0.16 to 0.79; the tier is their mean. Read the measures, not just the tier. crclbusdt_peg_deviation moved from 61.9 to 4.8 of its own history between 2026-10-22 and 2026-10-23. This is a change in a published measure, not a validated composite or forecast.",
+        "title": "BSTOCK measure falls 40.4 percentile points; segment tiers hold.",
+        "dek": "4 of 9 segments score today; EQUITY, ETF, FX, CN, BSTOCK publish observations with their composites withheld. The funding overlay reads STRAIN. The hottest qualifying measure is HY OAS (BAMLH0A0HYM2), at percentile 78.7 of its own history; the coolest is binance_btc_funding_24h, at 12.9. Inside HY the qualifying measures span 0.16 to 0.79; the tier is their mean. Read the measures, not just the tier. crclbusdt_peg_deviation moved from 61.9 to 21.6 of its own history between 2026-10-22 and 2026-10-23. This is a change in a published measure, not a validated composite or forecast.",
         "url": "https://liquilens-undertow.com/dispatch/2026-10-23.json",
         "beat": "cross-market-liquidity",
         "editorialClass": "full_story",
         "publicationStatus": "PUBLISHED",
-        "published": "2026-10-23T01:06:55+00:00",
+        "published": "2026-10-23T04:18:54+00:00",
         "eventTime": "2026-10-23T00:00:00Z",
-        "knowledgeTime": "2026-10-23T01:06:55+00:00",
+        "knowledgeTime": "2026-10-23T04:18:54+00:00",
         "evidenceStatus": "DERIVED",
         "contribution": "published_measure_delta",
         "limitation": "PARTIAL means a composite is withheld: a scored tier needs at least 2 measures with 60+ eligible observations and a 21-day span each, plus a passing registered replay and no failed negative control. Dated measure reports remain available; validation failures do not clear merely by accruing more history. Research and market data, not investment advice.",
@@ -5037,7 +5037,7 @@
         "verdicts": null,
         "outcomeWindow": null,
         "fraudMasked": false,
-        "fingerprint": "fbb713305abbbd26d7e0d7533188ce9a2149eac5f5f08fb1f9b2327d9b4f317b"
+        "fingerprint": "9c8f4014f67115b7fb94ba558a7b69a5c350122e58c972f3f93649827ae51012"
       },
       {
         "id": "liquilens-undertow:2026-10-22",
