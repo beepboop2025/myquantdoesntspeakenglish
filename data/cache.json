@@ -1,6 +1,6 @@
 {
   "schema": "mqdnse.feed-cache.v2",
-  "syncedAt": "2026-10-25T08:18:05.528Z",
+  "syncedAt": "2026-10-25T14:18:49.852Z",
   "channels": {
     "liquilens-desk": [
       {
@@ -2141,17 +2141,17 @@
       {
         "id": "liquilens-undertow:2026-10-25",
         "product": "liquilens-undertow",
-        "title": "CRYPTO moves tighter by 0.04 inside NORMAL; funding reads EROSION.",
-        "dek": "4 of 9 segments score today; EQUITY, ETF, FX, CN, BSTOCK publish observations with their composites withheld. The funding overlay reads EROSION. The hottest qualifying measure is HY OAS (BAMLH0A0HYM2), at percentile 85.4 of its own history; the coolest is HY Corporate Bond Market Distress Index (NY Fed CMDI), at 16.1. Inside HY the qualifying measures span 0.16 to 0.85; the tier is their mean. Read the measures, not just the tier.",
+        "title": "CRYPTO measure rises 27.7 percentile points; segment tiers hold.",
+        "dek": "4 of 9 segments score today; EQUITY, ETF, FX, CN, BSTOCK publish observations with their composites withheld. The funding overlay reads EROSION. The hottest qualifying measure is HY OAS (BAMLH0A0HYM2), at percentile 85.4 of its own history; the coolest is HY Corporate Bond Market Distress Index (NY Fed CMDI), at 16.1. Inside HY the qualifying measures span 0.16 to 0.85; the tier is their mean. Read the measures, not just the tier. binance_btc_funding_24h moved from 20.5 to 48.2 of its own history between 2026-10-24 and 2026-10-25. This is a change in a published measure, not a validated composite or forecast.",
         "url": "https://liquilens-undertow.com/dispatch/2026-10-25.json",
         "beat": "cross-market-liquidity",
         "editorialClass": "full_story",
         "publicationStatus": "PUBLISHED",
-        "published": "2026-10-25T08:06:54+00:00",
+        "published": "2026-10-25T14:07:33+00:00",
         "eventTime": "2026-10-25T00:00:00Z",
-        "knowledgeTime": "2026-10-25T08:06:54+00:00",
+        "knowledgeTime": "2026-10-25T14:07:33+00:00",
         "evidenceStatus": "DERIVED",
-        "contribution": "within_tier_score_delta",
+        "contribution": "published_measure_delta",
         "limitation": "PARTIAL means a composite is withheld: a scored tier needs at least 2 measures with 60+ eligible observations and a 21-day span each, plus a passing registered replay and no failed negative control. Dated measure reports remain available; validation failures do not clear merely by accruing more history. Research and market data, not investment advice.",
         "newsworthiness": 70,
         "articleType": "full_story",
@@ -2159,7 +2159,7 @@
         "verdicts": null,
         "outcomeWindow": null,
         "fraudMasked": false,
-        "fingerprint": "ed344c206f414d0fc04ccab9a708dd725788a47a74a1009290272bf849457ffe"
+        "fingerprint": "8fe76465dc118951b11b91ffaf1559838165bc426bd99769ace3a807de53cd71"
       },
       {
         "id": "liquilens-undertow:2026-10-24",
@@ -5019,17 +5019,17 @@
       {
         "id": "liquilens-undertow:2026-10-25",
         "product": "liquilens-undertow",
-        "title": "CRYPTO moves tighter by 0.04 inside NORMAL; funding reads EROSION.",
-        "dek": "4 of 9 segments score today; EQUITY, ETF, FX, CN, BSTOCK publish observations with their composites withheld. The funding overlay reads EROSION. The hottest qualifying measure is HY OAS (BAMLH0A0HYM2), at percentile 85.4 of its own history; the coolest is HY Corporate Bond Market Distress Index (NY Fed CMDI), at 16.1. Inside HY the qualifying measures span 0.16 to 0.85; the tier is their mean. Read the measures, not just the tier.",
+        "title": "CRYPTO measure rises 27.7 percentile points; segment tiers hold.",
+        "dek": "4 of 9 segments score today; EQUITY, ETF, FX, CN, BSTOCK publish observations with their composites withheld. The funding overlay reads EROSION. The hottest qualifying measure is HY OAS (BAMLH0A0HYM2), at percentile 85.4 of its own history; the coolest is HY Corporate Bond Market Distress Index (NY Fed CMDI), at 16.1. Inside HY the qualifying measures span 0.16 to 0.85; the tier is their mean. Read the measures, not just the tier. binance_btc_funding_24h moved from 20.5 to 48.2 of its own history between 2026-10-24 and 2026-10-25. This is a change in a published measure, not a validated composite or forecast.",
         "url": "https://liquilens-undertow.com/dispatch/2026-10-25.json",
         "beat": "cross-market-liquidity",
         "editorialClass": "full_story",
         "publicationStatus": "PUBLISHED",
-        "published": "2026-10-25T08:06:54+00:00",
+        "published": "2026-10-25T14:07:33+00:00",
         "eventTime": "2026-10-25T00:00:00Z",
-        "knowledgeTime": "2026-10-25T08:06:54+00:00",
+        "knowledgeTime": "2026-10-25T14:07:33+00:00",
         "evidenceStatus": "DERIVED",
-        "contribution": "within_tier_score_delta",
+        "contribution": "published_measure_delta",
         "limitation": "PARTIAL means a composite is withheld: a scored tier needs at least 2 measures with 60+ eligible observations and a 21-day span each, plus a passing registered replay and no failed negative control. Dated measure reports remain available; validation failures do not clear merely by accruing more history. Research and market data, not investment advice.",
         "newsworthiness": 70,
         "articleType": "full_story",
@@ -5037,7 +5037,7 @@
         "verdicts": null,
         "outcomeWindow": null,
         "fraudMasked": false,
-        "fingerprint": "ed344c206f414d0fc04ccab9a708dd725788a47a74a1009290272bf849457ffe"
+        "fingerprint": "8fe76465dc118951b11b91ffaf1559838165bc426bd99769ace3a807de53cd71"
       },
       {
         "id": "liquilens-undertow:2026-10-24",
