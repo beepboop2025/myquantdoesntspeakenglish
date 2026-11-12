@@ -1,6 +1,6 @@
 {
   "schema": "mqdnse.feed-cache.v2",
-  "syncedAt": "2026-11-12T14:18:19.397Z",
+  "syncedAt": "2026-11-12T20:17:27.997Z",
   "channels": {
     "liquilens-desk": [
       {
@@ -2118,17 +2118,17 @@
       {
         "id": "liquilens-undertow:2026-11-12",
         "product": "liquilens-undertow",
-        "title": "CRYPTO moves easier by 0.03 inside NORMAL; funding reads STRAIN.",
-        "dek": "3 of 9 segments score today; HY, EQUITY, ETF, FX, CN, BSTOCK publish observations with their composites withheld. The funding overlay reads STRAIN. The hottest qualifying measure is binance_btc_funding_24h, at percentile 41.4 of its own history; the coolest is binance_btc_basis_bp, at 12.8. Qualifying measures disagree inside at least one scored cell; every such cell's span is Agent/Desk tier today, because the span would hand back the percentile of a row the free board withholds.",
+        "title": "CRYPTO measure falls 22.3 percentile points; segment tiers hold.",
+        "dek": "3 of 9 segments score today; HY, EQUITY, ETF, FX, CN, BSTOCK publish observations with their composites withheld. The funding overlay reads STRAIN. The hottest qualifying measure is binance_btc_funding_24h, at percentile 52.7 of its own history; the coolest is binance_btc_basis_bp, at 45.4. Qualifying measures disagree inside at least one scored cell; every such cell's span is Agent/Desk tier today, because the span would hand back the percentile of a row the free board withholds. binance_btc_basis_bp moved from 67.8 to 45.4 of its own history between 2026-11-11 and 2026-11-12. This is a change in a published measure, not a validated composite or forecast.",
         "url": "https://liquilens-undertow.com/dispatch/2026-11-12.json",
         "beat": "cross-market-liquidity",
         "editorialClass": "full_story",
         "publicationStatus": "PUBLISHED",
-        "published": "2026-11-12T14:09:37+00:00",
+        "published": "2026-11-12T20:08:29+00:00",
         "eventTime": "2026-11-12T00:00:00Z",
-        "knowledgeTime": "2026-11-12T14:09:37+00:00",
+        "knowledgeTime": "2026-11-12T20:08:29+00:00",
         "evidenceStatus": "DERIVED",
-        "contribution": "within_tier_score_delta",
+        "contribution": "published_measure_delta",
         "limitation": "PARTIAL means a composite is withheld: a scored tier needs at least 2 measures with 60+ eligible observations and a 21-day span each, plus a passing registered replay and no failed negative control. Dated measure reports remain available; validation failures do not clear merely by accruing more history. Research and market data, not investment advice.",
         "newsworthiness": 90,
         "articleType": "full_story",
@@ -2136,7 +2136,7 @@
         "verdicts": null,
         "outcomeWindow": null,
         "fraudMasked": false,
-        "fingerprint": "eb2944a93b0840effd5cec66310ef0993ec89b45d3bf90e6fbe9c6cac5f7d5b6"
+        "fingerprint": "cb117172d79a299fd72d2bd3192190326016e71137570a8e6978ad2db184e016"
       },
       {
         "id": "liquilens-undertow:2026-11-11",
@@ -4973,17 +4973,17 @@
       {
         "id": "liquilens-undertow:2026-11-12",
         "product": "liquilens-undertow",
-        "title": "CRYPTO moves easier by 0.03 inside NORMAL; funding reads STRAIN.",
-        "dek": "3 of 9 segments score today; HY, EQUITY, ETF, FX, CN, BSTOCK publish observations with their composites withheld. The funding overlay reads STRAIN. The hottest qualifying measure is binance_btc_funding_24h, at percentile 41.4 of its own history; the coolest is binance_btc_basis_bp, at 12.8. Qualifying measures disagree inside at least one scored cell; every such cell's span is Agent/Desk tier today, because the span would hand back the percentile of a row the free board withholds.",
+        "title": "CRYPTO measure falls 22.3 percentile points; segment tiers hold.",
+        "dek": "3 of 9 segments score today; HY, EQUITY, ETF, FX, CN, BSTOCK publish observations with their composites withheld. The funding overlay reads STRAIN. The hottest qualifying measure is binance_btc_funding_24h, at percentile 52.7 of its own history; the coolest is binance_btc_basis_bp, at 45.4. Qualifying measures disagree inside at least one scored cell; every such cell's span is Agent/Desk tier today, because the span would hand back the percentile of a row the free board withholds. binance_btc_basis_bp moved from 67.8 to 45.4 of its own history between 2026-11-11 and 2026-11-12. This is a change in a published measure, not a validated composite or forecast.",
         "url": "https://liquilens-undertow.com/dispatch/2026-11-12.json",
         "beat": "cross-market-liquidity",
         "editorialClass": "full_story",
         "publicationStatus": "PUBLISHED",
-        "published": "2026-11-12T14:09:37+00:00",
+        "published": "2026-11-12T20:08:29+00:00",
         "eventTime": "2026-11-12T00:00:00Z",
-        "knowledgeTime": "2026-11-12T14:09:37+00:00",
+        "knowledgeTime": "2026-11-12T20:08:29+00:00",
         "evidenceStatus": "DERIVED",
-        "contribution": "within_tier_score_delta",
+        "contribution": "published_measure_delta",
         "limitation": "PARTIAL means a composite is withheld: a scored tier needs at least 2 measures with 60+ eligible observations and a 21-day span each, plus a passing registered replay and no failed negative control. Dated measure reports remain available; validation failures do not clear merely by accruing more history. Research and market data, not investment advice.",
         "newsworthiness": 90,
         "articleType": "full_story",
@@ -4991,7 +4991,7 @@
         "verdicts": null,
         "outcomeWindow": null,
         "fraudMasked": false,
-        "fingerprint": "eb2944a93b0840effd5cec66310ef0993ec89b45d3bf90e6fbe9c6cac5f7d5b6"
+        "fingerprint": "cb117172d79a299fd72d2bd3192190326016e71137570a8e6978ad2db184e016"
       },
       {
         "id": "liquilens-undertow:2026-11-11",
