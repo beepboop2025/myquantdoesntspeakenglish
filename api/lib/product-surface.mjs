@@ -551,31 +551,32 @@ const resultListSchema = {
 export const TOOLS = Object.freeze({
   list_capabilities: {
     title: 'Discover the My Quant editorial product',
-    description: 'Discover available product features, API/MCP URLs, versions, content limits, and interpretation boundaries before choosing a content tool. Returns product.capabilities.v1 metadata, without fetching stories or checking upstream freshness. Public and read-only; no credentials or arguments. Use latest_stories for recent records or get_health for endpoint compatibility. The mobile app distribution channel remains separately suspended.',
+    description: 'Discover available product features, API/MCP URLs, versions, content limits, and interpretation boundaries before choosing a content tool. Returns product.capabilities.v1 metadata, without fetching stories or checking upstream freshness. Public and read-only; no sign-in or arguments. The mobile app distribution channel remains separately suspended.',
     inputSchema: { type: 'object', additionalProperties: false },
+    annotations: { openWorldHint: false },
     call: async () => CAPABILITIES,
   },
   get_health: {
     title: 'Check the My Quant public surfaces',
-    description: 'Check that this endpoint responds with product.health.v1 metadata: product, API/MCP versions, deployed source SHA when available, and checked_at. Use for connection and version diagnosis; it does not fetch the editorial feed or prove source freshness. Public and read-only; no credentials or arguments. Use list_capabilities for supported surfaces and content limits.',
+    description: 'Check that this endpoint responds with product.health.v1 metadata: product, API/MCP versions, deployed source SHA when available, and checked_at. Use for connection and version diagnosis; it does not fetch the editorial feed or prove source freshness. Public and read-only; no sign-in or arguments.',
     inputSchema: { type: 'object', additionalProperties: false },
+    annotations: { openWorldHint: false },
     call: async () => getHealth(),
   },
   latest_stories: {
     title: 'Read the latest evidence-bounded stories',
-    description: 'Read recent published archive records when you want a chronological overview without a search term. Returns count, stories, the feed receipt, and release identity; each story retains sources, evidence clocks, publication state, release IDs, and limitations. Public and read-only; no credentials. Lists default to 10 records, at most 20, without pagination. The canonical feed is cached for up to 60 seconds; unavailable or invalid feeds return a tool error. Use search_stories for text matching or get_story for an exact returned ID.',
+    description: 'Read recent published archive records when you want a chronological overview without a search term. Returns count, stories, the feed receipt, and release identity; each story retains sources, evidence clocks, publication state, release IDs, and limitations. Public and read-only; no sign-in. Lists default to 10 records, at most 20, without pagination. The canonical feed is cached for up to 60 seconds; unavailable or invalid feeds return a tool error.',
     inputSchema: {
       type: 'object',
-      properties: { limit: { type: 'integer', description: 'Maximum records to return, newest first; 1–20, default 10. There is no pagination parameter.', minimum: 1, maximum: EDITORIAL_FEED_LIMITS.maxResultLimit, default: EDITORIAL_FEED_LIMITS.defaultResultLimit } },
+      properties: { limit: { type: 'integer', description: 'Maximum records to return, newest first; 1 to 20, default 10. There is no pagination parameter.', minimum: 1, maximum: EDITORIAL_FEED_LIMITS.maxResultLimit, default: EDITORIAL_FEED_LIMITS.defaultResultLimit } },
       additionalProperties: false,
     },
     outputSchema: resultListSchema,
-    annotations: { openWorldHint: true },
     call: (args) => editorialFeed.latestStories(args),
   },
   get_story: {
     title: 'Read one story by stable source ID',
-    description: 'Retrieve one published story using its exact stable ID from latest_stories or search_stories. Returns story, feed receipt, and release identity while retaining canonical sources, evidence clocks, publication state, release IDs, and limitations. Matching is exact and case-sensitive; an unknown ID returns a tool error. Public and read-only; no credentials. The canonical feed is cached for up to 60 seconds; unavailable or invalid feeds return a tool error. Use search_stories first when you only know a title or topic.',
+    description: 'Retrieve one published story using its exact stable ID from a story list or search result; a title or topic is not an ID. Returns story, feed receipt, and release identity while retaining canonical sources, evidence clocks, publication state, release IDs, and limitations. Matching is exact and case-sensitive; an unknown ID returns a tool error. Public and read-only; no sign-in. The canonical feed is cached for up to 60 seconds; unavailable or invalid feeds return a tool error.',
     inputSchema: {
       type: 'object',
       required: ['id'],
@@ -592,18 +593,17 @@ export const TOOLS = Object.freeze({
         story: { type: 'object' },
       },
     },
-    annotations: { openWorldHint: true },
     call: (args) => editorialFeed.getStory(args),
   },
   search_stories: {
     title: 'Search evidence-bounded stories',
-    description: 'Find published archive records by text when you do not know an exact story ID. All space-separated terms must match as case-insensitive substrings across IDs, titles, summaries, tags, products, beats, evidence status, contributions, or source labels/release IDs. Returns newest-first stories, normalized query, count, feed receipt, and release identity, preserving evidence clocks and limitations. No relevance ranking or pagination; zero matches returns an empty list. Public and read-only; no credentials. The feed is cached for up to 60 seconds; invalid queries or unavailable/invalid feeds return a tool error. Use get_story for an exact ID or latest_stories for an unfiltered overview.',
+    description: 'Find published archive records by text when you do not know an exact story ID. All space-separated terms must match as case-insensitive substrings across IDs, titles, summaries, tags, products, beats, evidence status, contributions, or source labels/release IDs. Returns newest-first stories, normalized query, count, feed receipt, and release identity, preserving evidence clocks and limitations. No relevance ranking or pagination; zero matches returns an empty list. Public and read-only; no sign-in. The feed is cached for up to 60 seconds; invalid queries or unavailable/invalid feeds return a tool error.',
     inputSchema: {
       type: 'object',
       required: ['query'],
       properties: {
         query: { type: 'string', description: 'Plain text, for example "dollar funding" or a source release ID. Unicode NFKC-normalized, trimmed, and whitespace-collapsed; every term must match. At most 12 terms, 160 characters, and 512 UTF-8 bytes after normalization. No quote, Boolean, regex, or semantic-search syntax.', minLength: 1, maxLength: EDITORIAL_FEED_LIMITS.maxQueryCharacters },
-        limit: { type: 'integer', description: 'Maximum matching records to return, newest first; 1–20, default 10. Does not change which terms must match.', minimum: 1, maximum: EDITORIAL_FEED_LIMITS.maxResultLimit, default: EDITORIAL_FEED_LIMITS.defaultResultLimit },
+        limit: { type: 'integer', description: 'Maximum matching records to return, newest first; 1 to 20, default 10. Does not change which terms must match.', minimum: 1, maximum: EDITORIAL_FEED_LIMITS.maxResultLimit, default: EDITORIAL_FEED_LIMITS.defaultResultLimit },
       },
       additionalProperties: false,
     },
@@ -612,7 +612,6 @@ export const TOOLS = Object.freeze({
       required: [...resultListSchema.required, 'query'],
       properties: { ...resultListSchema.properties, query: { type: 'string', description: 'The Unicode-normalized query with leading/trailing whitespace removed and internal whitespace collapsed.' } },
     },
-    annotations: { openWorldHint: true },
     call: (args) => editorialFeed.searchStories(args),
   },
 })

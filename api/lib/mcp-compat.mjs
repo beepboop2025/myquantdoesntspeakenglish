@@ -191,11 +191,14 @@ export function createMcpServer({
     description: tool.description,
     inputSchema: tool.inputSchema,
     ...(tool.outputSchema ? { outputSchema: tool.outputSchema } : {}),
+    // openWorldHint has no default here: a closed-world tool declares false,
+    // and a tool that reads beyond the server omits it, because the spec
+    // default is already true and scanners grade an explicit true as
+    // over-broad scope.
     annotations: {
       readOnlyHint: true,
       destructiveHint: false,
       idempotentHint: true,
-      openWorldHint: false,
       ...(tool.annotations ?? {}),
     },
   }))
