@@ -9,7 +9,7 @@ export const server = createMcpServer({
     description: 'Read-only discovery and bounded editorial content for the finite, evidence-bounded market briefing.',
     websiteUrl: SITE_URL,
   },
-  instructions: 'Use this server to discover or read the current My Quant briefing. Address stories by their stable source IDs, keep every returned source, release ID, publication state, evidence clock, and limitation attached, and treat every market statement as editorial analysis rather than personalized advice.',
+  instructions: 'Use this server to discover or read the current My Quant briefing. Its tools cover product discovery, endpoint health, the newest published stories, one story by its exact stable ID, and plain-text search across the published archive. Address stories by their stable source IDs, keep every returned source, release ID, publication state, evidence clock, and limitation attached, and treat every market statement as editorial analysis rather than personalized advice.',
   tools: TOOLS,
   allowedOrigins: [SITE_URL],
   maxBodyBytes: 16 * 1024,
